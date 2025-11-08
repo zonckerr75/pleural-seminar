@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pleural Seminar Wales 2025 — Certificate</title>
+  <meta name="description" content="Auto‑generate & download a personalised attendance certificate." />
+  <!-- pdf-lib -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" defer></script>
+  <style>
+    :root { --bg: #0b1320; --fg: #fff; --muted:#94a3b8; --accent:#22c55e; }
+    html,body{height:100%;}
+    body{margin:0;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+    .card{width:min(800px,92vw);padding:24px 22px;border-radius:18px;background:#0f172a;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    h1{font-size:22px;margin:0 0 6px}
+    p{margin:6px 0;color:var(--muted)}
+    code{background:#111827;color:#e5e7eb;padding:2px 6px;border-radius:6px}
+    .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+    input{flex:1;min-width:260px;padding:10px 12px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#fff}
+    button{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#042f14;font-weight:700;cursor:pointer}
+    .hint{font-size:13px;margin-top:10px}
+    a{color:#a5b4fc}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Pleural Seminar Wales 2025 — Certificate</h1>
+    <p>Enter your name or use the query string (e.g. <code>?name=Jane%20Doe</code>). This page draws your name onto <code>/assets/cert/certificate.pdf</code> and downloads it instantly.</p>
+
+    <div class="row">
+      <input id="nameInput" type="text" placeholder="Your full name for the certificate" />
+      <button id="goBtn">Download certificate</button>
+    </div>
+
+    <p class="hint">Advanced (for calibration/testing): add <code>&x=</code>, <code>&y=</code>, <code>&size=</code>, <code>&align=center|left|right</code>, and <code>&preview=1</code> to the URL to override defaults and preview inline before download.</p>
+
+    <div id="previewContainer" style="margin-top:16px"></div>
+  </div>
+
+  <script>
+  // === Defaults to be locked in after final coordinate confirmation ===
+  const DEFAULTS = {
+    x: 297,            // <-- placeholder (points from left). Replace after final alignment.
+    y: 644,            // <-- placeholder (points from bottom). Replace after final alignment.
+    size: 24,          // <-- placeholder font size.
+    align: 'center',   // alignment relative to (x,y): 'left' | 'center' | 'right'
+    font: 'Helvetica-Bold' // any of: Helvetica, Helvetica-Bold, TimesRoman, TimesRomanBold
+  };
+
+  function getParams(){
+    const u = new URL(window.location.href);
+    const p = new URLSearchParams(u.search);
+    const name = p.get('name') ? decodeURIComponent(p.get('name')) : '';
+    const x = p.get('x') ? Number(p.get('x')) : DEFAULTS.x;
+    const y = p.get('y') ? Number(p.get('y')) : DEFAULTS.y;
+    const size = p.get('size') ? Number(p.get('size')) : DEFAULTS.size;
+    const align = p.get('align') || DEFAULTS.align;
+    const font = p.get('font') || DEFAULTS.font;
+    const preview = p.get('preview') === '1';
+    return { name, x, y, size, align, font, preview };
+  }
+
+  function setParam(name, value){
+    const url = new URL(window.location.href);
+    url.searchParams.set(name, value);
+    window.history.replaceState({}, '', url);
+  }
+
+  function measureTextWidth(text, font, size){
+    return font.widthOfTextAtSize(text, size);
+  }
+
+  async function drawAndDownloadCertificate(opts){
+    const { PDFDocument, StandardFonts } = PDFLib;
+
+    // 1) Load base certificate PDF
+    const baseUrl = '/assets/cert/certificate.pdf';
+    const existingPdfBytes = await fetch(baseUrl).then(r => {
+      if(!r.ok) throw new Error('Could not load certificate.pdf');
+      return r.arrayBuffer();
+    });
+
+    // 2) Create a new PDF document from the base
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+    const page = pdfDoc.getPage(0);
+
+    // 3) Load a standard font
+    const fontName = opts.font || 'Helvetica-Bold';
+    const font = await pdfDoc.embedFont(StandardFonts[fontName.replace('-', '')] || StandardFonts.Helvetica);
+
+    // 4) Compute x based on alignment
+    let x = opts.x;
+    const y = opts.y;
+    const text = opts.name;
+    const size = opts.size;
+
+    const textWidth = measureTextWidth(text, font, size);
+    if (opts.align === 'center') x = x - textWidth / 2;
+    if (opts.align === 'right') x = x - textWidth;
+
+    // 5) Draw the text
+    page.drawText(text, {
+      x,
+      y,
+      size,
+      font,
+      color: PDFLib.rgb(0, 0, 0) // black text; change here if your certificate requires a different colour
+    });
+
+    // 6) Save & download
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const fileName = `Pleural Seminar Wales 2025 - Certificate - ${text}.pdf`;
+
+    if (opts.preview) {
+      // Show inline preview and provide a manual download link
+      const url = URL.createObjectURL(blob);
+      const container = document.getElementById('previewContainer');
+      container.innerHTML = '';
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '100%';
+      iframe.style.height = '620px';
+      iframe.src = url;
+      container.appendChild(iframe);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.textContent = 'Download this certificate PDF';
+      a.style.display = 'inline-block';
+      a.style.marginTop = '10px';
+      container.appendChild(a);
+      return; // no auto-download in preview mode
+    }
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
+
+  function handleButton(){
+    const name = document.getElementById('nameInput').value.trim();
+    if(!name){
+      alert('Please enter your full name');
+      return;
+    }
+    setParam('name', encodeURIComponent(name));
+    const opts = getParams();
+    drawAndDownloadCertificate(opts).catch(err => alert(err.message || String(err)));
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = getParams();
+    document.getElementById('goBtn').addEventListener('click', handleButton);
+    if (params.name) {
+      document.getElementById('nameInput').value = params.name;
+      // Auto-generate immediately if name provided via URL
+      drawAndDownloadCertificate(params).catch(err => alert(err.message || String(err)));
+    }
+  });
+  </script>
+</body>
+</html>
