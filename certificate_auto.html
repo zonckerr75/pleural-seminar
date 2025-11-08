@@ -1,189 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pleural Seminar Wales 2025 — Certificate</title>
-  <meta name="description" content="Auto‑generate & download a personalised attendance certificate." />
   <style>
-    :root { --bg: #0b1320; --fg: #fff; --muted:#94a3b8; --accent:#22c55e; }
-    html,body{height:100%;}
+    :root { --bg:#0b1320; --fg:#fff; --muted:#94a3b8; --accent:#22c55e }
+    html,body{height:100%}
     body{margin:0;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-    .card{width:min(800px,92vw);padding:24px 22px;border-radius:18px;background:#0f172a;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    h1{font-size:22px;margin:0 0 6px}
+    .card{width:min(800px,92vw);padding:24px;border-radius:16px;background:#0f172a;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    h1{margin:0 0 8px;font-size:22px}
     p{margin:6px 0;color:var(--muted)}
-    code{background:#111827;color:#e5e7eb;padding:2px 6px;border-radius:6px}
-    .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+    .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
     input{flex:1;min-width:260px;padding:10px 12px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#fff}
-    button{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#042f14;font-weight:700;cursor:pointer}
-    .hint{font-size:13px;margin-top:10px}
-    a{color:#a5b4fc}
-    .log{margin-top:10px;font-size:12px;color:#94a3b8}
-    .err{padding:12px;border-radius:10px;background:#1f2937;color:#fff;margin-top:10px}
+    button{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#052;cursor:pointer;font-weight:700}
+    #preview{width:100%;height:640px;margin-top:12px;border:0;display:none}
+    small{color:var(--muted)}
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Pleural Seminar Wales 2025 — Certificate</h1>
-    <p>Enter your name or use the query string (e.g. <code>?name=Jane%20Doe</code>). This page draws your name onto <code>/assets/cert/certificate.pdf</code> and downloads it.</p>
+    <p>Generates a personalised PDF from <code>/assets/cert/certificate.pdf</code> with your name centred, 7&nbsp;cm from the top, size 24.</p>
 
     <div class="row">
-      <input id="nameInput" type="text" placeholder="Your full name for the certificate" />
-      <button id="goBtn">Download certificate</button>
+      <input id="name" placeholder="Your full name as it should appear" />
+      <button id="go">Download</button>
     </div>
+    <p><small>Tip: you can also use <code>?name=Jane%20Doe</code> to auto‑download.</small></p>
 
-    <p class="hint">Advanced: add <code>&x=</code>, <code>&y=</code>, <code>&size=</code>, <code>&align=center|left|right</code>, <code>&preview=1</code>.</p>
-    <div id="previewContainer" style="margin-top:16px"></div>
-    <div id="diag" class="log"></div>
+    <iframe id="preview" title="Certificate preview"></iframe>
   </div>
 
+  <!-- Load pdf-lib (CDN). Placed BEFORE our script so PDFLib is ready. -->
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script>
-    // --- Loader that tries LOCAL copy first, then CDN fallback ---
-    function loadScript(src){
-      return new Promise((resolve, reject) => {
-        const s = document.createElement('script');
-        s.src = src; s.async = true;
-        s.onload = () => resolve(src);
-        s.onerror = () => reject(new Error('Failed to load ' + src));
-        document.head.appendChild(s);
-      });
+    // Minimal, single‑path implementation. No loaders, no diagnostics.
+    const BASES = ['/assets/cert/certificate.pdf','assets/cert/certificate.pdf'];
+
+    function qs(key){ const p=new URLSearchParams(location.search); return p.get(key)||''; }
+
+    async function fetchBasePdf(){
+      for (const url of BASES){
+        try {
+          const r = await fetch(url, { cache:'no-store' });
+          if (r.ok) return await r.arrayBuffer();
+        } catch(_){}
+      }
+      throw new Error('Could not load certificate.pdf at /assets/cert/certificate.pdf');
     }
 
-    const DIAG = (msg) => { const d=document.getElementById('diag'); if(d){ d.innerHTML += (d.innerHTML?'<br>':'') + msg; }}
+    async function buildPdf(name){
+      const { PDFDocument, StandardFonts, rgb } = PDFLib;
+      const baseBytes = await fetchBasePdf();
+      const pdf = await PDFDocument.load(baseBytes);
+      const page = pdf.getPage(0);
+      const { width: W, height: H } = page.getSize();
 
-    (async () => {
-      // Try local vendor build first (recommended to host a copy for reliability)
-      try {
-        await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
-        DIAG('Loaded pdf-lib from CDN');
-      } catch (e2) {
-        const c=document.getElementById('previewContainer');
-        if(c) c.innerHTML = `<div class='err'>⚠️ Could not load pdf-lib from CDN. Please check network or allow cdn.jsdelivr.net.</div>`;
-        return; // stop here
-      }
+      const font = await pdf.embedFont(StandardFonts.HelveticaBold);
+      const size = 24;
+      const y = H - (7 * 72 / 2.54); // 7 cm from top
+      const textWidth = font.widthOfTextAtSize(name, size);
+      const x = (W - textWidth) / 2; // centre
 
-      // Now safe to use window.PDFLib (CDN build sets window.PDFLib)
-      if (!window.PDFLib) {
-        const c=document.getElementById('previewContainer');
-        if(c) c.innerHTML = "<div class='err'>⚠️ PDFLib global is not available even after loading CDN. Try a hard refresh (Ctrl+F5) or open in a private window.</div>";
-        DIAG('PDFLib missing after CDN load');
-        return;
-      }
-      const DEFAULTS = { x: 297, y: 644, size: 24, align: 'center', font: 'Helvetica-Bold' };
+      page.drawText(name, { x, y, size, font, color: rgb(0,0,0) });
+      return await pdf.save();
+    }
 
-      function getParams(){
-        const u = new URL(window.location.href);
-        const p = new URLSearchParams(u.search);
-        const name = p.get('name') || '';
-        const x = p.get('x') ? Number(p.get('x')) : DEFAULTS.x;
-        const y = p.get('y') ? Number(p.get('y')) : DEFAULTS.y;
-        const size = p.get('size') ? Number(p.get('size')) : DEFAULTS.size;
-        const align = p.get('align') || DEFAULTS.align;
-        const font = p.get('font') || DEFAULTS.font;
-        const preview = p.get('preview') === '1';
-        return { name, x, y, size, align, font, preview };
-      }
-
-      function setParam(name, value){
-        const url = new URL(window.location.href);
-        url.searchParams.set(name, value);
-        window.history.replaceState({}, '', url);
-      }
-
-      async function drawAndDownloadCertificate(opts){
-        const { PDFDocument, StandardFonts, rgb } = PDFLib;
-
-        // 1) Fetch base PDF
-        const baseUrl = '/assets/cert/certificate.pdf';
-        DIAG('Fetching: ' + baseUrl);
-        const r = await fetch(baseUrl, { cache: 'no-store' });
-        if(!r.ok) throw new Error(`Could not load ${baseUrl} (status ${r.status})`);
-        const existingPdfBytes = await r.arrayBuffer();
-
-        // 2) Prepare PDF
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        const page = pdfDoc.getPage(0);
-        const { width: pageW, height: pageH } = page.getSize();
-
-        // 3) Font mapping
-        const fontMap = {
-          'Helvetica': StandardFonts.Helvetica,
-          'Helvetica-Bold': StandardFonts.HelveticaBold,
-          'TimesRoman': StandardFonts.TimesRoman,
-          'TimesRoman-Bold': StandardFonts.TimesRomanBold
-        };
-        const std = fontMap[opts.font] || StandardFonts.HelveticaBold;
-        const font = await pdfDoc.embedFont(std);
-
-        // 4) Positioning
-        // If using the default placeholder coords, translate them to page-relative:
-        // center horizontally, and 7 cm from the top, so it works on any page size.
-        let x = opts.x; let y = opts.y; const text = opts.name || ''; const size = opts.size;
-        const sevenCmInPts = 7 * 72 / 2.54; // ≈198 pt
-        if (opts.x === 297 && opts.y === 644) { // our previous A4-based defaults
-          x = pageW / 2;            // center X anchor
-          y = pageH - sevenCmInPts; // 7 cm from top
-        }
-        const textWidth = font.widthOfTextAtSize(text, size);
-        if (opts.align === 'center') x = x - textWidth / 2;
-        if (opts.align === 'right') x = x - textWidth;
-        const textWidth = font.widthOfTextAtSize(text, size);
-        if (opts.align === 'center') x = x - textWidth / 2;
-        if (opts.align === 'right') x = x - textWidth;
-
-        // 5) Draw name
-        // Temporary: draw in red to make it obvious during calibration
-        page.drawText(text, { x, y, size, font, color: rgb(1,0,0) });
-
-        // 6) Output
-        const pdfBytes = await pdfDoc.save();
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-        const fileName = `Pleural Seminar Wales 2025 - Certificate - ${text}.pdf`;
+    async function run(name){
+      if(!name || !name.trim()){ alert('Please enter your full name'); return; }
+      const clean = name.trim();
+      try{
+        const bytes = await buildPdf(clean);
+        const blob = new Blob([bytes], { type:'application/pdf' });
         const url = URL.createObjectURL(blob);
 
-        // Always show inline preview & manual link
-        const container = document.getElementById('previewContainer');
-        if (container) {
-          container.innerHTML = '';
-          const iframe = document.createElement('iframe');
-          iframe.style.width = '100%'; iframe.style.height = '620px'; iframe.src = url;
-          container.appendChild(iframe);
-          const a = document.createElement('a'); a.href = url; a.download = fileName; a.textContent = 'Download this certificate PDF'; a.style.display='inline-block'; a.style.marginTop='10px'; container.appendChild(a);
-        }
+        // Show preview AND trigger download (works even if auto‑download is blocked)
+        const iframe = document.getElementById('preview');
+        iframe.src = url; iframe.style.display = 'block';
 
-        if (!opts.preview) {
-          const link = document.createElement('a'); link.href = url; link.download = fileName; document.body.appendChild(link); link.click(); link.remove();
-        }
+        const a = document.createElement('a');
+        a.href = url; a.download = `Pleural Seminar Wales 2025 - Certificate - ${clean}.pdf`;
+        document.body.appendChild(a); a.click(); a.remove();
+      } catch (e){
+        alert((e && e.message) ? e.message : String(e));
       }
+    }
 
-      // === Run immediately (avoid DOMContentLoaded timing issues) ===
-      const params = getParams();
-      const btn = document.getElementById('goBtn');
-      if (btn) btn.addEventListener('click', () => {
-        const name = document.getElementById('nameInput').value.trim();
-        if(!name){ alert('Please enter your full name'); return; }
-        setParam('name', name);
-        const opts = getParams();
-        drawAndDownloadCertificate(opts).catch(err => {
-          console.error(err);
-          const c = document.getElementById('previewContainer');
-          if (c) c.innerHTML = `<div class='err'>⚠️ ${err && err.message ? err.message : String(err)}</div>`;
-        });
-      });
-
-      // Auto-preview if ?name= is present
-      if (params.name) {
-        const input = document.getElementById('nameInput');
-        if (input) input.value = params.name;
-        drawAndDownloadCertificate({ ...params, preview: true }).catch(err => {
-          const c = document.getElementById('previewContainer');
-          if (c) c.innerHTML = `<div class='err'>⚠️ ${err && err.message ? err.message : String(err)}</div>`;
-        });
-      }
-
-      // Also display pdf-lib version loaded
-      try { DIAG('pdf-lib OK'); } catch(e) {}
-    })();
+    // Wire up UI
+    window.addEventListener('load', () => {
+      document.getElementById('go').addEventListener('click', () => run(document.getElementById('name').value));
+      const preset = qs('name');
+      if (preset) { document.getElementById('name').value = preset; run(preset); }
+    });
   </script>
 </body>
 </html>
