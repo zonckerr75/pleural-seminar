@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Feedback Results — Pleural Seminar Wales 2025</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="nav">
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="faculty.html">Faculty Dashboard</a>
+      <span style="opacity:.6;">Feedback Results</span>
+    </nav>
+  </header>
+
+  <main style="padding:100px 20px;">
+    <section id="analytics" class="panel" style="margin:24px 0;">
+      <h2 style="margin:0 0 12px;">Feedback Analytics</h2>
+
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+        <label style="display:flex;align-items:center;gap:6px;">
+          <input id="togglePercent" type="checkbox">
+          Show as percentage
+        </label>
+        <span id="totalResponses" style="opacity:.8;"></span>
+      </div>
+
+      <div id="chartsGrid" class="charts-grid"></div>
+    </section>
+  </main>
+
+  <script type="module" src="/scripts/feedback-results.js"></script>
+</body>
+</html>
