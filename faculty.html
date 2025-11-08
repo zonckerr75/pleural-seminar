@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Faculty — Pleural Seminar Wales 2025</title>
   <style>
-    
 :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
 /* Base */
 html,body{height:100%}
@@ -21,26 +20,26 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
 .nav-list a{color:#e5e7eb;text-decoration:none;padding:10px 6px;display:inline-block}
 .nav-list a:hover{text-decoration:underline}
 
-    .page{max-width:1100px;margin:0 auto;padding:24px}
-    .card{background:var(--panel);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    h1{margin:0 0 6px;font-size:26px}
-    h2{margin:14px 0 8px;font-size:20px}
-    .muted{color:var(--muted)}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
-    .btn{appearance:none;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
-    .btn.primary{background:var(--accent);color:#052}
-    .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--fg)}
-    table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
-    th,td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
-    th{text-align:left;font-weight:700}
-    tr:hover td{background:#0c1526}
-    .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0b1220;border:1px solid var(--border);font-size:12px;color:var(--muted)}
-    .gate{max-width:420px;margin:60px auto}
-    input[type=password]{width:100%;background:#0b1220;border:1px solid var(--border);border-radius:10px;color:#fff;padding:10px 12px;margin:8px 0}
-    .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .spacer{flex:1}
-    .hide{display:none}
-    code{background:#0b1220;padding:2px 6px;border-radius:6px}
+.page{max-width:1100px;margin:0 auto;padding:24px}
+.card{background:var(--panel);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+h1{margin:0 0 6px;font-size:26px}
+h2{margin:14px 0 8px;font-size:20px}
+.muted{color:var(--muted)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.btn{appearance:none;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+.btn.primary{background:var(--accent);color:#052}
+.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--fg)}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{text-align:left;font-weight:700}
+tr:hover td{background:#0c1526}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0b1220;border:1px solid var(--border);font-size:12px;color:var(--muted)}
+.gate{max-width:420px;margin:60px auto}
+input[type=password]{width:100%;background:#0b1220;border:1px solid var(--border);border-radius:10px;color:#fff;padding:10px 12px;margin:8px 0}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.hide{display:none}
+code{background:#0b1220;padding:2px 6px;border-radius:6px}
   </style>
 </head>
 <body>
@@ -123,10 +122,12 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
     </div>
   </div>
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
   <script>
-    const ACCESS_CODE = "pleural2025"; // change this
+    // -------- Robust faculty gate + single Firebase init --------
+    const ACCESS_CODE = "pleural2025"; // change this if needed
     const firebaseConfig = {
       apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
       authDomain: "pleural-seminar-2025.firebaseapp.com",
@@ -135,7 +136,11 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
       messagingSenderId: "914784082205",
       appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
     };
-    firebase.initializeApp(firebaseConfig);
+
+    // Initialise Firebase only once
+    if (!firebase.apps || !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.firestore();
 
     const gate = document.getElementById('gate');
@@ -145,37 +150,66 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
     const msgEl = document.getElementById('gateMsg');
     const who = document.getElementById('who');
 
-    function openDash(){ gate.classList.add('hide'); dash.classList.remove('hide'); who.textContent = "Faculty access granted"; sessionStorage.setItem('psw25_gate','ok'); }
-    if (sessionStorage.getItem('psw25_gate') === 'ok') openDash();
+    function normalise(s){ return (s||"").toString().trim().replace(/\s+/g,''); }
+    function openDash(){
+      gate?.classList.add('hide');
+      dash?.classList.remove('hide');
+      if (who) who.textContent = "Faculty access granted";
+      sessionStorage.setItem('psw25_gate','ok');
+    }
+
+    // If previously unlocked in this tab
+    if (sessionStorage.getItem('psw25_gate') === 'ok') {
+      openDash();
+    } else {
+      // Or unlock via URL ?code=... or #code=...
+      const params = new URLSearchParams(location.search);
+      const q = params.get('code');
+      const hash = new URLSearchParams(location.hash.slice(1));
+      const hq = hash.get('code');
+      const urlCode = normalise(q || hq);
+      if (urlCode && urlCode.toLowerCase() === normalise(ACCESS_CODE).toLowerCase()) {
+        openDash();
+      }
+    }
 
     enterBtn?.addEventListener('click', () => {
-      const val = codeEl.value.trim();
+      const val = normalise(codeEl?.value);
       if (!val) { msgEl.textContent = "Enter the access code."; return; }
-      if (val !== ACCESS_CODE) { msgEl.textContent = "Incorrect code."; return; }
+      if (val.toLowerCase() !== normalise(ACCESS_CODE).toLowerCase()) {
+        msgEl.textContent = "Incorrect code.";
+        return;
+      }
       msgEl.textContent = "";
       openDash();
       setTimeout(()=>document.getElementById('exportCsv')?.focus(), 50);
     });
 
+    codeEl?.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter') { e.preventDefault(); enterBtn?.click(); }
+    });
+
+    // ---- Feedback live view ----
     const tbody = document.querySelector('#tbl tbody');
     const countLabel = document.getElementById('countLabel');
+
     function fmtTime(ts){ if (!ts) return ""; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString(); }
     function renderRow(doc){
       const r = doc.data(); const res = r.responses || {};
       const sessions = []; for (let i=4;i<=14;i++) sessions.push(`${i}:${res['q'+i]||''}`);
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${fmtTime(r.submittedAt)}<\/td>
-        <td>${res.certificate_name || ""}<\/td>
-        <td>${res.email || ""}<\/td>
-        <td>${res.q1||""}<\/td>
-        <td>${res.q2||""}<\/td>
-        <td>${res.q3||""}<\/td>
-        <td>${sessions.join(' · ')}<\/td>
-        <td>${(res.q15||"").replaceAll("\n"," ")}<\/td>
-        <td>${(res.q16||"").replaceAll("\n"," ")}<\/td>
-        <td>${(res.q17||"").replaceAll("\n"," ")}<\/td>
-        <td>${(res.q18||"").replaceAll("\n"," ")}<\/td>`;
+        <td>${fmtTime(r.submittedAt)}</td>
+        <td>${res.certificate_name || ""}</td>
+        <td>${res.email || ""}</td>
+        <td>${res.q1||""}</td>
+        <td>${res.q2||""}</td>
+        <td>${res.q3||""}</td>
+        <td>${sessions.join(' · ')}</td>
+        <td>${(res.q15||"").replaceAll("\n"," ")}</td>
+        <td>${(res.q16||"").replaceAll("\n"," ")}</td>
+        <td>${(res.q17||"").replaceAll("\n"," ")}</td>
+        <td>${(res.q18||"").replaceAll("\n"," ")}</td>`;
       return tr;
     }
 
@@ -187,8 +221,7 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
         countLabel.textContent = `${rowsData.length} response${rowsData.length===1?"":"s"}`;
       });
 
-    function toCsvValue(v){ if (v == null) return ""; const s = String(v).replace(/"/g,'""'); return /[",
-]/.test(s) ? `"${s}"` : s; }
+    function toCsvValue(v){ if (v == null) return ""; const s = String(v).replace(/"/g,'""'); return /[",\n]/.test(s) ? `"${s}"` : s; }
     function exportCsv(){ 
       const headers = ["docId","submittedAt","name","email","q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15","q16","q17","q18"];
       const lines = [headers.join(",")];
@@ -208,8 +241,7 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
         ].map(toCsvValue);
         lines.push(row.join(","));
       });
-      const blob = new Blob([lines.join("
-")], {type: "text/csv"});
+      const blob = new Blob([lines.join("\n")], {type: "text/csv"});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = "feedback_export.csv";
       document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1000);
