@@ -1,42 +1,20 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pleural Seminar Wales 2025 — Certificate</title>
-  <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;background:#0b1320;color:#fff;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center}
-    .card{background:#0f172a;padding:24px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:min(720px,92vw)}
-    h1{margin:0 0 10px;font-size:22px}
-    p{margin:6px 0;color:#94a3b8}
-    .row{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
-    input{flex:1;min-width:260px;padding:10px 12px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#fff}
-    button{padding:10px 14px;border:0;border-radius:10px;background:#22c55e;color:#062;cursor:pointer;font-weight:700}
-    code{background:#111827;color:#e5e7eb;padding:2px 6px;border-radius:6px}
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Pleural Seminar Wales 2025 — Certificate</h1>
-    <p>Enter your name or use <code>?name=Jane%20Doe</code>. This page downloads a personalised PDF certificate.</p>
-    <div class="row">
-      <input id="name" placeholder="Your full name for the certificate" />
-      <button id="go">Download certificate</button>
+<html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pleural Seminar Wales 2025 — Certificate</title></head>
+<body style="font-family:system-ui;display:flex;min-height:100vh;align-items:center;justify-content:center;background:#0b1320;color:#fff;margin:0">
+  <div style="background:#0f172a;padding:24px;border-radius:16px;width:min(720px,92vw)">
+    <h1 style="margin:0 0 10px;font-size:22px">Pleural Seminar Wales 2025 — Certificate</h1>
+    <p>Enter your name or use <code>?name=Jane%20Doe</code>. This will download your certificate.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+      <input id="name" placeholder="Your full name" style="flex:1;min-width:260px;padding:10px 12px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#fff"/>
+      <button id="go" style="padding:10px 14px;border:0;border-radius:10px;background:#22c55e;color:#062;font-weight:700;cursor:pointer">Download</button>
     </div>
-    <p>Direct link format: <code>/api/certificate?name=Jane%20Doe</code></p>
+    <p>Direct link: <code>/api/certificate?name=Jane%20Doe</code></p>
   </div>
-
   <script>
-    function qs(k){ const p=new URLSearchParams(location.search); return p.get(k) || ""; }
-    function dl(url){ const a=document.createElement('a'); a.href=url; a.rel='noopener'; a.click(); }
-    function run(name){
-      if(!name.trim()){ alert("Please enter your full name"); return; }
-      const url = `/api/certificate?name=${encodeURIComponent(name.trim())}`;
-      // Navigate so the browser treats it as a real download
-      window.location.href = url;
-    }
-    document.getElementById('go').addEventListener('click', () => run(document.getElementById('name').value));
-    const pre = qs('name'); if (pre) { document.getElementById('name').value = pre; run(pre); }
+    const qs = new URLSearchParams(location.search); 
+    function run(n){ if(!n.trim()) return alert('Enter your name'); location.href='/api/certificate?name='+encodeURIComponent(n.trim()); }
+    document.getElementById('go').onclick = () => run(document.getElementById('name').value);
+    if(qs.get('name')){ document.getElementById('name').value=qs.get('name'); run(qs.get('name')); }
   </script>
-</body>
-</html>
+</body></html>
