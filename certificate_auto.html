@@ -54,21 +54,21 @@
     (async () => {
       // Try local vendor build first (recommended to host a copy for reliability)
       try {
-        await loadScript('/assets/vendor/pdf-lib.min.js');
-        DIAG('Loaded pdf-lib from /assets/vendor/pdf-lib.min.js');
-      } catch (e1) {
-        DIAG('Local pdf-lib not found, trying CDN…');
-        try {
-          await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
-          DIAG('Loaded pdf-lib from CDN');
-        } catch (e2) {
-          const c=document.getElementById('previewContainer');
-          if(c) c.innerHTML = `<div class='err'>⚠️ Could not load pdf-lib from local or CDN. Please allow this domain or upload <code>/assets/vendor/pdf-lib.min.js</code>.</div>`;
-          return; // stop here
-        }
+        await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
+        DIAG('Loaded pdf-lib from CDN');
+      } catch (e2) {
+        const c=document.getElementById('previewContainer');
+        if(c) c.innerHTML = `<div class='err'>⚠️ Could not load pdf-lib from CDN. Please check network or allow cdn.jsdelivr.net.</div>`;
+        return; // stop here
       }
 
-      // Now safe to use window.PDFLib
+      // Now safe to use window.PDFLib (CDN build sets window.PDFLib)
+      if (!window.PDFLib) {
+        const c=document.getElementById('previewContainer');
+        if(c) c.innerHTML = "<div class='err'>⚠️ PDFLib global is not available even after loading CDN. Try a hard refresh (Ctrl+F5) or open in a private window.</div>";
+        DIAG('PDFLib missing after CDN load');
+        return;
+      }
       const DEFAULTS = { x: 297, y: 644, size: 24, align: 'center', font: 'Helvetica-Bold' };
 
       function getParams(){
