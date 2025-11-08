@@ -1,0 +1,61 @@
+// /api/certificate.ts
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  try {
+    const name = (String(req.query.name || '')).trim();
+    if (!name) {
+      res.status(400).send('Missing ?name=');
+      return;
+    }
+
+    // Build absolute URL to your static certificate
+    const host = req.headers['x-forwarded-host'] || req.headers.host || 'pleuralseminar.wales';
+    const proto = (req.headers['x-forwarded-proto'] as string) || 'https';
+    const baseUrl = `${proto}://${host}`;
+    const certUrl = `${baseUrl}/assets/cert/certificate.pdf`;
+
+    // Fetch base certificate PDF
+    const r = await fetch(certUrl, { cache: 'no-store' });
+    if (!r.ok) {
+      res.status(500).send(`Could not load ${certUrl} (status ${r.status})`);
+      return;
+    }
+    const baseBytes = new Uint8Array(await r.arrayBuffer());
+
+    // Load and edit
+    const pdfDoc = await PDFDocument.load(baseBytes);
+    const page = pdfDoc.getPage(0);
+    const { width: pageW, height: pageH } = page.getSize();
+
+    const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    // Coordinates: centre, 7 cm from top
+    const sevenCm = 7 * 72 / 2.54; // ≈ 198 pt
+    const y = pageH - sevenCm;
+    const size = 24;
+
+    const textWidth = font.widthOfTextAtSize(name, size);
+    const x = (pageW / 2) - (textWidth / 2);
+
+    page.drawText(name, {
+      x,
+      y,
+      size,
+      font,
+      color: rgb(0, 0, 0),
+    });
+
+    const out = await pdfDoc.save();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="Pleural Seminar Wales 2025 - Certificate - ${name}.pdf"`
+    );
+    res.status(200).send(Buffer.from(out));
+  } catch (e: any) {
+    res.status(500).send(`Error generating certificate: ${e?.message || e}`);
+  }
+}
