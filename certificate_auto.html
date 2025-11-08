@@ -75,18 +75,9 @@
     const { PDFDocument, StandardFonts, rgb } = PDFLib;
 
     const baseUrl = (location.protocol.startsWith('http') ? '/assets/cert/certificate.pdf' : './assets/cert/certificate.pdf');
-    let existingPdfBytes;
-    try {
-      const r = await fetch(baseUrl, { cache: 'no-store' });
-      if(!r.ok) throw new Error(`Fetch failed (${r.status}) for ${baseUrl}`);
-      existingPdfBytes = await r.arrayBuffer();
-    } catch (e) {
-      const container = document.getElementById('previewContainer');
-      if (container) {
-        container.innerHTML = `<div style="padding:12px;border-radius:10px;background:#1f2937;color:#fff;">⚠️ Unable to load base certificate: <code>${baseUrl}</code><br>${e && e.message ? e.message : e}</div>`;
-      }
-      throw e;
-    }
+    const r = await fetch('/assets/cert/certificate.pdf', { cache: 'no-store' });
+    if(!r.ok) throw new Error(`Could not load /assets/cert/certificate.pdf (status ${r.status})`);
+    const existingPdfBytes = await r.arrayBuffer();
 
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
     const page = pdfDoc.getPage(0);
@@ -171,18 +162,14 @@
     const btn = document.getElementById('goBtn');
     if (btn) btn.addEventListener('click', handleButton);
 
-    // Show quick diagnostics
-    const diag = document.createElement('div');
-    diag.style.fontSize = '12px';
-    diag.style.marginTop = '10px';
-    diag.style.color = '#94a3b8';
-    diag.innerHTML = `Base PDF: <code>${(location.protocol.startsWith('http') ? '/assets/cert/certificate.pdf' : './assets/cert/certificate.pdf')}</code>`;
-    document.querySelector('.card').appendChild(diag);
-
+    // If name present via URL, render immediately and show preview
     if (params.name) {
       const input = document.getElementById('nameInput');
       if (input) input.value = params.name;
-      drawAndDownloadCertificate({ ...params, preview: true }).catch(err => alert(err.message || String(err)));
+      drawAndDownloadCertificate({ ...params, preview: true }).catch(err => {
+        const c = document.getElementById('previewContainer');
+        if (c) c.innerHTML = `<div style='padding:12px;border-radius:10px;background:#1f2937;color:#fff;'>⚠️ ${err && err.message ? err.message : err}</div>`;
+      });
     }
   });
   </script>
