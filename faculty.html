@@ -40,6 +40,43 @@ input[type=password]{width:100%;background:#0b1220;border:1px solid var(--border
 .spacer{flex:1}
 .hide{display:none}
 code{background:#0b1220;padding:2px 6px;border-radius:6px}
+
+/* --- New: Faculty Actions grid buttons --- */
+.action-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 12px}
+.action-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap:16px;
+}
+.action-btn{
+  display:flex; align-items:center; gap:14px;
+  padding:16px 18px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius:14px;
+  text-decoration:none; color: var(--fg);
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+  outline: none;
+}
+.action-btn .icon{ font-size:24px; }
+.action-btn .text{ display:flex; flex-direction:column; line-height:1.2; }
+.action-btn strong{ font-weight:700; }
+.action-btn em{ font-style:normal; opacity:.75; font-size:.9rem; }
+.action-btn:hover{
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 16px rgba(0,0,0,.28);
+}
+.action-btn:active{
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.action-btn:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--accent);
+}
   </style>
 </head>
 <body>
@@ -76,16 +113,50 @@ code{background:#0b1220;padding:2px 6px;border-radius:6px}
     </div>
 
     <div id="dash" class="card hide">
-      <h1>Faculty Dashboard</h1>
-      <p class="muted">Pleural Seminar Wales 2025 • Live data from Firestore</p>
-
-      <div class="row">
-        <a href="#feedback" class="btn ghost">View feedback data</a>
-        <a href="/posters.html" class="btn ghost">Score posters</a>
-        <a href="/presentations.html" class="btn ghost">Score presentations</a>
-        <span class="spacer"></span>
+      <div class="action-header">
+        <div>
+          <h1>Faculty Dashboard</h1>
+          <p class="muted" style="margin:4px 0 0;">Pleural Seminar Wales 2025 • Live data from Firestore</p>
+        </div>
         <span id="who" class="pill"></span>
       </div>
+
+      <!-- NEW: 2×2 action buttons -->
+      <section aria-label="Faculty actions" style="margin:8px 0 18px;">
+        <div class="action-grid">
+          <a class="action-btn" href="/posters-score.html" aria-label="Score posters">
+            <span class="icon" aria-hidden="true">🖼️</span>
+            <span class="text">
+              <strong>Score posters</strong>
+              <em>Judge poster submissions</em>
+            </span>
+          </a>
+
+          <a class="action-btn" href="/cases-score.html" aria-label="Score cases">
+            <span class="icon" aria-hidden="true">🩺</span>
+            <span class="text">
+              <strong>Score cases</strong>
+              <em>Judge case presentations</em>
+            </span>
+          </a>
+
+          <a class="action-btn" href="/results.html" aria-label="View results">
+            <span class="icon" aria-hidden="true">🏆</span>
+            <span class="text">
+              <strong>View results</strong>
+              <em>Live ranks & totals</em>
+            </span>
+          </a>
+
+          <a class="action-btn" href="/feedback-results.html" aria-label="View feedback">
+            <span class="icon" aria-hidden="true">📊</span>
+            <span class="text">
+              <strong>View feedback</strong>
+              <em>Charts & summaries</em>
+            </span>
+          </a>
+        </div>
+      </section>
 
       <h2 id="feedback">Feedback responses</h2>
       <div class="toolbar">
@@ -134,7 +205,7 @@ code{background:#0b1220;padding:2px 6px;border-radius:6px}
       projectId: "pleural-seminar-2025",
       storageBucket: "pleural-seminar-2025.appspot.com",
       messagingSenderId: "914784082205",
-      appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
+      appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
     };
 
     // Initialise Firebase only once
