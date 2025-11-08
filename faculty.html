@@ -27,6 +27,23 @@
     .spacer{flex:1}
     .hide{display:none}
     code{background:#0b1220;padding:2px 6px;border-radius:6px}
+/* --- Fixed navigation bar --- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #0b1320; /* match your theme */
+  border-bottom: 1px solid #1f2937;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+/* Add space below header so content isn't hidden underneath */
+body {
+  padding-top: 80px; /* adjust to header height */
+}
+
   </style>
 </head>
 <body>
