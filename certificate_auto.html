@@ -108,6 +108,8 @@
 
     // Always show a visible preview + manual download link (helps if auto-download is blocked)
     const url = URL.createObjectURL(blob);
+    // Also open in new tab when previewing to bypass any iframe/inline blob restrictions
+    if (opts.preview) { try { window.open(url, '_blank'); } catch (e) {} }
     const container = document.getElementById('previewContainer');
     if (container) {
       container.innerHTML = '';
