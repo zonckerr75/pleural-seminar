@@ -4,84 +4,48 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Feedback Results — Pleural Seminar Wales 2025</title>
-  <link rel="stylesheet" href="style.css" />
 
-.card > div:first-child{
-  position:sticky;
-  top:0;
-  background:var(--panel);
-  z-index:100;
-  padding-bottom:8px;
-  border-bottom:1px solid var(--border);
-}
-
- 
-<style>
-:root{
-  --bg:#0b1320;
-  --panel:#0f172a;
-  --fg:#e5e7eb;
-  --muted:#94a3b8;
-  --accent:#22c55e;
-  --border:#1f2937;
-}
-html,body{height:100%}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--fg);
-  font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
-  padding-top:80px;
-}
-.page-wrap{max-width:1100px;margin:0 auto;padding:24px}
-.card{
-  background:var(--panel);
-  border-radius:16px;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
-  padding:24px;
-}
-.btn{
-  padding:8px 14px;
-  border-radius:10px;
-  border:1px solid var(--border);
-  color:var(--fg);
-  background:transparent;
-  cursor:pointer;
-}
-.btn:hover{
-  border-color:var(--accent);
-  color:var(--accent);
-}
-h1,h2,h3,h4{color:var(--fg)}
-.muted{color:var(--muted)}
-/* summary + charts grid already defined */
-.free-text-list{
-  list-style:disc;
-  padding-left:20px;
-  margin:8px 0 20px;
-}
-</style>
-
-
-
-
-
-
-
-.free-text-list{
-    list-style: disc;
-    padding-left: 20px;
-    margin: 8px 0 18px;
+  <!-- THEME -->
+  <style>
+  :root{
+    --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8;
+    --accent:#22c55e; --border:#1f2937;
   }
-  .free-text-list li{
-    margin: 4px 0;
-    color: var(--fg, #e5e7eb);
-  }
-</style>
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+       padding-top:80px}
+  /* Fixed header (brand only, no breadcrumbs) */
+  header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;
+             border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;min-height:64px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand h1{font-size:20px;margin:0}
+  .brand .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block}
 
+  .page-wrap{max-width:1100px;margin:0 auto;padding:24px}
+  .card{background:var(--panel);border-radius:16px;padding:24px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .btn{padding:8px 14px;border-radius:10px;border:1px solid var(--border);color:var(--fg);
+       background:transparent;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  h1,h2,h3{color:var(--fg)}
+  .muted{color:var(--muted)}
 
+  /* Controls + grids */
+  .charts-grid{display:grid;grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));gap:16px}
+  .chart-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px}
+  .chart-card h3{margin:0 0 8px;font-size:14px;font-weight:600}
+  .chart-meta{font-size:12px;opacity:.75;margin-bottom:6px}
+  .chart-wrap{position:relative;height:220px}
+  .free-text-list{list-style:disc;padding-left:20px;margin:8px 0 20px}
+
+  /* Sticky header row inside card (title + back button) */
+  .card-header{position:sticky;top:0;background:var(--panel);z-index:10;
+               padding-bottom:8px;margin:-4px -4px 12px -4px}
+  .card-header .bar{border-bottom:1px solid var(--border);padding:4px}
+  </style>
 </head>
-
 <body>
   <header class="nav">
     <div class="wrap nav-inner">
@@ -89,46 +53,26 @@ h1,h2,h3,h4{color:var(--fg)}
         <span class="dot" aria-hidden="true"></span>
         <h1>Welsh Pleural Seminar 2025</h1>
       </div>
-      <nav aria-label="Primary">
-        <ul class="nav-list">
-          <li><a href="/index.html">Home</a></li>
-          <li><a href="/faculty.html" rel="nofollow">Faculty</a></li>
-          <li><span style="opacity:.6;">Feedback Results</span></li>
-        </ul>
-      </nav>
+      <!-- no menu/breadcrumbs -->
+      <div></div>
     </div>
   </header>
 
   <main class="page-wrap">
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
-        <h1 style="margin:0;">Feedback Analytics</h1>
-        <a href="/faculty.html" class="btn ghost" style="text-decoration:none;">← Back to Faculty Dashboard</a>
+      <div class="card-header">
+        <div class="bar" style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+          <h1 style="margin:0;">Feedback Analytics</h1>
+          <a href="/faculty.html" class="btn" aria-label="Back to Faculty Dashboard">← Back to Faculty Dashboard</a>
+        </div>
       </div>
-      <p class="muted" style="margin-top:6px;">Real-time results from Firestore</p>
 
-      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0;">
+      <!-- Controls -->
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:4px 0 16px;">
         <label style="display:flex;align-items:center;gap:6px;">
-          <input id="togglePercent" type="checkbox">
-          Show as percentage
+          <input id="togglePercent" type="checkbox"> Show as percentage
         </label>
-        <span id="totalResponses" style="opacity:.8;"></span>
-      </div>
-
-      <!-- Summary cards -->
-      <div class="summary-grid">
-        <div class="summary-card">
-          <h4>Total responses</h4>
-          <div class="value" id="sumTotal">—</div>
-        </div>
-        <div class="summary-card">
-          <h4>Mean (Q1–Q3 overall)</h4>
-          <div class="value" id="sumMeanCore">—</div>
-        </div>
-        <div class="summary-card">
-          <h4>Mean (Sessions Q4–Q14)</h4>
-          <div class="value" id="sumMeanSessions">—</div>
-        </div>
+        <span id="totalResponses" class="muted"></span>
       </div>
 
       <!-- Charts Q1–Q14 -->
@@ -136,320 +80,194 @@ h1,h2,h3,h4{color:var(--fg)}
 
       <!-- Free text Q15–Q18 -->
       <section style="margin-top:28px;">
-        <h2 style="margin-bottom:12px;">Free-text Feedback</h2>
+        <h2 style="margin:0 0 12px;">Free-text Feedback</h2>
 
-        <h3 id="q15Title">Q15 — Best aspects</h3>
+        <h3 id="q15Title">Q15</h3>
         <ul id="q15List" class="free-text-list"></ul>
 
-        <h3 id="q16Title">Q16 — Worst aspects</h3>
+        <h3 id="q16Title">Q16</h3>
         <ul id="q16List" class="free-text-list"></ul>
 
-        <h3 id="q17Title">Q17 — Impact on practice</h3>
+        <h3 id="q17Title">Q17</h3>
         <ul id="q17List" class="free-text-list"></ul>
 
-        <h3 id="q18Title">Q18 — Additional comments</h3>
+        <h3 id="q18Title">Q18</h3>
         <ul id="q18List" class="free-text-list"></ul>
       </section>
     </div>
   </main>
-</body>
 
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 
-  
-// === Historic text → numeric score mapping (5 best → 1 worst) ===
-const TEXT_TO_SCORE = {
-  q1: {
-    'extremely useful': 5,
-    'useful': 4,
-    'fairly useful': 3,
-    'not useful': 2,
-    'not relevant': 1
-  },
-  // Q2 & Q3 used "Excellent → Very poor"
-  q2: {
-    'excellent': 5,
-    'good': 4,
-    'fairly good': 3,
-    'poor': 2,
-    'very poor': 1
-  },
-  q3: {
-    'excellent': 5,
-    'good': 4,
-    'fairly good': 3,
-    'poor': 2,
-    'very poor': 1
-  }
-};
-// Sessions Q4–Q14 use the same scale as Q1
-const GENERIC_USEFUL = TEXT_TO_SCORE.q1;
-
-// Normalise any raw value (number or text) into a 1–5 score
-function toScore(raw, qnum){
-  if (raw == null) return NaN;
-  if (typeof raw === 'number') return raw;
-  // sometimes numeric strings like "4"
-  const n = parseInt(raw, 10);
-  if (Number.isFinite(n)) return n;
-
-  const s = String(raw).trim().toLowerCase();
-  if (!s) return NaN;
-
-  if (qnum >= 4 && qnum <= 14) return GENERIC_USEFUL[s] ?? NaN;
-
-  if (qnum === 1) return TEXT_TO_SCORE.q1[s] ?? NaN;
-  if (qnum === 2) return TEXT_TO_SCORE.q2[s] ?? NaN;
-  if (qnum === 3) return TEXT_TO_SCORE.q3[s] ?? NaN;
-
-  return NaN;
-}
-
-
-  <script type="module" src="/scripts/feedback-results.js"></script>
-
-<!-- Chart.js (bar charts) -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
-<!-- Firebase compat (match faculty.html) -->
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
-
-<script>
-// ===== Config: set your real question texts here =====
-// Replace the placeholder texts with your actual Q1–Q18 prompts.
-// If a text is missing, the title will fall back to "Qn".
-const QUESTION_TEXT = {
-  q1: "Q1 — Overall quality",
-  q2: "Q2 — Relevance to practice",
-  q3: "Q3 — Organisation & timings",
-  // Sessions (example placeholders)
-  q4: "Q4 — Session 1",
-  q5: "Q5 — Session 2",
-  q6: "Q6 — Session 3",
-  q7: "Q7 — Session 4",
-  q8: "Q8 — Session 5",
-  q9: "Q9 — Session 6",
-  q10: "Q10 — Session 7",
-  q11: "Q11 — Session 8",
-  q12: "Q12 — Session 9",
-  q13: "Q13 — Session 10",
-  q14: "Q14 — Session 11",
-  q15: "Q15 — Best aspects (free text)",
-  q16: "Q16 — Areas to improve (free text)",
-  q17: "Q17 — Impact on practice (free text)",
-  q18: "Q18 — Any other comments (free text)"
-};
-
-// ===== Firebase init (same project as faculty.html) =====
-const firebaseConfig = {
-  apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
-  authDomain: "pleural-seminar-2025.firebaseapp.com",
-  projectId: "pleural-seminar-2025",
-  storageBucket: "pleural-seminar-2025.appspot.com",
-  messagingSenderId: "914784082205",
-  appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
-};
-if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// ===== DOM hooks =====
-const chartsGrid = document.getElementById('chartsGrid');
-const togglePercent = document.getElementById('togglePercent');
-const totalResponsesEl = document.getElementById('totalResponses');
-const sumTotal = document.getElementById('sumTotal');
-const sumMeanCore = document.getElementById('sumMeanCore');
-const sumMeanSessions = document.getElementById('sumMeanSessions');
-
-const q15List = document.getElementById('q15List');
-const q16List = document.getElementById('q16List');
-const q17List = document.getElementById('q17List');
-const q18List = document.getElementById('q18List');
-
-// Apply titles from QUESTION_TEXT onto headings already in the HTML (if present)
-document.getElementById('q15Title') && (document.getElementById('q15Title').textContent = QUESTION_TEXT.q15 || "Q15");
-document.getElementById('q16Title') && (document.getElementById('q16Title').textContent = QUESTION_TEXT.q16 || "Q16");
-document.getElementById('q17Title') && (document.getElementById('q17Title').textContent = QUESTION_TEXT.q17 || "Q17");
-document.getElementById('q18Title') && (document.getElementById('q18Title').textContent = QUESTION_TEXT.q18 || "Q18");
-
-// ===== Build 14 individual chart cards (Q1..Q14) =====
-const OPTION_LABELS = ["1","2","3","4","5"];
-const barColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#22c55e';
-const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#1f2937';
-const fgColor   = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim()     || '#e5e7eb';
-
-const chartRefs = []; // [{id, chart, metaEl, counts:[5]}]
-chartsGrid.innerHTML = "";
-
-for (let q=1; q<=14; q++){
-  const id = `q${q}`;
-  const card = document.createElement('div');
-  card.className = 'chart-card';
-
-  const h3 = document.createElement('h3');
-  h3.textContent = QUESTION_TEXT[id] || id.toUpperCase();
-  card.appendChild(h3);
-
-  const meta = document.createElement('div');
-  meta.className = 'chart-meta';
-  meta.id = `meta-${id}`;
-  meta.textContent = '—';
-  card.appendChild(meta);
-
-  const wrap = document.createElement('div');
-  wrap.className = 'chart-wrap';
-  const canvas = document.createElement('canvas');
-  canvas.id = `chart-${id}`;
-  wrap.appendChild(canvas);
-  card.appendChild(wrap);
-
-  chartsGrid.appendChild(card);
-
-  const ctx = canvas.getContext('2d');
-  const chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: OPTION_LABELS,
-      datasets: [{
-        label: 'Responses',
-        data: [0,0,0,0,0],
-        borderWidth: 1,
-        backgroundColor: barColor
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (context) => {
-              const v = context.parsed.y ?? 0;
-              return togglePercent.checked ? `${v.toFixed(0)}%` : `${v} responses`;
-            }
-          }
-        }
-      },
-      scales: {
-        x: { grid: { color: gridColor }, ticks: { color: fgColor } },
-        y: {
-          beginAtZero: true,
-          grid: { color: gridColor },
-          ticks: { color: fgColor, precision: 0,
-            callback: (val) => togglePercent.checked ? `${val}%` : val }
-        }
+  <script>
+  // ===== Load question text (JSON first, fallback to feedback.html parse) =====
+  async function loadQuestionText(){
+    try{
+      const r = await fetch('/assets/feedback-questions.json',{cache:'no-store'});
+      if(r.ok) return await r.json();
+    }catch(e){}
+    try{
+      const r = await fetch('/feedback.html',{cache:'no-store'});
+      if(r.ok){
+        const html = await r.text();
+        const doc = new DOMParser().parseFromString(html,'text/html');
+        const out = {};
+        doc.querySelectorAll('label, .question, [data-q]').forEach(el=>{
+          const t=(el.getAttribute('data-q')||el.textContent||'').trim().replace(/\s+/g,' ');
+          const m=/^Q([1-9]|1[0-8])\b/i.exec(t);
+          if(m){ out['q'+m[1]] = t; }
+        });
+        return out;
       }
-    }
-  });
-
-  chartRefs.push({ id, chart, metaEl: meta, counts: [0,0,0,0,0] });
-}
-
-// ===== Firestore stream → update charts + lists =====
-let allRows = [];
-db.collection('feedback').orderBy('submittedAt','desc').onSnapshot(snap => {
-  allRows = [];
-  // Reset counts
-  chartRefs.forEach(ref => ref.counts = [0,0,0,0,0]);
-  // Reset free text lists
-  [q15List,q16List,q17List,q18List].forEach(ul => ul && (ul.innerHTML=""));
-
-  snap.forEach(doc => {
-    const d = doc.data() || {};
-    const r = d.responses || {};
-    allRows.push(r);
-
-    // Tally Q1..Q14
-    // Tally Q1..Q14
-for (let q = 1; q <= 14; q++){
-  const key = `q${q}`;
-  const val = toScore(r[key], q);   // <-- use the helper
-  if (Number.isFinite(val) && val >= 1 && val <= 5){
-    chartRefs[q-1].counts[val-1] += 1;
+    }catch(e){}
+    return {};
   }
-}
 
+  // ===== Historic text → numeric mapping =====
+  const TEXT_TO_SCORE = {
+    q1: {'extremely useful':5,'useful':4,'fairly useful':3,'not useful':2,'not relevant':1},
+    q2: {'excellent':5,'good':4,'fairly good':3,'poor':2,'very poor':1},
+    q3: {'excellent':5,'good':4,'fairly good':3,'poor':2,'very poor':1}
+  };
+  const GENERIC_USEFUL = TEXT_TO_SCORE.q1;
+  function toScore(raw,qnum){
+    if(raw==null) return NaN;
+    if(typeof raw==='number') return raw;
+    const n=parseInt(raw,10); if(Number.isFinite(n)) return n;
+    const s=String(raw).trim().toLowerCase(); if(!s) return NaN;
+    if(qnum>=4 && qnum<=14) return GENERIC_USEFUL[s] ?? NaN;
+    if(qnum===1) return TEXT_TO_SCORE.q1[s] ?? NaN;
+    if(qnum===2) return TEXT_TO_SCORE.q2[s] ?? NaN;
+    if(qnum===3) return TEXT_TO_SCORE.q3[s] ?? NaN;
+    return NaN;
+  }
 
-    // Append free text Q15..Q18 (skip empties)
-    for (let q=15; q<=18; q++){
-      const key = `q${q}`;
-      const txt = (r[key] || "").toString().trim();
-      if (!txt) continue;
-      const li = document.createElement('li');
-      li.textContent = txt.replace(/\s+/g, ' ');
-      if (q === 15 && q15List) q15List.appendChild(li);
-      else if (q === 16 && q16List) q16List.appendChild(li);
-      else if (q === 17 && q17List) q17List.appendChild(li);
-      else if (q === 18 && q18List) q18List.appendChild(li);
-    }
-  });
+  // ===== Colors & DOM =====
+  const barColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#22c55e';
+  const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#1f2937';
+  const fgColor   = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim()     || '#e5e7eb';
 
-  // Update totals/means
-  const N = allRows.length;
-  totalResponsesEl.textContent = `Total responses: ${N}`;
-  sumTotal && (sumTotal.textContent = String(N));
+  const chartsGrid = document.getElementById('chartsGrid');
+  const togglePercent = document.getElementById('togglePercent');
+  const totalResponsesEl = document.getElementById('totalResponses');
+  const q15List = document.getElementById('q15List');
+  const q16List = document.getElementById('q16List');
+  const q17List = document.getElementById('q17List');
+  const q18List = document.getElementById('q18List');
 
-  // Mean of Q1–Q3 (overall core)
-  const meanCore = meanFromRows(allRows, [1,2,3]);
-  sumMeanCore && (sumMeanCore.textContent = isNaN(meanCore) ? "—" : meanCore.toFixed(2));
+  // ===== Firebase =====
+  const firebaseConfig = {
+    apiKey:"AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+    authDomain:"pleural-seminar-2025.firebaseapp.com",
+    projectId:"pleural-seminar-2025",
+    storageBucket:"pleural-seminar-2025.appspot.com",
+    messagingSenderId:"914784082205",
+    appId:"1:914784082205:web:448e2d4fe8e9579075a9f4"
+  };
+  if(!firebase.apps || !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-  // Mean across sessions Q4–Q14
-  const meanSessions = meanFromRows(allRows, [4,5,6,7,8,9,10,11,12,13,14]);
-  sumMeanSessions && (sumMeanSessions.textContent = isNaN(meanSessions) ? "—" : meanSessions.toFixed(2));
+  (async function init(){
+    const QT = await loadQuestionText();
 
-  renderCharts();
-});
-
-togglePercent.addEventListener('change', renderCharts);
-
-function renderCharts(){
-  chartRefs.forEach(ref => {
-    const counts = ref.counts.slice();
-    if (togglePercent.checked){
-      const total = counts.reduce((a,b)=>a+b,0) || 1;
-      ref.chart.data.datasets[0].data = counts.map(c => Math.round(c*100/total));
-      ref.chart.options.scales.y.max = 100;
-      ref.metaEl.textContent = `n=${total} • mean=${formatMeanFromCounts(counts)}`;
-    } else {
-      ref.chart.data.datasets[0].data = counts;
-      const maxCount = Math.max(0, ...counts);
-      ref.chart.options.scales.y.max = niceCeil(maxCount);
-      ref.metaEl.textContent = `n=${counts.reduce((a,b)=>a+b,0)} • mean=${formatMeanFromCounts(counts)}`;
-    }
-    ref.chart.update();
-  });
-}
-
-function formatMeanFromCounts(counts){
-  const m = computeMeanFromCounts(counts);
-  return isNaN(m) ? "—" : m.toFixed(2);
-}
-function computeMeanFromCounts(counts){
-  const total = counts.reduce((a,b)=>a+b,0);
-  if (!total) return NaN;
-  const sum = counts.reduce((acc,c,idx)=> acc + c*(idx+1), 0);
-  return sum / total;
-}
-function niceCeil(n){
-  if (n <= 5) return 5;
-  if (n <= 10) return 10;
-  const pow = Math.pow(10, Math.floor(Math.log10(n)));
-  const step = pow/2;
-  return Math.ceil(n/step)*step;
-}
-function meanFromRows(rows, qnums){
-  let sum=0, n=0;
-  rows.forEach(r=>{
-    qnums.forEach(q=>{
-      const v = r[`q${q}`];
-      const num = typeof v === 'string' ? parseInt(v,10) :
-                  (typeof v === 'number' ? v : NaN);
-      if (Number.isFinite(num) && num>=1 && num<=5){ sum += num; n++; }
+    // Apply free-text titles
+    const ids=[15,16,17,18];
+    ids.forEach(i=>{
+      const el=document.getElementById(`q${i}Title`);
+      if(el && QT[`q${i}`]) el.textContent = QT[`q${i}`];
     });
-  });
-  return n ? (sum/n) : NaN;
-}
-</script>
 
+    // Build Q1–Q14 chart cards
+    const OPTION_LABELS = ["1","2","3","4","5"];
+    const chartRefs = [];
+    chartsGrid.innerHTML="";
+    for(let q=1;q<=14;q++){
+      const id=`q${q}`;
+      const card=document.createElement('div'); card.className='chart-card';
+      const h3=document.createElement('h3'); h3.textContent = QT[id] || id.toUpperCase(); card.appendChild(h3);
+      const meta=document.createElement('div'); meta.className='chart-meta'; meta.id=`meta-${id}`; meta.textContent='—'; card.appendChild(meta);
+      const wrap=document.createElement('div'); wrap.className='chart-wrap';
+      const canvas=document.createElement('canvas'); canvas.id=`chart-${id}`; wrap.appendChild(canvas);
+      card.appendChild(wrap); chartsGrid.appendChild(card);
+
+      const ctx=canvas.getContext('2d');
+      const chart=new Chart(ctx,{
+        type:'bar',
+        data:{labels:OPTION_LABELS,datasets:[{label:'Responses',data:[0,0,0,0,0],borderWidth:1,backgroundColor:barColor}]},
+        options:{
+          responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:(c)=>{const v=c.parsed.y??0; return togglePercent.checked?`${v.toFixed(0)}%`:`${v} responses`;}}}},
+          scales:{x:{grid:{color:gridColor},ticks:{color:fgColor}},y:{beginAtZero:true,grid:{color:gridColor},ticks:{color:fgColor,precision:0,callback:(v)=>togglePercent.checked?`${v}%`:v}}}
+        }
+      });
+      chartRefs.push({id,chart,metaEl:meta,counts:[0,0,0,0,0]});
+    }
+
+    // Stream data
+    let allRows=[];
+    db.collection('feedback').orderBy('submittedAt','desc').onSnapshot(snap=>{
+      allRows=[]; chartRefs.forEach(r=>r.counts=[0,0,0,0,0]);
+      [q15List,q16List,q17List,q18List].forEach(ul=>ul&&(ul.innerHTML=""));
+
+      snap.forEach(doc=>{
+        const d=doc.data()||{}; const r=d.responses||{}; allRows.push(r);
+        // charts
+        for(let q=1;q<=14;q++){
+          const val = toScore(r[`q${q}`], q);
+          if(Number.isFinite(val) && val>=1 && val<=5){ chartRefs[q-1].counts[val-1]+=1; }
+        }
+        // free text
+        for(let q=15;q<=18;q++){
+          const t=(r[`q${q}`]||"").toString().trim(); if(!t) continue;
+          const li=document.createElement('li'); li.textContent=t.replace(/\s+/g,' ');
+          if(q===15) q15List.appendChild(li); else if(q===16) q16List.appendChild(li);
+          else if(q===17) q17List.appendChild(li); else if(q===18) q18List.appendChild(li);
+        }
+      });
+
+      // top line count only (no summary cards)
+      totalResponsesEl.textContent = `Total responses: ${allRows.length}`;
+
+      renderCharts(chartRefs);
+    });
+
+    togglePercent.addEventListener('change',()=>renderCharts(chartRefs));
+  })();
+
+  function renderCharts(chartRefs){
+    chartRefs.forEach(ref=>{
+      const counts=ref.counts.slice();
+      if(togglePercent.checked){
+        const total=counts.reduce((a,b)=>a+b,0)||1;
+        ref.chart.data.datasets[0].data=counts.map(c=>Math.round(c*100/total));
+        ref.chart.options.scales.y.max=100;
+        ref.metaEl.textContent=`n=${total} • mean=${formatMean(counts)}`;
+      }else{
+        ref.chart.data.datasets[0].data=counts;
+        const max=Math.max(0,...counts);
+        ref.chart.options.scales.y.max=niceCeil(max);
+        ref.metaEl.textContent=`n=${counts.reduce((a,b)=>a+b,0)} • mean=${formatMean(counts)}`;
+      }
+      ref.chart.update();
+    });
+  }
+  function formatMean(counts){
+    const m=meanFromCounts(counts);
+    return isNaN(m)?"—":m.toFixed(2);
+  }
+  function meanFromCounts(counts){
+    const total=counts.reduce((a,b)=>a+b,0); if(!total) return NaN;
+    const sum=counts.reduce((acc,c,i)=>acc+c*(i+1),0); return sum/total;
+  }
+  function niceCeil(n){
+    if(n<=5) return 5; if(n<=10) return 10;
+    const pow=Math.pow(10,Math.floor(Math.log10(n))); const step=pow/2;
+    return Math.ceil(n/step)*step;
+  }
+  </script>
 </body>
 </html>
