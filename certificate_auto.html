@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pleural Seminar Wales 2025 — Certificate</title>
   <meta name="description" content="Auto‑generate & download a personalised attendance certificate." />
-  <!-- pdf-lib -->
-  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <style>
     :root { --bg: #0b1320; --fg: #fff; --muted:#94a3b8; --accent:#22c55e; }
     html,body{height:100%;}
@@ -20,160 +18,160 @@
     button{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#042f14;font-weight:700;cursor:pointer}
     .hint{font-size:13px;margin-top:10px}
     a{color:#a5b4fc}
+    .log{margin-top:10px;font-size:12px;color:#94a3b8}
+    .err{padding:12px;border-radius:10px;background:#1f2937;color:#fff;margin-top:10px}
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Pleural Seminar Wales 2025 — Certificate</h1>
-    <p>Enter your name or use the query string (e.g. <code>?name=Jane%20Doe</code>). This page draws your name onto <code>/assets/cert/certificate.pdf</code> and downloads it instantly.</p>
+    <p>Enter your name or use the query string (e.g. <code>?name=Jane%20Doe</code>). This page draws your name onto <code>/assets/cert/certificate.pdf</code> and downloads it.</p>
 
     <div class="row">
       <input id="nameInput" type="text" placeholder="Your full name for the certificate" />
       <button id="goBtn">Download certificate</button>
     </div>
 
-    <p class="hint">Advanced (for calibration/testing): add <code>&x=</code>, <code>&y=</code>, <code>&size=</code>, <code>&align=center|left|right</code>, and <code>&preview=1</code> to the URL to override defaults and preview inline before download.</p>
-
+    <p class="hint">Advanced: add <code>&x=</code>, <code>&y=</code>, <code>&size=</code>, <code>&align=center|left|right</code>, <code>&preview=1</code>.</p>
     <div id="previewContainer" style="margin-top:16px"></div>
+    <div id="diag" class="log"></div>
   </div>
 
   <script>
-  // === Defaults to be locked in after final coordinate confirmation ===
-  const DEFAULTS = {
-    x: 297,
-    y: 644,
-    size: 24,
-    align: 'center',
-    font: 'Helvetica-Bold'
-  };
-
-  function getParams(){
-    const u = new URL(window.location.href);
-    const p = new URLSearchParams(u.search);
-    const name = p.get('name') || '';
-    const x = p.get('x') ? Number(p.get('x')) : DEFAULTS.x;
-    const y = p.get('y') ? Number(p.get('y')) : DEFAULTS.y;
-    const size = p.get('size') ? Number(p.get('size')) : DEFAULTS.size;
-    const align = p.get('align') || DEFAULTS.align;
-    const font = p.get('font') || DEFAULTS.font;
-    const preview = p.get('preview') === '1';
-    return { name, x, y, size, align, font, preview };
-  };
-  }
-
-  function setParam(name, value){
-    const url = new URL(window.location.href);
-    url.searchParams.set(name, value);
-    window.history.replaceState({}, '', url);
-  }
-
-  function measureTextWidth(text, font, size){
-    return font.widthOfTextAtSize(text, size);
-  }
-
-  async function drawAndDownloadCertificate(opts){
-    const { PDFDocument, StandardFonts, rgb } = PDFLib;
-
-    const baseUrl = (location.protocol.startsWith('http') ? '/assets/cert/certificate.pdf' : './assets/cert/certificate.pdf');
-    const r = await fetch('/assets/cert/certificate.pdf', { cache: 'no-store' });
-    if(!r.ok) throw new Error(`Could not load /assets/cert/certificate.pdf (status ${r.status})`);
-    const existingPdfBytes = await r.arrayBuffer();
-
-    const pdfDoc = await PDFDocument.load(existingPdfBytes);
-    const page = pdfDoc.getPage(0);
-
-    const fontMap = {
-      'Helvetica': StandardFonts.Helvetica,
-      'Helvetica-Bold': StandardFonts.HelveticaBold,
-      'TimesRoman': StandardFonts.TimesRoman,
-      'TimesRoman-Bold': StandardFonts.TimesRomanBold
-    };
-    const std = fontMap[opts.font] || StandardFonts.HelveticaBold;
-    const font = await pdfDoc.embedFont(std);
-
-    let x = opts.x;
-    const y = opts.y;
-    const text = opts.name || '';
-    const size = opts.size;
-
-    const textWidth = font.widthOfTextAtSize(text, size);
-    if (opts.align === 'center') x = x - textWidth / 2;
-    if (opts.align === 'right') x = x - textWidth;
-
-    page.drawText(text, { x, y, size, font, color: rgb(0,0,0) });
-
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const fileName = `Pleural Seminar Wales 2025 - Certificate - ${text}.pdf`;
-
-    // Always show a visible preview + manual download link (helps if auto-download is blocked)
-    const url = URL.createObjectURL(blob);
-    // Also open in new tab when previewing to bypass any iframe/inline blob restrictions
-    if (opts.preview) { try { window.open(url, '_blank'); } catch (e) {} }
-    const container = document.getElementById('previewContainer');
-    if (container) {
-      container.innerHTML = '';
-      const iframe = document.createElement('iframe');
-      iframe.style.width = '100%';
-      iframe.style.height = '620px';
-      iframe.src = url;
-      container.appendChild(iframe);
-
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      a.textContent = 'Download this certificate PDF';
-      a.style.display = 'inline-block';
-      a.style.marginTop = '10px';
-      container.appendChild(a);
-    }
-
-    if (!opts.preview) {
-      // Try programmatic download; if blocked, the manual link remains visible
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    }
-  }
-
-  function handleButton(){
-    try {
-      const name = document.getElementById('nameInput').value.trim();
-      if(!name){ alert('Please enter your full name'); return; }
-      setParam('name', name);
-      const opts = getParams();
-      drawAndDownloadCertificate(opts).catch(err => {
-        console.error(err);
-        alert('Error: ' + (err && err.message ? err.message : String(err)));
-      });
-    } catch (e) {
-      console.error(e);
-      alert('Unexpected error');
-    }
-  }
-    setParam('name', encodeURIComponent(name));
-    const opts = getParams();
-    drawAndDownloadCertificate(opts).catch(err => alert(err.message || String(err)));
-  }
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const params = getParams();
-    const btn = document.getElementById('goBtn');
-    if (btn) btn.addEventListener('click', handleButton);
-
-    // If name present via URL, render immediately and show preview
-    if (params.name) {
-      const input = document.getElementById('nameInput');
-      if (input) input.value = params.name;
-      drawAndDownloadCertificate({ ...params, preview: true }).catch(err => {
-        const c = document.getElementById('previewContainer');
-        if (c) c.innerHTML = `<div style='padding:12px;border-radius:10px;background:#1f2937;color:#fff;'>⚠️ ${err && err.message ? err.message : err}</div>`;
+    // --- Loader that tries LOCAL copy first, then CDN fallback ---
+    function loadScript(src){
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = src; s.async = true;
+        s.onload = () => resolve(src);
+        s.onerror = () => reject(new Error('Failed to load ' + src));
+        document.head.appendChild(s);
       });
     }
-  });
+
+    const DIAG = (msg) => { const d=document.getElementById('diag'); if(d){ d.innerHTML += (d.innerHTML?'<br>':'') + msg; }}
+
+    (async () => {
+      // Try local vendor build first (recommended to host a copy for reliability)
+      try {
+        await loadScript('/assets/vendor/pdf-lib.min.js');
+        DIAG('Loaded pdf-lib from /assets/vendor/pdf-lib.min.js');
+      } catch (e1) {
+        DIAG('Local pdf-lib not found, trying CDN…');
+        try {
+          await loadScript('https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js');
+          DIAG('Loaded pdf-lib from CDN');
+        } catch (e2) {
+          const c=document.getElementById('previewContainer');
+          if(c) c.innerHTML = `<div class='err'>⚠️ Could not load pdf-lib from local or CDN. Please allow this domain or upload <code>/assets/vendor/pdf-lib.min.js</code>.</div>`;
+          return; // stop here
+        }
+      }
+
+      // Now safe to use window.PDFLib
+      const DEFAULTS = { x: 297, y: 644, size: 24, align: 'center', font: 'Helvetica-Bold' };
+
+      function getParams(){
+        const u = new URL(window.location.href);
+        const p = new URLSearchParams(u.search);
+        const name = p.get('name') || '';
+        const x = p.get('x') ? Number(p.get('x')) : DEFAULTS.x;
+        const y = p.get('y') ? Number(p.get('y')) : DEFAULTS.y;
+        const size = p.get('size') ? Number(p.get('size')) : DEFAULTS.size;
+        const align = p.get('align') || DEFAULTS.align;
+        const font = p.get('font') || DEFAULTS.font;
+        const preview = p.get('preview') === '1';
+        return { name, x, y, size, align, font, preview };
+      }
+
+      function setParam(name, value){
+        const url = new URL(window.location.href);
+        url.searchParams.set(name, value);
+        window.history.replaceState({}, '', url);
+      }
+
+      async function drawAndDownloadCertificate(opts){
+        const { PDFDocument, StandardFonts, rgb } = PDFLib;
+
+        // 1) Fetch base PDF
+        const baseUrl = '/assets/cert/certificate.pdf';
+        DIAG('Fetching: ' + baseUrl);
+        const r = await fetch(baseUrl, { cache: 'no-store' });
+        if(!r.ok) throw new Error(`Could not load ${baseUrl} (status ${r.status})`);
+        const existingPdfBytes = await r.arrayBuffer();
+
+        // 2) Prepare PDF
+        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+        const page = pdfDoc.getPage(0);
+
+        // 3) Font mapping
+        const fontMap = {
+          'Helvetica': StandardFonts.Helvetica,
+          'Helvetica-Bold': StandardFonts.HelveticaBold,
+          'TimesRoman': StandardFonts.TimesRoman,
+          'TimesRoman-Bold': StandardFonts.TimesRomanBold
+        };
+        const std = fontMap[opts.font] || StandardFonts.HelveticaBold;
+        const font = await pdfDoc.embedFont(std);
+
+        // 4) Positioning
+        let x = opts.x; const y = opts.y; const text = opts.name || ''; const size = opts.size;
+        const textWidth = font.widthOfTextAtSize(text, size);
+        if (opts.align === 'center') x = x - textWidth / 2;
+        if (opts.align === 'right') x = x - textWidth;
+
+        // 5) Draw name
+        page.drawText(text, { x, y, size, font, color: rgb(0,0,0) });
+
+        // 6) Output
+        const pdfBytes = await pdfDoc.save();
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const fileName = `Pleural Seminar Wales 2025 - Certificate - ${text}.pdf`;
+        const url = URL.createObjectURL(blob);
+
+        // Always show inline preview & manual link
+        const container = document.getElementById('previewContainer');
+        if (container) {
+          container.innerHTML = '';
+          const iframe = document.createElement('iframe');
+          iframe.style.width = '100%'; iframe.style.height = '620px'; iframe.src = url;
+          container.appendChild(iframe);
+          const a = document.createElement('a'); a.href = url; a.download = fileName; a.textContent = 'Download this certificate PDF'; a.style.display='inline-block'; a.style.marginTop='10px'; container.appendChild(a);
+        }
+
+        if (!opts.preview) {
+          const link = document.createElement('a'); link.href = url; link.download = fileName; document.body.appendChild(link); link.click(); link.remove();
+        }
+      }
+
+      // === Run immediately (avoid DOMContentLoaded timing issues) ===
+      const params = getParams();
+      const btn = document.getElementById('goBtn');
+      if (btn) btn.addEventListener('click', () => {
+        const name = document.getElementById('nameInput').value.trim();
+        if(!name){ alert('Please enter your full name'); return; }
+        setParam('name', name);
+        const opts = getParams();
+        drawAndDownloadCertificate(opts).catch(err => {
+          console.error(err);
+          const c = document.getElementById('previewContainer');
+          if (c) c.innerHTML = `<div class='err'>⚠️ ${err && err.message ? err.message : String(err)}</div>`;
+        });
+      });
+
+      // Auto-preview if ?name= is present
+      if (params.name) {
+        const input = document.getElementById('nameInput');
+        if (input) input.value = params.name;
+        drawAndDownloadCertificate({ ...params, preview: true }).catch(err => {
+          const c = document.getElementById('previewContainer');
+          if (c) c.innerHTML = `<div class='err'>⚠️ ${err && err.message ? err.message : String(err)}</div>`;
+        });
+      }
+
+      // Also display pdf-lib version loaded
+      try { DIAG('pdf-lib OK'); } catch(e) {}
+    })();
   </script>
 </body>
 </html>
