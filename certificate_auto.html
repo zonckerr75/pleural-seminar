@@ -103,6 +103,7 @@
         // 2) Prepare PDF
         const pdfDoc = await PDFDocument.load(existingPdfBytes);
         const page = pdfDoc.getPage(0);
+        const { width: pageW, height: pageH } = page.getSize();
 
         // 3) Font mapping
         const fontMap = {
@@ -115,13 +116,24 @@
         const font = await pdfDoc.embedFont(std);
 
         // 4) Positioning
-        let x = opts.x; const y = opts.y; const text = opts.name || ''; const size = opts.size;
+        // If using the default placeholder coords, translate them to page-relative:
+        // center horizontally, and 7 cm from the top, so it works on any page size.
+        let x = opts.x; let y = opts.y; const text = opts.name || ''; const size = opts.size;
+        const sevenCmInPts = 7 * 72 / 2.54; // ≈198 pt
+        if (opts.x === 297 && opts.y === 644) { // our previous A4-based defaults
+          x = pageW / 2;            // center X anchor
+          y = pageH - sevenCmInPts; // 7 cm from top
+        }
+        const textWidth = font.widthOfTextAtSize(text, size);
+        if (opts.align === 'center') x = x - textWidth / 2;
+        if (opts.align === 'right') x = x - textWidth;
         const textWidth = font.widthOfTextAtSize(text, size);
         if (opts.align === 'center') x = x - textWidth / 2;
         if (opts.align === 'right') x = x - textWidth;
 
         // 5) Draw name
-        page.drawText(text, { x, y, size, font, color: rgb(0,0,0) });
+        // Temporary: draw in red to make it obvious during calibration
+        page.drawText(text, { x, y, size, font, color: rgb(1,0,0) });
 
         // 6) Output
         const pdfBytes = await pdfDoc.save();
