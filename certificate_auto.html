@@ -6,7 +6,7 @@
   <title>Pleural Seminar Wales 2025 — Certificate</title>
   <meta name="description" content="Auto‑generate & download a personalised attendance certificate." />
   <!-- pdf-lib -->
-  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <style>
     :root { --bg: #0b1320; --fg: #fff; --muted:#94a3b8; --accent:#22c55e; }
     html,body{height:100%;}
@@ -74,11 +74,19 @@
   async function drawAndDownloadCertificate(opts){
     const { PDFDocument, StandardFonts, rgb } = PDFLib;
 
-    const baseUrl = '/assets/cert/certificate.pdf';
-    const existingPdfBytes = await fetch(baseUrl).then(r => {
-      if(!r.ok) throw new Error('Could not load /assets/cert/certificate.pdf');
-      return r.arrayBuffer();
-    });
+    const baseUrl = (location.protocol.startsWith('http') ? '/assets/cert/certificate.pdf' : './assets/cert/certificate.pdf');
+    let existingPdfBytes;
+    try {
+      const r = await fetch(baseUrl, { cache: 'no-store' });
+      if(!r.ok) throw new Error(`Fetch failed (${r.status}) for ${baseUrl}`);
+      existingPdfBytes = await r.arrayBuffer();
+    } catch (e) {
+      const container = document.getElementById('previewContainer');
+      if (container) {
+        container.innerHTML = `<div style="padding:12px;border-radius:10px;background:#1f2937;color:#fff;">⚠️ Unable to load base certificate: <code>${baseUrl}</code><br>${e && e.message ? e.message : e}</div>`;
+      }
+      throw e;
+    }
 
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
     const page = pdfDoc.getPage(0);
@@ -160,9 +168,20 @@
 
   window.addEventListener('DOMContentLoaded', () => {
     const params = getParams();
-    document.getElementById('goBtn').addEventListener('click', handleButton);
+    const btn = document.getElementById('goBtn');
+    if (btn) btn.addEventListener('click', handleButton);
+
+    // Show quick diagnostics
+    const diag = document.createElement('div');
+    diag.style.fontSize = '12px';
+    diag.style.marginTop = '10px';
+    diag.style.color = '#94a3b8';
+    diag.innerHTML = `Base PDF: <code>${(location.protocol.startsWith('http') ? '/assets/cert/certificate.pdf' : './assets/cert/certificate.pdf')}</code>`;
+    document.querySelector('.card').appendChild(diag);
+
     if (params.name) {
-      document.getElementById('nameInput').value = params.name;
+      const input = document.getElementById('nameInput');
+      if (input) input.value = params.name;
       drawAndDownloadCertificate({ ...params, preview: true }).catch(err => alert(err.message || String(err)));
     }
   });
