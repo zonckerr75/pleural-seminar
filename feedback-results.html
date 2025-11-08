@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Feedback Results — Pleural Seminar Wales 2025</title>
   <link rel="stylesheet" href="style.css" />
+<style>
+  .free-text-list{
+    list-style: disc;
+    padding-left: 20px;
+    margin: 8px 0 18px;
+  }
+  .free-text-list li{
+    margin: 4px 0;
+    color: var(--fg, #e5e7eb);
+  }
+</style>
+
+
 </head>
 <body>
   <header class="nav">
@@ -14,22 +27,57 @@
       <span style="opacity:.6;">Feedback Results</span>
     </nav>
   </header>
+<main style="padding:100px 20px;">
+  <section id="analytics" class="panel" style="margin:24px 0;">
+    <h2 style="margin:0 0 12px;">Feedback Analytics</h2>
 
-  <main style="padding:100px 20px;">
-    <section id="analytics" class="panel" style="margin:24px 0;">
-      <h2 style="margin:0 0 12px;">Feedback Analytics</h2>
+    <!-- Controls -->
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+      <label style="display:flex;align-items:center;gap:6px;">
+        <input id="togglePercent" type="checkbox">
+        Show as percentage
+      </label>
+      <span id="totalResponses" style="opacity:.8;"></span>
+    </div>
 
-      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
-        <label style="display:flex;align-items:center;gap:6px;">
-          <input id="togglePercent" type="checkbox">
-          Show as percentage
-        </label>
-        <span id="totalResponses" style="opacity:.8;"></span>
+    <!-- Top summary -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <h4>Total responses</h4>
+        <div class="value" id="sumTotal">—</div>
       </div>
+      <div class="summary-card">
+        <h4>Mean (Q1–Q3 overall)</h4>
+        <div class="value" id="sumMeanCore">—</div>
+      </div>
+      <div class="summary-card">
+        <h4>Mean (Sessions Q4–Q14)</h4>
+        <div class="value" id="sumMeanSessions">—</div>
+      </div>
+    </div>
 
-      <div id="chartsGrid" class="charts-grid"></div>
+    <!-- Charts Q1–Q14 will be injected here -->
+    <div id="chartsGrid" class="charts-grid"></div>
+
+    <!-- Free-text Q15–Q18 -->
+    <section style="margin-top:20px;">
+      <h3 style="margin:16px 0 8px;" id="q15Title">Q15 — Best aspects (free text)</h3>
+      <ul id="q15List" class="free-text-list"></ul>
+
+      <h3 style="margin:16px 0 8px;" id="q16Title">Q16 — Areas to improve (free text)</h3>
+      <ul id="q16List" class="free-text-list"></ul>
+
+      <h3 style="margin:16px 0 8px;" id="q17Title">Q17 — Impact on practice (free text)</h3>
+      <ul id="q17List" class="free-text-list"></ul>
+
+      <h3 style="margin:16px 0 8px;" id="q18Title">Q18 — Any other comments (free text)</h3>
+      <ul id="q18List" class="free-text-list"></ul>
     </section>
-  </main>
+  </section>
+</main>
+
+  
+
 
   <script type="module" src="/scripts/feedback-results.js"></script>
 </body>
