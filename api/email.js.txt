@@ -1,0 +1,33 @@
+import sendgrid from '@sendgrid/mail';
+
+export default async function handler(req, res) {
+  try {
+    if (req.method !== 'POST') return res.status(405).send('Use POST');
+    const { name, email, pdfBase64 } = req.body || {};
+    if (!name || !email || !pdfBase64) return res.status(400).send('Missing name/email/pdf');
+
+    const apiKey = process.env.SENDGRID_KEY;
+    if (!apiKey) return res.status(500).send('SENDGRID_KEY not set');
+
+    sendgrid.setApiKey(apiKey);
+
+    await sendgrid.send({
+      to: email,
+      from: { email: 'no-reply@pleuralseminar.wales', name: 'Pleural Seminar Wales' },
+      subject: 'Your Pleural Seminar Wales 2025 Certificate',
+      text: `Dear ${name},\n\nAttached is your attendance certificate.\n\nThank you for joining us!\n\n— Pleural Seminar Wales Team`,
+      attachments: [
+        {
+          filename: `Pleural Seminar Wales 2025 - Certificate - ${name}.pdf`,
+          type: 'application/pdf',
+          content: pdfBase64,
+          disposition: 'attachment'
+        }
+      ]
+    });
+
+    res.status(200).send('Sent');
+  } catch (e) {
+    res.status(500).send('Error: ' + (e?.message || e));
+  }
+}
