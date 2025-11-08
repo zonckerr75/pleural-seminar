@@ -1,0 +1,122 @@
+<section id="feedback">
+  <div class="wrap">
+    <h2 class="section-title" style="margin-bottom:8px;">
+      Pleural Seminar Wales 2025 – Evaluation
+    </h2>
+    <p class="small" style="margin-bottom:16px; line-height:1.6;">
+      Thank you for participating in our event. We hope you enjoyed the seminar and found it interesting.
+    </p>
+    <p class="small" style="margin-bottom:24px; line-height:1.6;">
+      We want to hear your feedback so we can keep improving our logistics and content.
+      Please fill this quick survey and let us know your thoughts.
+    </p>
+
+    <form id="feedback-form" name="feedback-form">
+
+      <!-- Q1 -->
+      <div class="form-group">
+        <label for="q1"><strong>1. How useful did you find this event?</strong></label><br>
+        <label><input type="radio" name="q1" value="Extremely useful" required> Extremely useful</label><br>
+        <label><input type="radio" name="q1" value="Useful"> Useful</label><br>
+        <label><input type="radio" name="q1" value="Fairly useful"> Fairly useful</label><br>
+        <label><input type="radio" name="q1" value="Not useful"> Not useful</label>
+      </div>
+
+      <!-- Q2 -->
+      <div class="form-group">
+        <label for="q2"><strong>2. What was your overall impression of the programme of this event?</strong></label><br>
+        <label><input type="radio" name="q2" value="Excellent" required> Excellent</label><br>
+        <label><input type="radio" name="q2" value="Good"> Good</label><br>
+        <label><input type="radio" name="q2" value="Fairly good"> Fairly good</label><br>
+        <label><input type="radio" name="q2" value="Poor"> Poor</label><br>
+        <label><input type="radio" name="q2" value="Very poor"> Very poor</label>
+      </div>
+
+      <!-- Q3 -->
+      <div class="form-group">
+        <label for="q3"><strong>3. What was your overall impression of the organisation of this event?</strong></label><br>
+        <label><input type="radio" name="q3" value="Excellent" required> Excellent</label><br>
+        <label><input type="radio" name="q3" value="Good"> Good</label><br>
+        <label><input type="radio" name="q3" value="Fairly good"> Fairly good</label><br>
+        <label><input type="radio" name="q3" value="Poor"> Poor</label><br>
+        <label><input type="radio" name="q3" value="Very poor"> Very poor</label>
+      </div>
+
+      <!-- Q4–Q14 (session questions) -->
+      <!-- Each with identical scale -->
+      <script>
+        const sessionQuestions = [
+          ["4", "‘Diagnostic Pathway in MPE – New Data on “Straight-to-Biopsy”’ by Prof. Naj Rahman"],
+          ["5", "‘Update in Mesothelioma Research – HIT-MESO Trial’ by Dr. Paul Shaw"],
+          ["6", "‘Local Anaesthetic Thoracoscopy’ by Dr. Richard Westley"],
+          ["7", "‘Clinical Applications of Artificial Intelligence’ by Prof. Alan Fraser"],
+          ["8", "‘A Pathway for the Management of Hepatic Hydrothorax’ by Dr. Sam Ryan"],
+          ["9", "‘Legal Aspects in Asbestos-related Pleural Disease’ by speaker from Irwin Mitchell"],
+          ["10", "‘Thoracic Ultrasound Training’ by Dr. Rebecca Pearce"],
+          ["11", "‘How Did We Manage Pneumothoraces?’ by Dr. Natnael Afesha"],
+          ["12", "‘Outcomes of Empyema’ by Dr. Nora Ramley"],
+          ["13", "‘Ten Years of Ambulatory Pleural Procedure Service at SBUHB’ by Dr. N. Chinnappa"],
+          ["14", "the Case Presentation session"]
+        ];
+        document.addEventListener("DOMContentLoaded", () => {
+          const form = document.getElementById("feedback-form");
+          sessionQuestions.forEach(([num, title]) => {
+            const div = document.createElement("div");
+            div.className = "form-group";
+            div.innerHTML = `
+              <label for="q${num}"><strong>${num}. How useful to you personally was ${title}?</strong></label><br>
+              <label><input type="radio" name="q${num}" value="Extremely useful" required> Extremely useful</label><br>
+              <label><input type="radio" name="q${num}" value="Useful"> Useful</label><br>
+              <label><input type="radio" name="q${num}" value="Fairly useful"> Fairly useful</label><br>
+              <label><input type="radio" name="q${num}" value="Not useful"> Not useful</label><br>
+              <label><input type="radio" name="q${num}" value="Not relevant"> Not relevant</label>
+            `;
+            form.appendChild(div);
+          });
+        });
+      </script>
+
+      <!-- Q15 -->
+      <div class="form-group">
+        <label for="q15"><strong>15. What was the best aspect of this event?</strong></label><br>
+        <textarea id="q15" name="q15" rows="3" placeholder="Type your response here..." style="width:100%;" required></textarea>
+      </div>
+
+      <!-- Q16 -->
+      <div class="form-group">
+        <label for="q16"><strong>16. What was the worst aspect of this event?</strong></label><br>
+        <textarea id="q16" name="q16" rows="3" placeholder="Type your response here..." style="width:100%;" required></textarea>
+      </div>
+
+      <!-- Q17 -->
+      <div class="form-group">
+        <label for="q17"><strong>17. What impact will this event have on your future practice?</strong></label><br>
+        <textarea id="q17" name="q17" rows="3" placeholder="Type your response here..." style="width:100%;" required></textarea>
+      </div>
+
+      <!-- Q18 -->
+      <div class="form-group">
+        <label for="q18"><strong>18. Any additional comments or suggestions for future topics of discussion?</strong></label><br>
+        <textarea id="q18" name="q18" rows="3" placeholder="Type your response here..." style="width:100%;" required></textarea>
+      </div>
+
+      <!-- Q19 -->
+      <div class="form-group">
+        <label for="q19"><strong>19. Enter your name as it should appear on your certificate</strong></label><br>
+        <input type="text" id="q19" name="certificate_name" placeholder="Your full name" style="width:100%;" required>
+      </div>
+
+      <!-- Q20 -->
+      <div class="form-group">
+        <label for="q20"><strong>20. Email address</strong></label><br>
+        <input type="email" id="q20" name="email" placeholder="you@example.com" style="width:100%;" required>
+      </div>
+
+      <!-- Submit -->
+      <div style="margin-top:20px;">
+        <button type="submit" class="btn primary">Submit Feedback</button>
+      </div>
+
+    </form>
+  </div>
+</section>

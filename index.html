@@ -176,5 +176,90 @@
     <p class="small">© 2025 Welsh Pleural Seminar · CPD approved for 6 category 1 (external) credits · Thanks to sponsors: Irwin Mitchell LLP, PleurX, Wolf UK, Astra‑Zeneca UK, PulmonX</p>
   </div>
 </footer>
+
+<!-- Firebase + Firestore (ES Modules from CDN) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+  // 1) Your Firebase web app config (from Firebase console)
+  const firebaseConfig = {
+  apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+  authDomain: "pleural-seminar-2025.firebaseapp.com",
+  projectId: "pleural-seminar-2025",
+  storageBucket: "pleural-seminar-2025.firebasestorage.app",
+  messagingSenderId: "914784082205",
+  appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
+
+  };
+
+  // 2) Init
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // 3) Helper: serialize form into a flat object
+  function formToObject(form) {
+    const fd = new FormData(form);
+    const obj = {};
+    // For radio buttons: FormData already returns the selected value.
+    for (const [k, v] of fd.entries()) {
+      // Rename q19/q20 to the canonical names, in case you used the names I suggested
+      if (k === "q19" || k === "certificate_name") obj["certificate_name"] = v.trim();
+      else if (k === "q20" || k === "email") obj["email"] = v.trim();
+      else obj[k] = typeof v === "string" ? v.trim() : v;
+    }
+    return obj;
+  }
+
+  // 4) Hook up the submit handler
+  const form = document.getElementById("feedback-form");
+  const submitBtn = form?.querySelector('button[type="submit"]');
+
+  if (form) {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting…";
+      }
+
+      try {
+        const payload = formToObject(form);
+
+        // Required fields sanity guard (basic front-end check)
+        if (!payload.certificate_name || !payload.email) {
+          alert("Please fill in your name (as on certificate) and a valid email address.");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit Feedback";
+          return;
+        }
+
+        // Add meta
+        payload._submittedAt = serverTimestamp();
+        payload._ua = navigator.userAgent;
+
+        // Write to Firestore
+        await addDoc(collection(db, "feedback2025"), payload);
+
+        // Success UI + certificate handoff
+        const name = encodeURIComponent(payload.certificate_name);
+        alert("Thanks for your feedback! Your response has been recorded.");
+        // Option A (redirect to certificate page with prefilled name in query string):
+        window.location.href = `/certificate.html?name=${name}`;
+        // Option B: If you prefer to just reset form, comment the line above and use:
+        // form.reset();
+
+      } catch (err) {
+        console.error(err);
+        alert("Sorry, something went wrong submitting your feedback. Please try again.");
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit Feedback";
+        }
+      }
+    });
+  }
+</script>
+
 </body>
 </html>
