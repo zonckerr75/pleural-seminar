@@ -6,26 +6,10 @@
   <title>Pleural Seminar Wales 2025 — Feedback</title>
   <meta name="description" content="Event feedback form with instant certificate generation and optional email." />
   <style>
-    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
+    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--border:#1f2937}
     html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;padding-top:80px}
-
-    /* ===== Fixed top nav (shared) ===== */
-    header.nav{
-      position:fixed; top:0; left:0; right:0; z-index:1000;
-      background:#0b1320; border-bottom:1px solid var(--border); box-shadow:0 2px 10px rgba(0,0,0,.4);
-    }
-    .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
-    .nav-inner{display:flex;align-items:center;justify-content:space-between;min-height:64px}
-    .brand{display:flex;align-items:center;gap:10px}
-    .brand h1{font-size:20px;margin:0}
-    .brand .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block}
-    .nav-list{list-style:none;margin:0;padding:0;display:flex;gap:18px;align-items:center}
-    .nav-list a{color:#e5e7eb;text-decoration:none;padding:10px 6px;display:inline-block}
-    .nav-list a:hover{text-decoration:underline}
-
-    /* ===== Page layout ===== */
-    .page-wrap{max-width:980px;margin:0 auto;padding:22px}
+    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+    .wrap{max-width:980px;margin:0 auto;padding:22px}
     .card{background:var(--panel);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:22px}
     h1{margin:6px 0 8px;font-size:28px}
     h2{margin:20px 0 10px;font-size:20px;color:#fff}
@@ -40,32 +24,62 @@
     .bar{height:100%;width:0%;background:var(--accent)}
     .likert label{display:block;margin:4px 0}
     .divider{border:0;border-top:1px solid var(--border);margin:18px 0}
+    .muted{color:var(--muted)}
     .row-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .footnote{font-size:12px;color:var(--muted);margin-top:10px}
+/* --- Fixed navigation bar --- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: #0b1320; /* match your theme */
+  border-bottom: 1px solid #1f2937;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+/* Add space below header so content isn't hidden underneath */
+body {
+  padding-top: 80px; /* adjust to header height */
+}
+
+/* Keep the top menu fixed on screen */
+header.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: #0b1320;            /* your theme */
+  border-bottom: 1px solid #1f2937;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+/* Push page content down so it isn't hidden under the fixed header */
+body { padding-top: 80px; }        /* tweak to 70–90px if needed */
+
   </style>
 </head>
 <body>
-
-  <!-- Fixed site header -->
-  <header class="nav">
-    <div class="wrap nav-inner">
-      <div class="brand">
-        <span class="dot" aria-hidden="true"></span>
-        <h1>Welsh Pleural Seminar 2025</h1>
-      </div>
-      <nav aria-label="Primary">
-        <ul class="nav-list">
-          <li><a href="/#programme">Agenda</a></li>
-          <li><a href="/#house">Housekeeping</a></li>
-          <li><a href="/#livestream">Livestream</a></li>
-          <li><a href="/feedback.html">Feedback</a></li>
-          <li><a href="/certificate_auto.html">Certificate</a></li>
-          <li><a href="/faculty.html" rel="nofollow">Faculty</a></li>
-        </ul>
-      </nav>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <h1>Welsh Pleural Seminar 2025</h1>
     </div>
-  </header>
+    <nav aria-label="Primary">
+      <ul class="nav-list">
+        <li><a href="/#programme">Agenda</a></li>
+        <li><a href="/#house">Housekeeping</a></li>
+        <li><a href="/#livestream">Livestream</a></li>
+        <li><a href="/feedback.html">Feedback</a></li>
+        <li><a href="/faculty.html" rel="nofollow">Faculty</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
 
-  <div class="page-wrap">
+
+  <div class="wrap">
     <div class="card">
       <h1>Pleural Seminar Wales 2025 – Evaluation</h1>
       <p class="small">Thank you for joining us. Please complete this short form. After submitting, you can instantly download or email your certificate.</p>
@@ -255,6 +269,7 @@
             <button type="button" id="downloadCert" class="btn primary">Download Certificate</button>
             <button type="button" id="emailCert" class="btn ghost" title="Email option will be available shortly.">Email Certificate</button>
           </div>
+          
         </div>
       </form>
     </div>
@@ -271,7 +286,11 @@
     function updateProgress(){
       const answered = $$('[data-q] input:checked, [data-q] textarea:valid, [data-q] input[type="text"]:valid, [data-q] input[type="email"]:valid')
         .filter((el)=>{
-          const group = el.closest('[data-q]'); if(!group) return false; group.dataset._counted = '1'; return true;
+          // count one per question container
+          const group = el.closest('[data-q]');
+          if(!group) return false;
+          group.dataset._counted = '1';
+          return true;
         }).length;
       const unique = $$('[data-q]').filter(g=>g.dataset._counted==='1').length;
       $$('[data-q]').forEach(g=>delete g.dataset._counted);
@@ -279,7 +298,7 @@
       $('#progressBar').style.width = Math.min(100, Math.round((unique/totalQs)*100)) + '%';
     }
 
-    // Keyboard navigation for Likert
+    // Keyboard navigation for Likert (1..5 selects options; arrow keys move focus between radio options)
     function enableKeyboardLikert(){
       $$('.likert').forEach(group=>{
         group.addEventListener('keydown', (e)=>{
@@ -301,7 +320,9 @@
     }
 
     // Draft save/load
-    function serializeForm(form){ const fd = new FormData(form); const obj={}; for(const [k,v] of fd.entries()) obj[k]=v; return obj; }
+    function serializeForm(form){
+      const fd = new FormData(form); const obj={}; for(const [k,v] of fd.entries()) obj[k]=v; return obj;
+    }
     function saveDraft(form){ localStorage.setItem('psw25_feedback', JSON.stringify(serializeForm(form))); }
     function loadDraft(form){ const raw=localStorage.getItem('psw25_feedback'); if(!raw) return; const data=JSON.parse(raw); for(const k in data){ const el=form.elements[k]; if(!el) continue; if(el instanceof RadioNodeList){ const r=form.querySelector(`input[name=${k}][value='${data[k]}']`); if(r) r.checked=true; } else { el.value=data[k]; } } }
 
@@ -311,7 +332,7 @@
     async function downloadCertificate(name){ const bytes=await buildPdf(name); const blob=new Blob([bytes],{type:'application/pdf'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`Pleural Seminar Wales 2025 - Certificate - ${name}.pdf`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),1500); }
     async function emailCertificate(name,email){ const bytes=await buildPdf(name); const b=new Uint8Array(bytes); let bin=''; for(let i=0;i<b.length;i++) bin+=String.fromCharCode(b[i]); const pdfBase64=btoa(bin); const resp=await fetch('/api/email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,pdfBase64})}); if(!resp.ok) throw new Error(await resp.text()); }
 
-    // Email availability check (disabled until API exists)
+    // Email availability check (keep disabled until API exists)
     async function checkEmailAvailability(){ const btn=$('#emailCert'); if(!btn) return; btn.disabled=true; try{ const r=await fetch('/api/email',{method:'GET'}); if(r.status===200||r.status===405){ btn.disabled=false; btn.title=''; } }catch(_){} }
 
     // Wire up
@@ -335,39 +356,48 @@
     });
   </script>
 
-  <!-- Firebase SDKs + config for Firestore save -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
-      authDomain: "pleural-seminar-2025.firebaseapp.com",
-      projectId: "pleural-seminar-2025",
-      storageBucket: "pleural-seminar-2025.appspot.com",
-      messagingSenderId: "914784082205",
-      appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+    authDomain: "pleural-seminar-2025.firebaseapp.com",
+    projectId: "pleural-seminar-2025",
+    storageBucket: "pleural-seminar-2025.appspot.com",
+    messagingSenderId: "914784082205",
+    appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
     document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('feedback-form');
-      if (!form) return;
-      form.addEventListener('submit', async (e) => {
-        if (!form.checkValidity()) return;
-        const formData = new FormData(form);
-        const responses = {};
-        for (const [key, value] of formData.entries()) responses[key] = value;
-        try {
-          await db.collection('feedback').add({
-            responses,
-            submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          console.log('✅ Feedback saved to Firestore');
-        } catch (err) {
-          console.error('⚠️ Error saving feedback:', err);
-        }
-      });
+    const form = document.getElementById('feedback-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      if (!form.checkValidity()) return; // let browser validate first
+      const formData = new FormData(form);
+      const responses = {};
+      for (const [key, value] of formData.entries()) {
+        responses[key] = value;
+      }
+
+      try {
+        await db.collection('feedback').add({
+          responses,
+          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('✅ Feedback saved to Firestore');
+      } catch (err) {
+        console.error('⚠️ Error saving feedback:', err);
+      }
     });
-  </script>
+  });
+</script>
+
+</script>
+
+
 </body>
 </html>
