@@ -40,17 +40,17 @@
   <script>
   // === Defaults to be locked in after final coordinate confirmation ===
   const DEFAULTS = {
-    x: 297,            // <-- placeholder (points from left). Replace after final alignment.
-    y: 644,            // <-- placeholder (points from bottom). Replace after final alignment.
-    size: 24,          // <-- placeholder font size.
-    align: 'center',   // alignment relative to (x,y): 'left' | 'center' | 'right'
-    font: 'Helvetica-Bold' // any of: Helvetica, Helvetica-Bold, TimesRoman, TimesRomanBold
+    x: 297,
+    y: 644,
+    size: 24,
+    align: 'center',
+    font: 'Helvetica-Bold'
   };
 
   function getParams(){
     const u = new URL(window.location.href);
     const p = new URLSearchParams(u.search);
-    const name = p.get('name') ? decodeURIComponent(p.get('name')) : '';
+    const name = p.get('name') || '';
     const x = p.get('x') ? Number(p.get('x')) : DEFAULTS.x;
     const y = p.get('y') ? Number(p.get('y')) : DEFAULTS.y;
     const size = p.get('size') ? Number(p.get('size')) : DEFAULTS.size;
@@ -58,6 +58,7 @@
     const font = p.get('font') || DEFAULTS.font;
     const preview = p.get('preview') === '1';
     return { name, x, y, size, align, font, preview };
+  };
   }
 
   function setParam(name, value){
@@ -71,51 +72,45 @@
   }
 
   async function drawAndDownloadCertificate(opts){
-    const { PDFDocument, StandardFonts } = PDFLib;
+    const { PDFDocument, StandardFonts, rgb } = PDFLib;
 
-    // 1) Load base certificate PDF
     const baseUrl = '/assets/cert/certificate.pdf';
     const existingPdfBytes = await fetch(baseUrl).then(r => {
-      if(!r.ok) throw new Error('Could not load certificate.pdf');
+      if(!r.ok) throw new Error('Could not load /assets/cert/certificate.pdf');
       return r.arrayBuffer();
     });
 
-    // 2) Create a new PDF document from the base
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
     const page = pdfDoc.getPage(0);
 
-    // 3) Load a standard font
-    const fontName = opts.font || 'Helvetica-Bold';
-    const font = await pdfDoc.embedFont(StandardFonts[fontName.replace('-', '')] || StandardFonts.Helvetica);
+    const fontMap = {
+      'Helvetica': StandardFonts.Helvetica,
+      'Helvetica-Bold': StandardFonts.HelveticaBold,
+      'TimesRoman': StandardFonts.TimesRoman,
+      'TimesRoman-Bold': StandardFonts.TimesRomanBold
+    };
+    const std = fontMap[opts.font] || StandardFonts.HelveticaBold;
+    const font = await pdfDoc.embedFont(std);
 
-    // 4) Compute x based on alignment
     let x = opts.x;
     const y = opts.y;
-    const text = opts.name;
+    const text = opts.name || '';
     const size = opts.size;
 
-    const textWidth = measureTextWidth(text, font, size);
+    const textWidth = font.widthOfTextAtSize(text, size);
     if (opts.align === 'center') x = x - textWidth / 2;
     if (opts.align === 'right') x = x - textWidth;
 
-    // 5) Draw the text
-    page.drawText(text, {
-      x,
-      y,
-      size,
-      font,
-      color: PDFLib.rgb(0, 0, 0) // black text; change here if your certificate requires a different colour
-    });
+    page.drawText(text, { x, y, size, font, color: rgb(0,0,0) });
 
-    // 6) Save & download
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     const fileName = `Pleural Seminar Wales 2025 - Certificate - ${text}.pdf`;
 
-    if (opts.preview) {
-      // Show inline preview and provide a manual download link
-      const url = URL.createObjectURL(blob);
-      const container = document.getElementById('previewContainer');
+    // Always show a visible preview + manual download link (helps if auto-download is blocked)
+    const url = URL.createObjectURL(blob);
+    const container = document.getElementById('previewContainer');
+    if (container) {
       container.innerHTML = '';
       const iframe = document.createElement('iframe');
       iframe.style.width = '100%';
@@ -130,23 +125,34 @@
       a.style.display = 'inline-block';
       a.style.marginTop = '10px';
       container.appendChild(a);
-      return; // no auto-download in preview mode
     }
 
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    if (!opts.preview) {
+      // Try programmatic download; if blocked, the manual link remains visible
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
   }
 
   function handleButton(){
-    const name = document.getElementById('nameInput').value.trim();
-    if(!name){
-      alert('Please enter your full name');
-      return;
+    try {
+      const name = document.getElementById('nameInput').value.trim();
+      if(!name){ alert('Please enter your full name'); return; }
+      setParam('name', name);
+      const opts = getParams();
+      drawAndDownloadCertificate(opts).catch(err => {
+        console.error(err);
+        alert('Error: ' + (err && err.message ? err.message : String(err)));
+      });
+    } catch (e) {
+      console.error(e);
+      alert('Unexpected error');
     }
+  }
     setParam('name', encodeURIComponent(name));
     const opts = getParams();
     drawAndDownloadCertificate(opts).catch(err => alert(err.message || String(err)));
@@ -157,8 +163,7 @@
     document.getElementById('goBtn').addEventListener('click', handleButton);
     if (params.name) {
       document.getElementById('nameInput').value = params.name;
-      // Auto-generate immediately if name provided via URL
-      drawAndDownloadCertificate(params).catch(err => alert(err.message || String(err)));
+      drawAndDownloadCertificate({ ...params, preview: true }).catch(err => alert(err.message || String(err)));
     }
   });
   </script>
