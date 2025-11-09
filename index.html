@@ -53,6 +53,23 @@ body {
   padding-top: 80px; /* adjust to header height */
 }
 
+/* --- Mobile overflow fix (Nov 2025 polish) --- */
+html, body {
+  width: 100%;
+  overflow-x: hidden;     /* Prevent sideways scroll */
+}
+
+* {
+  box-sizing: border-box; /* Prevent width calculations from overflowing */
+  max-width: 100%;        /* Ensures no element exceeds screen width */
+}
+
+/* If your nav has a horizontal flex layout */
+nav, header.nav, .navbar {
+  flex-wrap: wrap;        /* Menu wraps on small screens */
+  overflow-x: auto;       /* Allows scroll within nav instead of whole page */
+}
+
   </style>
 </head>
 <body>
