@@ -253,8 +253,9 @@
         card.querySelector(`#msg_${p.id}`).textContent = `Saved ✓ Average ${data.average}`;
       }catch(err){
         console.error(err);
-        card.querySelector(`#msg_${p.id}`).textContent = 'Error saving — check connection.';
-      }
+  const m = `Error: ${err.code || ''} ${err.message || ''}`.trim();
+  card.querySelector(`#msg_${p.id}`).textContent = m || 'Error saving — check connection.';
+}
     });
   }
 
