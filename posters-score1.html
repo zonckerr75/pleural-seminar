@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pleural Seminar — Poster Scoring</title>
+  <style>
+    :root{
+      --bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--border:#1f2937
+    }
+    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+    header{position:sticky;top:0;background:rgba(11,19,32,0.9);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);padding:12px 16px;z-index:5}
+    h1{margin:0;font-size:18px}
+    main{max-width:960px;margin:16px auto;padding:0 12px 64px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 4px 20px rgba(0,0,0,0.25)}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .muted{color:var(--muted)}
+    label{display:block;margin:6px 0}
+    select, button, textarea{background:#0b1222;color:var(--fg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit}
+    select, button{height:44px}
+    button.primary{background:var(--accent);border-color:var(--accent);color:#072814;font-weight:600}
+    button.ghost{background:transparent}
+    button[disabled]{opacity:.6;cursor:not-allowed}
+    .pill{display:inline-block;padding:2px 10px;border:1px solid var(--border);border-radius:999px;font-size:12px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(5, minmax(70px,1fr));gap:8px}
+    .scorebox{border:1px dashed var(--border);border-radius:12px;padding:8px}
+    .radio-line{display:flex;gap:12px;flex-wrap:wrap}
+    .notice{border-left:4px solid var(--accent);padding:10px 12px;background:#0b1222;border-radius:10px;margin:12px 0}
+    .error{border-left-color:var(--danger)}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Pleural Seminar — Poster Scoring</h1>
+  <div class="muted" id="status">Select your name to begin.</div>
+</header>
+<main>
+  <section class="card">
+    <h2 style="margin-top:0">Judge</h2>
+    <p class="muted">Choose your name once. It will be applied to every poster you submit in this session.</p>
+    <div class="row">
+      <label>
+        <span class="muted">Judge name</span><br>
+        <select id="judgeSelect" required>
+          <option value="">— Select judge —</option>
+        </select>
+      </label>
+      <button id="lockJudgeBtn" class="primary">Lock judge</button>
+      <button id="changeJudgeBtn" class="ghost" disabled>Change</button>
+      <span id="judgeLockedPill" class="pill" style="display:none">Locked</span>
+    </div>
+    <div id="judgeError" class="notice error" style="display:none">Please select a judge before scoring.</div>
+  </section>
+
+  <section id="posters"></section>
+
+  <section class="card">
+    <h3 style="margin:0">Need to pause?</h3>
+    <p class="muted">You can submit posters one by one. Come back later and continue — your judge name will stay locked in this browser.</p>
+    <button id="unlockAllBtn" class="ghost">Reset & clear saved judge</button>
+  </section>
+</main>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script>
+  // TODO: Replace with your Firebase config
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // ---- Data (seed) ----
+  const JUDGES = [
+    "Alina Ionescu",
+    "Ruth Williams",
+    "Narendra Chinnappa",
+    "Arte Gonzalez",
+    "Andrew Griffiths",
+    "Elizabeth Green",
+    "Ali Thahseen" // backup
+  ];
+
+  const POSTERS = [
+    { id: "p1", title: "Fusobacterium", authors: "Ahmed Fadel, Yasser Ahmed" },
+    { id: "p2", title: "A storm of Polyserositis", authors: "Ahmed Fadel, Yasser Ahmed" },
+    { id: "p3", title: "One tap towards improved documentation", authors: "Chrissy Price" },
+    { id: "p4", title: "Pneumothorax in CPAP/NIV", authors: "Mohsen Mosallam" },
+    { id: "p5", title: "Hepatic Hydrothorax management", authors: "Sam Ryan" },
+  ];
+
+  const CRITERIA = [
+    { key: 'layout', label: 'First impression & layout' },
+    { key: 'results', label: 'Results' },
+    { key: 'relevance', label: 'Relevance to practice' },
+    { key: 'conclusion', label: 'Conclusion' },
+    { key: 'overall', label: 'Overall quality' },
+  ];
+
+  // ---- UI helpers ----
+  const judgeSelect = document.getElementById('judgeSelect');
+  const lockJudgeBtn = document.getElementById('lockJudgeBtn');
+  const changeJudgeBtn = document.getElementById('changeJudgeBtn');
+  const judgeLockedPill = document.getElementById('judgeLockedPill');
+  const judgeError = document.getElementById('judgeError');
+  const status = document.getElementById('status');
+
+  // Populate judge dropdown
+  JUDGES.forEach(j => {
+    const opt = document.createElement('option');
+    opt.value = j; opt.textContent = j; judgeSelect.appendChild(opt);
+  });
+
+  // Persist judge selection in localStorage
+  const savedJudge = localStorage.getItem('ps_judge');
+  if (savedJudge) {
+    judgeSelect.value = savedJudge;
+    lockJudge();
+  }
+
+  lockJudgeBtn.addEventListener('click', () => {
+    if (!judgeSelect.value) { judgeError.style.display='block'; return; }
+    localStorage.setItem('ps_judge', judgeSelect.value);
+    lockJudge();
+  });
+
+  changeJudgeBtn.addEventListener('click', () => {
+    localStorage.removeItem('ps_judge');
+    judgeSelect.disabled = false;
+    lockJudgeBtn.disabled = false;
+    changeJudgeBtn.disabled = true;
+    judgeLockedPill.style.display='none';
+    status.textContent = 'Judge unlocked. Select your name and lock before scoring.';
+  });
+
+  document.getElementById('unlockAllBtn').addEventListener('click', () => {
+    localStorage.removeItem('ps_judge');
+    judgeSelect.disabled = false;
+    lockJudgeBtn.disabled = false;
+    changeJudgeBtn.disabled = true;
+    judgeLockedPill.style.display='none';
+    status.textContent = 'Reset done. Select your name to begin.';
+  });
+
+  function lockJudge(){
+    judgeSelect.disabled = true;
+    lockJudgeBtn.disabled = true;
+    changeJudgeBtn.disabled = false;
+    judgeLockedPill.style.display='inline-block';
+    judgeError.style.display='none';
+    status.textContent = `Scoring as: ${judgeSelect.value}`;
+  }
+
+  // Render poster cards
+  const postersEl = document.getElementById('posters');
+
+  function scoreRadios(namePrefix){
+    const wrap = document.createElement('div');
+    wrap.className = 'radio-line';
+    for (let v=1; v<=5; v++){
+      const id = `${namePrefix}_${v}`;
+      wrap.insertAdjacentHTML('beforeend', `
+        <label for="${id}"><input type="radio" id="${id}" name="${namePrefix}" value="${v}"> ${v}</label>
+      `);
+    }
+    return wrap;
+  }
+
+  function posterCard(p){
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <h3 style="margin:0 0 6px 0">${p.title}</h3>
+      <div class="muted">${p.authors}</div>
+      <div class="grid" style="margin-top:12px">
+        ${CRITERIA.map(c => `
+          <div class="scorebox">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">${c.label} (1–5)</div>
+            <div id="rad_${p.id}_${c.key}"></div>
+          </div>
+        `).join('')}
+      </div>
+      <label style="margin-top:12px;display:block">
+        <span class="muted">Any other comments (optional)</span>
+        <textarea id="c_${p.id}" rows="3" placeholder="Write brief comments here…"></textarea>
+      </label>
+      <div class="row" style="align-items:center;justify-content:space-between">
+        <button class="primary" id="btn_${p.id}">Submit score</button>
+        <div class="muted" id="msg_${p.id}"></div>
+      </div>
+    `;
+    postersEl.appendChild(card);
+
+    // attach radio groups
+    CRITERIA.forEach(c => {
+      const target = card.querySelector(`#rad_${p.id}_${c.key}`);
+      const radios = scoreRadios(`${p.id}_${c.key}`);
+      target.appendChild(radios);
+    });
+
+    // submit handler
+    card.querySelector(`#btn_${p.id}`).addEventListener('click', async () => {
+      const judge = localStorage.getItem('ps_judge');
+      if (!judge){ judgeError.style.display='block'; window.scrollTo({top:0,behavior:'smooth'}); return; }
+
+      // collect scores
+      const data = { posterId: p.id, posterTitle: p.title, posterAuthors: p.authors, judge, ts: new Date().toISOString() };
+      let missing = [];
+      CRITERIA.forEach(c => {
+        const sel = card.querySelector(`input[name='${p.id}_${c.key}']:checked`);
+        if (!sel) missing.push(c.label);
+        data[c.key] = sel ? Number(sel.value) : null;
+      });
+      data.comments = card.querySelector(`#c_${p.id}`).value.trim();
+
+      if (missing.length){
+        card.querySelector(`#msg_${p.id}`).textContent = `Missing: ${missing.join(', ')}`;
+        return;
+      }
+
+      // average
+      const avg = (CRITERIA.reduce((s,c)=> s + data[c.key], 0)) / CRITERIA.length;
+      data.average = Number(avg.toFixed(2));
+
+      // upsert to Firestore (one doc per poster per judge)
+      const docId = `${p.id}__${judge.replace(/\s+/g,'_')}`;
+      try{
+        await db.collection('scores').doc(docId).set(data, { merge: true });
+        card.querySelector(`#msg_${p.id}`).textContent = `Saved ✓ Average ${data.average}`;
+      }catch(err){
+        console.error(err);
+        card.querySelector(`#msg_${p.id}`).textContent = 'Error saving — check connection.';
+      }
+    });
+  }
+
+  POSTERS.forEach(posterCard);
+</script>
+
+<!-- Suggested Firestore security rules (adjust for your project) -->
+<!--
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /posters/{id} { allow read: if true; allow write: if false; }
+    match /judges/{id}  { allow read: if true; allow write: if false; }
+    match /scores/{scoreId} {
+      // Allow clients to create/update their score docs. Consider enabling App Check.
+      allow create, update: if true;  // tighten for production
+      allow read: if false;           // hide scores from public clients
+    }
+  }
+}
+-->
+
+</body>
+</html>
