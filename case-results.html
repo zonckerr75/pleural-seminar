@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pleural Seminar — Case Results</title>
+  <title>Pleural Seminar — Case Results (Live)</title>
   <style>
     :root{ --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8; --border:#1f2937; --accent:#38bdf8; --accent2:#22c55e }
     html,body{height:100%}
@@ -55,7 +55,7 @@
       <a href="faculty.html" class="btn ghost" aria-label="Back to dashboard">← Back to dashboard</a>
       <a href="results.html" class="btn">Poster Results</a>
       <a id="exportCsv" class="btn primary" role="button" tabindex="0">Export CSV</a>
-      <span id="metaPill" class="pill">Loading…</span>
+      <span id="metaPill" class="pill">Connecting…</span>
     </div>
   </div>
 </header>
@@ -63,7 +63,7 @@
 <main>
   <section class="card">
     <h2>Leaderboard</h2>
-    <p class="muted">Totals are the <em>sum of judges’ totals</em> per case (max per submission 35). Click Export for a CSV of the aggregated table.</p>
+    <p class="muted">Totals are the <em>sum of judges’ totals</em> per case (max per submission 35). Updates live.</p>
     <table aria-describedby="meta">
       <thead>
         <tr>
@@ -75,7 +75,7 @@
         </tr>
       </thead>
       <tbody id="resultsBody">
-        <tr><td colspan="5" class="small">Loading…</td></tr>
+        <tr><td colspan="5" class="small">Listening for updates…</td></tr>
       </tbody>
     </table>
     <p id="meta" class="small" style="margin-top:8px"></p>
@@ -98,15 +98,16 @@
   if (!firebase.apps || !firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
   const db = firebase.firestore();
 
-  /* === LOAD & AGGREGATE FROM casesScore === */
+  /* === LIVE LOAD FROM casesScore === */
   const COLLECTION = 'casesScore';
   const body = document.getElementById('resultsBody');
   const meta = document.getElementById('meta');
   const metaPill = document.getElementById('metaPill');
+  let unsubscribe = null;
 
-  function aggregateRows(snap){
+  function aggregateRows(snapshot){
     const byKey = new Map();
-    snap.forEach(doc=>{
+    snapshot.forEach(doc=>{
       const d = doc.data();
       const presenter = d.casePresenter || d.presenter || '';
       const title = d.caseTitle || d.title || '';
@@ -143,16 +144,27 @@
     metaPill.textContent = `${rows.length} cases · ${subs} submissions`;
   }
 
-  async function load(){
+  function startLive(){
     try{
-      const snap = await db.collection(COLLECTION).get();
-      const rows = aggregateRows(snap);
-      render(rows);
-      window.__caseRows = rows; // for CSV
+      // Order by timestamp for stable snapshot ordering; not required for aggregation
+      unsubscribe = db.collection(COLLECTION)
+        .orderBy('ts', 'asc')
+        .onSnapshot(
+          (snap)=>{
+            const rows = aggregateRows(snap);
+            render(rows);
+            window.__caseRows = rows; // for CSV export
+          },
+          (err)=>{
+            console.error(err);
+            body.innerHTML = `<tr><td colspan="5" class="small">Error loading results. Check permissions/network.</td></tr>`;
+            meta.textContent = '';
+            metaPill.textContent = 'Error';
+          }
+        );
+      metaPill.textContent = 'Live';
     }catch(err){
       console.error(err);
-      body.innerHTML = `<tr><td colspan="5" class="small">Error loading results. Check permissions/network.</td></tr>`;
-      meta.textContent = '';
       metaPill.textContent = 'Error';
     }
   }
@@ -186,7 +198,9 @@
     URL.revokeObjectURL(url);
   });
 
-  load();
+  startLive();
+  // (Optional) stop listening if you ever navigate away via SPA etc:
+  // window.addEventListener('beforeunload', ()=> unsubscribe && unsubscribe());
 </script>
 </body>
 </html>
