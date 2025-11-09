@@ -70,6 +70,22 @@ nav, header.nav, .navbar {
   overflow-x: auto;       /* Allows scroll within nav instead of whole page */
 }
 
+/* Stop any page-wide sideways scroll */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* Common overflow culprit in flex layouts: children keep their width */
+* { box-sizing: border-box; }
+header, nav, .navbar, .wrap, .container { max-width: 100vw; }
+
+/* IMPORTANT for flex/grid children: allow them to shrink */
+.flex > *, [class*="row"] > *, .grid > * { min-width: 0; }
+
+/* Images / iframes / tables shouldn’t exceed the viewport */
+img, video, iframe, table { max-width: 100%; height: auto; }
+
+/* Long words/URLs won’t push the layout wide */
+body { word-break: break-word; overflow-wrap: anywhere; }
+
   </style>
 </head>
 <body>
