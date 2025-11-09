@@ -19,12 +19,12 @@
     .nav-actions{margin-left:auto; display:flex; gap:8px; align-items:center}
 
     /* Buttons/pills */
-    a.btn,button{ background:#0b1222; color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:8px 12px; font:inherit; height:40px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; white-space:nowrap }
+    a.btn,button{ background:#0b1222; color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:8px 12px; font:inherit; height:40px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; white-space:nowrap; cursor:pointer }
     a.btn.primary,button.primary{ background:var(--accent); border-color:var(--accent); color:#072814; font-weight:700 }
     a.btn.ghost,button.ghost{ background:transparent }
     .pill{ display:inline-block; padding:2px 10px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--muted) }
 
-    /* Cards/layout */
+    /* Layout */
     main{ max-width:980px; margin:18px auto 64px; padding:0 12px }
     .card{ background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px; margin:12px 0; box-shadow:0 8px 24px rgba(0,0,0,.28) }
     h1{margin:0 0 6px;font-size:20px}
@@ -45,17 +45,17 @@
 
     .notice{ border-left:4px solid var(--accent); padding:10px 12px; background:#0b1222; border-radius:10px; margin:12px 0 }
     .error{ border-left-color:var(--danger) }
-    #totalLine{ font-weight:700 }
+    .total-line{ font-weight:700 }
 
-    /* Mobile tweaks to eliminate sideways scroll */
+    /* Mobile tweaks */
     @media (max-width: 840px){
       .grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
       .brand h1{font-size:16px}
     }
     @media (max-width: 560px){
       .grid{ grid-template-columns:1fr; }
-      .radio-line label{ flex: 0 0 40px }       /* slightly narrower buttons on very small screens */
-      .nav-actions a.btn{ padding:6px 10px; height:36px }  /* smaller top-right buttons */
+      .radio-line label{ flex: 0 0 40px }
+      .nav-actions a.btn{ padding:6px 10px; height:36px }
     }
   </style>
 </head>
@@ -67,7 +67,6 @@
       <h1>Pleural Seminar — Case Presentation Scoring</h1>
     </div>
     <div class="nav-actions">
-      <!-- Top-right Back to dashboard button -->
       <a href="faculty.html" class="btn ghost" aria-label="Back to dashboard">← Back to dashboard</a>
       <span class="pill" id="status">Select your name to begin.</span>
     </div>
@@ -78,7 +77,7 @@
   <!-- Judge -->
   <section class="card" aria-labelledby="judge-title">
     <h2 id="judge-title">Judge</h2>
-    <p class="muted">Choose your name once. It will be applied to every case you submit in this session.</p>
+    <p class="muted">Choose your name once. It will apply to every case you submit in this session.</p>
     <div class="row">
       <label style="flex:1;min-width:240px">
         <span class="muted">Judge name</span><br>
@@ -93,66 +92,8 @@
     <div id="judgeError" class="notice error" style="display:none">Please select a judge before scoring.</div>
   </section>
 
-  <!-- Scoring guide -->
-  <section class="card" aria-labelledby="guide-title">
-    <h2 id="guide-title">Scoring guide</h2>
-    <p class="muted">Use the 1–5 scale for each criterion <strong>(5 = best, 1 = worst)</strong>. Total max = <strong>35</strong>.</p>
-  </section>
-
-  <!-- Case selector + scoring -->
-  <section class="card" aria-labelledby="case-title">
-    <h2 id="case-title">Case & scoring</h2>
-    <div class="row">
-      <label style="flex:1">
-        <span class="muted">Case</span><br>
-        <select id="caseSelect" required>
-          <option value="">— Select case —</option>
-        </select>
-      </label>
-    </div>
-
-    <div class="grid" style="margin-top:12px">
-      <div class="scorebox">
-        <div class="muted" style="font-size:13px;margin-bottom:6px">Delivery (1–5; 5 best)</div>
-        <div id="rad_delivery" class="radio-line"></div>
-      </div>
-      <div class="scorebox">
-        <div class="muted" style="font-size:13px;margin-bottom:6px">Knowledge &amp; material (1–5)</div>
-        <div id="rad_knowledge" class="radio-line"></div>
-      </div>
-      <div class="scorebox">
-        <div class="muted" style="font-size:13px;margin-bottom:6px">Relevance of subject (1–5)</div>
-        <div id="rad_relevance" class="radio-line"></div>
-      </div>
-      <div class="scorebox">
-        <div class="muted" style="font-size:13px;margin-bottom:6px">Use of media (1–5)</div>
-        <div id="rad_media" class="radio-line"></div>
-      </div>
-      <div class="scorebox">
-        <div class="muted" style="font-size:13px;margin-bottom:6px">Quality of resources (1–5)</div>
-        <div id="rad_resources" class="radio-line"></div>
-      </div>
-      <div class="scorebox">
-        <div class="muted" style="font-size:13px;margin-bottom:6px">Conclusion (1–5)</div>
-        <div id="rad_conclusion" class="radio-line"></div>
-      </div>
-      <div class="scorebox">
-        <div class="muted" style="font-size:13px;margin-bottom:6px">Overall quality (1–5)</div>
-        <div id="rad_overall" class="radio-line"></div>
-      </div>
-    </div>
-
-    <label style="margin-top:12px;display:block">
-      <span class="muted">Additional comments (optional)</span>
-      <textarea id="comments" placeholder="Write brief comments here…"></textarea>
-    </label>
-
-    <div class="row" style="justify-content:space-between">
-      <div class="muted" id="totalLine">Total: 0 / 35</div>
-      <a class="btn primary" id="submitBtn" role="button" tabindex="0">Submit score</a>
-    </div>
-    <div id="caseMsg" class="muted" style="margin-top:6px"></div>
-  </section>
+  <!-- All cases render here -->
+  <div id="casesContainer"></div>
 
   <section class="card">
     <h3 style="margin:0">Need to pause?</h3>
@@ -161,11 +102,11 @@
   </section>
 </main>
 
-<!-- Firebase SDKs (same versions as poster-score.html) -->
+<!-- Firebase SDKs (same versions as your poster page) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script>
-  /* === FIREBASE (copied pattern from your poster scorer) === */
+  /* === FIREBASE (same project as posters) === */
   const firebaseConfig = {
     apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
     authDomain: "pleural-seminar-2025.firebaseapp.com",
@@ -235,93 +176,151 @@
     status.textContent = `Scoring as: ${judgeSelect.value} — 1–5 scale (5 best, 1 worst)`;
   }
 
-  /* === CASES === */
-  const caseSelect = document.getElementById('caseSelect');
-  CASES.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id;
-    opt.textContent = `${c.presenter} — ${c.title}`;
-    caseSelect.appendChild(opt);
-  });
-
-  /* === RADIO GROUPS (1–5) === */
-  function scoreRadios(name){
-    const wrap = document.createElement('div');
-    wrap.className = 'radio-line';
+  /* === UTIL === */
+  function radioGroupHTML(name){
+    let h = '<div class="radio-line">';
     for (let v=1; v<=5; v++){
       const id = `${name}_${v}`;
-      wrap.insertAdjacentHTML('beforeend', `<label for="${id}"><input type="radio" id="${id}" name="${name}" value="${v}"> ${v}</label>`);
+      h += `<label for="${id}"><input type="radio" id="${id}" name="${name}" value="${v}"> ${v}</label>`;
     }
-    return wrap;
+    h += '</div>';
+    return h;
   }
-  ['delivery','knowledge','relevance','media','resources','conclusion','overall'].forEach(key=>{
-    document.getElementById(`rad_${key}`).appendChild(scoreRadios(`case_${key}`));
-  });
-
-  /* === TOTAL === */
-  function getSelectedValue(name){
+  function getSelected(name){
     const el = document.querySelector(`input[name='${name}']:checked`);
     return el ? Number(el.value) : null;
   }
-  function calcTotal(){
+  function calcTotalFor(prefix){
     const keys = ['delivery','knowledge','relevance','media','resources','conclusion','overall'];
-    const sum = keys.reduce((s,k)=> s + (getSelectedValue(`case_${k}`) || 0), 0);
-    document.getElementById('totalLine').textContent = `Total: ${sum} / 35`;
-    return sum;
+    return keys.reduce((s,k)=> s + (getSelected(`${prefix}_${k}`) || 0), 0);
   }
+
+  /* === RENDER CASE BLOCKS === */
+  const casesContainer = document.getElementById('casesContainer');
+
+  function caseBlockHTML(c){
+    const prefix = c.id; // namespaced inputs: case01_delivery etc
+    return `
+      <section class="card" aria-labelledby="${prefix}_title">
+        <h2 id="${prefix}_title">${c.presenter}</h2>
+        <p class="muted" style="margin-top:-6px">${c.title}</p>
+
+        <div class="grid" style="margin-top:12px">
+          <div class="scorebox">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">Delivery (1–5; 5 best)</div>
+            ${radioGroupHTML(`${prefix}_delivery`)}
+          </div>
+          <div class="scorebox">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">Knowledge &amp; material (1–5)</div>
+            ${radioGroupHTML(`${prefix}_knowledge`)}
+          </div>
+          <div class="scorebox">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">Relevance of subject (1–5)</div>
+            ${radioGroupHTML(`${prefix}_relevance`)}
+          </div>
+          <div class="scorebox">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">Use of media (1–5)</div>
+            ${radioGroupHTML(`${prefix}_media`)}
+          </div>
+          <div class="scorebox">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">Quality of resources (1–5)</div>
+            ${radioGroupHTML(`${prefix}_resources`)}
+          </div>
+          <div class="scorebox">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">Conclusion (1–5)</div>
+            ${radioGroupHTML(`${prefix}_conclusion`)}
+          </div>
+          <div class="scorebox">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">Overall quality (1–5)</div>
+            ${radioGroupHTML(`${prefix}_overall`)}
+          </div>
+        </div>
+
+        <label style="margin-top:12px;display:block">
+          <span class="muted">Additional comments (optional)</span>
+          <textarea id="${prefix}_comments" placeholder="Write brief comments here…"></textarea>
+        </label>
+
+        <div class="row" style="justify-content:space-between">
+          <div class="muted total-line" id="${prefix}_total">Total: 0 / 35</div>
+          <a class="btn primary" data-submit="${prefix}" role="button" tabindex="0">Submit score</a>
+        </div>
+        <div id="${prefix}_msg" class="muted" style="margin-top:6px"></div>
+      </section>
+    `;
+  }
+
+  // Render all cases
+  casesContainer.innerHTML = CASES.map(caseBlockHTML).join("");
+
+  // Live total updates (event delegation)
   document.addEventListener('change', (e)=>{
-    if (e.target && e.target.name && e.target.name.startsWith('case_')) calcTotal();
+    const name = e.target && e.target.name;
+    if(!name) return;
+    const parts = name.split('_');   // e.g., "case01_delivery_3" radios => name is "case01_delivery"
+    if (parts.length >= 2){
+      const prefix = parts[0];
+      const total = calcTotalFor(prefix);
+      const el = document.getElementById(`${prefix}_total`);
+      if (el) el.textContent = `Total: ${total} / 35`;
+    }
   });
 
-  /* === SUBMIT === */
-  document.getElementById('submitBtn').addEventListener('click', async ()=>{
-    const judge = localStorage.getItem('ps_judge_case');
-    const msgEl = document.getElementById('caseMsg');
-    msgEl.textContent = '';
+  // Submission (event delegation)
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('[data-submit]');
+    if(!btn) return;
 
+    const judge = localStorage.getItem('ps_judge_case');
     if (!judge){
       judgeError.style.display='block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    const selectedId = caseSelect.value;
-    if (!selectedId){
-      msgEl.textContent = 'Please select a case before submitting.';
-      return;
-    }
 
-    const chosen = CASES.find(c => c.id === selectedId) || {};
-    const data = {
-      caseId: selectedId,
-      caseTitle: chosen.title || '',
-      casePresenter: chosen.presenter || '',
-      judge,
-      ts: new Date().toISOString()
-    };
+    const prefix = btn.getAttribute('data-submit'); // case id
+    const msgEl = document.getElementById(`${prefix}_msg`);
 
+    // Collect scores
+    const keys = ['delivery','knowledge','relevance','media','resources','conclusion','overall'];
     const missing = [];
-    for (const c of ['delivery','knowledge','relevance','media','resources','conclusion','overall']){
-      const v = getSelectedValue(`case_${c}`);
-      if (v == null) missing.push(c);
-      data[c] = v ?? null;
-    }
-    data.comments = (document.getElementById('comments').value || '').trim();
+    const data = {};
+    keys.forEach(k=>{
+      const v = getSelected(`${prefix}_${k}`);
+      if (v == null) missing.push(k);
+      data[k] = v ?? null;
+    });
 
     if (missing.length){
       msgEl.textContent = `Missing: ${missing.join(', ')}`;
       return;
     }
 
-    data.total = ['delivery','knowledge','relevance','media','resources','conclusion','overall'].reduce((s,k)=>s+data[k],0);
+    // Compose payload
+    const chosen = CASES.find(c => c.id === prefix) || {};
+    const total = keys.reduce((s,k)=> s + data[k], 0);
+    const payload = {
+      caseId: prefix,
+      caseTitle: chosen.title || '',
+      casePresenter: chosen.presenter || '',
+      judge,
+      total,
+      comments: (document.getElementById(`${prefix}_comments`).value || '').trim(),
+      ts: new Date().toISOString(),
+      ...data
+    };
 
-    // stable doc id — overwrite rather than duplicate for same judge & case
-    const docId = `${selectedId}__${judge.replace(/\s+/g,'_')}`;
+    // Save (overwrite same judge+case)
+    const docId = `${prefix}__${judge.replace(/\s+/g,'_')}`;
+    btn.setAttribute('aria-busy','true'); btn.textContent = 'Saving…';
     try{
-      await db.collection('casesScore').doc(docId).set(data, { merge: true });
-      msgEl.textContent = `Saved ✓ Total score ${data.total}`;
+      await db.collection('casesScore').doc(docId).set(payload, { merge: true });
+      msgEl.textContent = `Saved ✓ Total score ${total}`;
     }catch(err){
       console.error(err);
       msgEl.textContent = `Error: ${err?.code || ''} ${err?.message || 'Failed to save'}`.trim();
+    }finally{
+      btn.removeAttribute('aria-busy'); btn.textContent = 'Submit score';
     }
   });
 </script>
