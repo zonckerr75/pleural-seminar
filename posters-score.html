@@ -251,7 +251,7 @@
       try{
         await db.collection('scores').doc(docId).set(data, { merge: true });
         card.querySelector(`#msg_${p.id}`).textContent = `Saved ✓ Average ${data.average}`;
-      }catch(err){
+     catch(err){
         console.error(err);
   const m = `Error: ${err.code || ''} ${err.message || ''}`.trim();
   card.querySelector(`#msg_${p.id}`).textContent = m || 'Error saving — check connection.';
