@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pleural Seminar — Case Results</title>
+  <style>
+    :root{ --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8; --border:#1f2937; --accent:#38bdf8; --accent2:#22c55e }
+    html,body{height:100%}
+    body{ margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif; padding-top:64px; overflow-x:hidden }
+
+    /* Header */
+    header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 12px}
+    .nav-inner{display:flex;align-items:center;min-height:56px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand h1{font-size:18px;margin:0}
+    .brand .dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);display:inline-block}
+    .nav-actions{margin-left:auto; display:flex; gap:8px; align-items:center}
+    a.btn{ background:#0b1222; color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:8px 12px; height:40px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; white-space:nowrap }
+    a.btn.primary{ background:var(--accent); border-color:var(--accent); color:#06253a; font-weight:700 }
+    a.btn.ghost{ background:transparent }
+    .pill{ display:inline-block; padding:2px 10px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--muted) }
+
+    /* Layout */
+    main{ max-width:1100px; margin:18px auto 64px; padding:0 12px }
+    .card{ background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px; margin:12px 0; box-shadow:0 8px 24px rgba(0,0,0,.28) }
+    h1{margin:0 0 6px;font-size:20px}
+    h2{margin:0 0 10px;font-size:18px}
+    .muted{ color:var(--muted) }
+
+    /* Table */
+    table{ width:100%; border-collapse:collapse; margin-top:10px }
+    th, td{ padding:10px; border-bottom:1px solid var(--border); vertical-align:top }
+    th{text-align:left;font-weight:700}
+    td.right, th.right{ text-align:right }
+    .small{ font-size:14px; color:var(--muted) }
+
+    /* Mobile */
+    @media (max-width: 680px){
+      .brand h1{font-size:16px}
+      td:nth-child(1){width:52px}
+      td:nth-child(4), th:nth-child(4){width:110px}
+    }
+  </style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <h1>Case Presentation Results</h1>
+    </div>
+    <div class="nav-actions">
+      <a href="faculty.html" class="btn ghost" aria-label="Back to dashboard">← Back to dashboard</a>
+      <a href="results.html" class="btn">Poster Results</a>
+      <a id="exportCsv" class="btn primary" role="button" tabindex="0">Export CSV</a>
+      <span id="metaPill" class="pill">Loading…</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Leaderboard</h2>
+    <p class="muted">Totals are the <em>sum of judges’ totals</em> per case (max per submission 35). Click Export for a CSV of the aggregated table.</p>
+    <table aria-describedby="meta">
+      <thead>
+        <tr>
+          <th style="width:60px">#</th>
+          <th style="width:240px">Presenter</th>
+          <th>Title</th>
+          <th class="right" style="width:120px">Total</th>
+          <th style="width:320px">Judges (individual totals)</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody">
+        <tr><td colspan="5" class="small">Loading…</td></tr>
+      </tbody>
+    </table>
+    <p id="meta" class="small" style="margin-top:8px"></p>
+  </section>
+</main>
+
+<!-- Firebase SDKs (same project as scorer) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script>
+  /* === FIREBASE (same config as your scorer pages) === */
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+    authDomain: "pleural-seminar-2025.firebaseapp.com",
+    projectId: "pleural-seminar-2025",
+    storageBucket: "pleural-seminar-2025.appspot.com",
+    messagingSenderId: "914784082205",
+    appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
+  };
+  if (!firebase.apps || !firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+  const db = firebase.firestore();
+
+  /* === LOAD & AGGREGATE FROM casesScore === */
+  const COLLECTION = 'casesScore';
+  const body = document.getElementById('resultsBody');
+  const meta = document.getElementById('meta');
+  const metaPill = document.getElementById('metaPill');
+
+  function aggregateRows(snap){
+    const byKey = new Map();
+    snap.forEach(doc=>{
+      const d = doc.data();
+      const presenter = d.casePresenter || d.presenter || '';
+      const title = d.caseTitle || d.title || '';
+      const total = parseInt(d.total || 0, 10) || 0;
+      const judge = d.judge || '—';
+      const key = `${presenter}|||${title}`;
+
+      const cur = byKey.get(key) || { presenter, title, total:0, judges:[] };
+      cur.total += total;
+      cur.judges.push({ judge, total });
+      byKey.set(key, cur);
+    });
+    return Array.from(byKey.values()).sort((a,b)=> b.total - a.total);
+  }
+
+  function render(rows){
+    if (!rows.length){
+      body.innerHTML = `<tr><td colspan="5" class="small">No case scores yet.</td></tr>`;
+      meta.textContent = '';
+      metaPill.textContent = '0 cases · 0 submissions';
+      return;
+    }
+    body.innerHTML = rows.map((r,i)=>`
+      <tr>
+        <td>${i+1}</td>
+        <td>${r.presenter}</td>
+        <td>${r.title}</td>
+        <td class="right">${r.total}</td>
+        <td>${r.judges.map(j => `${j.judge} (${j.total})`).join('<br>')}</td>
+      </tr>
+    `).join('');
+    const subs = rows.reduce((n,r)=> n + r.judges.length, 0);
+    meta.textContent = `Showing ${rows.length} case(s); ${subs} judge submission(s) aggregated.`;
+    metaPill.textContent = `${rows.length} cases · ${subs} submissions`;
+  }
+
+  async function load(){
+    try{
+      const snap = await db.collection(COLLECTION).get();
+      const rows = aggregateRows(snap);
+      render(rows);
+      window.__caseRows = rows; // for CSV
+    }catch(err){
+      console.error(err);
+      body.innerHTML = `<tr><td colspan="5" class="small">Error loading results. Check permissions/network.</td></tr>`;
+      meta.textContent = '';
+      metaPill.textContent = 'Error';
+    }
+  }
+
+  /* === CSV Export of aggregated results === */
+  function toCsv(rows){
+    const header = ['Rank','Presenter','Title','Total','Judges'];
+    const lines = [header.join(',')];
+    rows.forEach((r, i)=>{
+      const judges = r.judges.map(j => `${j.judge} (${j.total})`).join(' | ');
+      const cells = [
+        i+1,
+        `"${(r.presenter||'').replace(/"/g,'""')}"`,
+        `"${(r.title||'').replace(/"/g,'""')}"`,
+        r.total,
+        `"${judges.replace(/"/g,'""')}"`,
+      ];
+      lines.push(cells.join(','));
+    });
+    return lines.join('\n');
+  }
+
+  document.getElementById('exportCsv').addEventListener('click', ()=>{
+    const rows = window.__caseRows || [];
+    const csv = toCsv(rows);
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'case-results.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  load();
+</script>
+</body>
+</html>
