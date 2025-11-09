@@ -1,5 +1,5 @@
 {
-  "functions": { "api/*.js": { "runtime": "nodejs18.x" } },
+  
   "rewrites": [
     { "source": "/feedback", "destination": "/feedback.html" },
     { "source": "/certificate", "destination": "/certificate_auto.html" }
