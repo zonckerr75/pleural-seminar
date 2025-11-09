@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pleural Seminar — Case Presentation Scoring</title>
+  <style>
+    :root{ --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8; --accent:#22c55e; --danger:#ef4444; --border:#1f2937 }
+    html,body{height:100%}
+    body{ margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif; padding-top:64px; overflow-x:hidden }
+
+    /* Header */
+    header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 12px}
+    .nav-inner{display:flex;align-items:center;min-height:56px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand h1{font-size:18px;margin:0}
+    .brand .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block}
+    .nav-actions{margin-left:auto; display:flex; gap:8px; align-items:center}
+
+    /* Buttons/pills */
+    a.btn,button{ background:#0b1222; color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:8px 12px; font:inherit; height:40px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; white-space:nowrap }
+    a.btn.primary,button.primary{ background:var(--accent); border-color:var(--accent); color:#072814; font-weight:700 }
+    a.btn.ghost,button.ghost{ background:transparent }
+    .pill{ display:inline-block; padding:2px 10px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--muted) }
+
+    /* Cards/layout */
+    main{ max-width:980px; margin:18px auto 64px; padding:0 12px }
+    .card{ background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px; margin:12px 0; box-shadow:0 8px 24px rgba(0,0,0,.28) }
+    h1{margin:0 0 6px;font-size:20px}
+    h2{margin:0 0 10px;font-size:18px}
+    h3{margin:0 0 6px;font-size:16px}
+    .muted{ color:var(--muted) }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center }
+    label{ display:block; margin:6px 0 }
+    select, textarea{ background:#0b1222; color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:10px 12px; font:inherit; width:100% }
+    textarea{ min-height:70px; resize:vertical }
+
+    /* Grid for score blocks */
+    .grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px } /* minmax(0,1fr) prevents overflow */
+    .scorebox{ border:1px dashed var(--border); border-radius:12px; padding:10px }
+    .radio-line{ display:flex; gap:8px; flex-wrap:wrap }           /* allow wrapping */
+    .radio-line label{ flex: 0 0 44px; display:flex; align-items:center; gap:6px; justify-content:center } /* fixed width pills */
+    .radio-line input{ width:18px; height:18px }
+
+    .notice{ border-left:4px solid var(--accent); padding:10px 12px; background:#0b1222; border-radius:10px; margin:12px 0 }
+    .error{ border-left-color:var(--danger) }
+    #totalLine{ font-weight:700 }
+
+    /* Mobile tweaks to eliminate sideways scroll */
+    @media (max-width: 840px){
+      .grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+      .brand h1{font-size:16px}
+    }
+    @media (max-width: 560px){
+      .grid{ grid-template-columns:1fr; }
+      .radio-line label{ flex: 0 0 40px }       /* slightly narrower buttons on very small screens */
+      .nav-actions a.btn{ padding:6px 10px; height:36px }  /* smaller top-right buttons */
+    }
+  </style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <h1>Pleural Seminar — Case Presentation Scoring</h1>
+    </div>
+    <div class="nav-actions">
+      <!-- Top-right Back to dashboard button -->
+      <a href="faculty.html" class="btn ghost" aria-label="Back to dashboard">← Back to dashboard</a>
+      <span class="pill" id="status">Select your name to begin.</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Judge -->
+  <section class="card" aria-labelledby="judge-title">
+    <h2 id="judge-title">Judge</h2>
+    <p class="muted">Choose your name once. It will be applied to every case you submit in this session.</p>
+    <div class="row">
+      <label style="flex:1;min-width:240px">
+        <span class="muted">Judge name</span><br>
+        <select id="judgeSelect" required>
+          <option value="">— Select judge —</option>
+        </select>
+      </label>
+      <a id="lockJudgeBtn" class="btn primary" role="button" tabindex="0">Lock judge</a>
+      <a id="changeJudgeBtn" class="btn ghost" role="button" tabindex="0" aria-disabled="true">Change</a>
+      <span id="judgeLockedPill" class="pill" style="display:none">Locked</span>
+    </div>
+    <div id="judgeError" class="notice error" style="display:none">Please select a judge before scoring.</div>
+  </section>
+
+  <!-- Scoring guide -->
+  <section class="card" aria-labelledby="guide-title">
+    <h2 id="guide-title">Scoring guide</h2>
+    <p class="muted">Use the 1–5 scale for each criterion <strong>(5 = best, 1 = worst)</strong>. Total max = <strong>35</strong>.</p>
+  </section>
+
+  <!-- Case selector + scoring -->
+  <section class="card" aria-labelledby="case-title">
+    <h2 id="case-title">Case & scoring</h2>
+    <div class="row">
+      <label style="flex:1">
+        <span class="muted">Case</span><br>
+        <select id="caseSelect" required>
+          <option value="">— Select case —</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="grid" style="margin-top:12px">
+      <div class="scorebox">
+        <div class="muted" style="font-size:13px;margin-bottom:6px">Delivery (1–5; 5 best)</div>
+        <div id="rad_delivery" class="radio-line"></div>
+      </div>
+      <div class="scorebox">
+        <div class="muted" style="font-size:13px;margin-bottom:6px">Knowledge &amp; material (1–5)</div>
+        <div id="rad_knowledge" class="radio-line"></div>
+      </div>
+      <div class="scorebox">
+        <div class="muted" style="font-size:13px;margin-bottom:6px">Relevance of subject (1–5)</div>
+        <div id="rad_relevance" class="radio-line"></div>
+      </div>
+      <div class="scorebox">
+        <div class="muted" style="font-size:13px;margin-bottom:6px">Use of media (1–5)</div>
+        <div id="rad_media" class="radio-line"></div>
+      </div>
+      <div class="scorebox">
+        <div class="muted" style="font-size:13px;margin-bottom:6px">Quality of resources (1–5)</div>
+        <div id="rad_resources" class="radio-line"></div>
+      </div>
+      <div class="scorebox">
+        <div class="muted" style="font-size:13px;margin-bottom:6px">Conclusion (1–5)</div>
+        <div id="rad_conclusion" class="radio-line"></div>
+      </div>
+      <div class="scorebox">
+        <div class="muted" style="font-size:13px;margin-bottom:6px">Overall quality (1–5)</div>
+        <div id="rad_overall" class="radio-line"></div>
+      </div>
+    </div>
+
+    <label style="margin-top:12px;display:block">
+      <span class="muted">Additional comments (optional)</span>
+      <textarea id="comments" placeholder="Write brief comments here…"></textarea>
+    </label>
+
+    <div class="row" style="justify-content:space-between">
+      <div class="muted" id="totalLine">Total: 0 / 35</div>
+      <a class="btn primary" id="submitBtn" role="button" tabindex="0">Submit score</a>
+    </div>
+    <div id="caseMsg" class="muted" style="margin-top:6px"></div>
+  </section>
+
+  <section class="card">
+    <h3 style="margin:0">Need to pause?</h3>
+    <p class="muted">You can submit cases one by one. Your judge name will stay locked in this browser.</p>
+    <a id="unlockAllBtn" class="btn ghost" role="button" tabindex="0">Reset & clear saved judge</a>
+  </section>
+</main>
+
+<!-- Firebase SDKs (same versions as poster-score.html) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script>
+  /* === FIREBASE (copied pattern from your poster scorer) === */
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+    authDomain: "pleural-seminar-2025.firebaseapp.com",
+    projectId: "pleural-seminar-2025",
+    storageBucket: "pleural-seminar-2025.appspot.com",
+    messagingSenderId: "914784082205",
+    appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
+  };
+  if (!firebase.apps || !firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+  const db = firebase.firestore();
+
+  /* === DATA === */
+  const JUDGES = ["Alina Ionescu","Ruth Williams","Narendra Chinnappa","Arte Gonzalez","Andrew Griffiths","Elizabeth Green","Ali Thahseen"];
+  const CASES = [
+    { id: "case01", title: "Serious incident: A case-based discussion", presenter: "Sara Davies (ANP, Swansea Bay UHB)" },
+    { id: "case02", title: "What is in the differential?", presenter: "Sarah Case (Specialist Registrar, Wales)" },
+    { id: "case03", title: "What does this ‘milky appearance’ of pleural fluid hide?", presenter: "Sion Freeman (IMT) & Eilish Yarman (Specialist Registrar, Wales)" },
+    { id: "case04", title: "An unexpected pleural finding", presenter: "Dana Bendajki (Trainee, ABUHB South Wales)" }
+  ];
+  const CRITERIA = [
+    { key: 'delivery',   label: 'Delivery' },
+    { key: 'knowledge',  label: 'Knowledge & material' },
+    { key: 'relevance',  label: 'Relevance of subject' },
+    { key: 'media',      label: 'Use of media' },
+    { key: 'resources',  label: 'Quality of resources' },
+    { key: 'conclusion', label: 'Conclusion' },
+    { key: 'overall',    label: 'Overall quality' }
+  ];
+
+  /* === JUDGE LOCK === */
+  const judgeSelect = document.getElementById('judgeSelect');
+  const lockJudgeBtn = document.getElementById('lockJudgeBtn');
+  const changeJudgeBtn = document.getElementById('changeJudgeBtn');
+  const judgeLockedPill = document.getElementById('judgeLockedPill');
+  const judgeError = document.getElementById('judgeError');
+  const status = document.getElementById('status');
+
+  JUDGES.forEach(j => { const opt = document.createElement('option'); opt.value=j; opt.textContent=j; judgeSelect.appendChild(opt); });
+  const savedJudge = localStorage.getItem('ps_judge_case');
+  if (savedJudge) { judgeSelect.value = savedJudge; lockJudge(); }
+
+  lockJudgeBtn.addEventListener('click', () => {
+    if (!judgeSelect.value) { judgeError.style.display='block'; return; }
+    localStorage.setItem('ps_judge_case', judgeSelect.value);
+    lockJudge();
+  });
+  changeJudgeBtn.addEventListener('click', () => {
+    localStorage.removeItem('ps_judge_case');
+    judgeSelect.disabled = false; lockJudgeBtn.classList.remove('ghost'); lockJudgeBtn.classList.add('primary');
+    changeJudgeBtn.setAttribute('aria-disabled','true');
+    judgeLockedPill.style.display='none';
+    status.textContent = 'Judge unlocked. Select your name and lock before scoring.';
+  });
+  document.getElementById('unlockAllBtn').addEventListener('click', () => {
+    localStorage.removeItem('ps_judge_case');
+    judgeSelect.disabled = false; lockJudgeBtn.classList.remove('ghost'); lockJudgeBtn.classList.add('primary');
+    changeJudgeBtn.setAttribute('aria-disabled','true');
+    judgeLockedPill.style.display='none';
+    status.textContent = 'Reset done. Select your name to begin.';
+  });
+  function lockJudge(){
+    judgeSelect.disabled = true;
+    lockJudgeBtn.classList.remove('primary'); lockJudgeBtn.classList.add('ghost');
+    changeJudgeBtn.removeAttribute('aria-disabled');
+    judgeLockedPill.style.display = 'inline-block';
+    judgeError.style.display = 'none';
+    status.textContent = `Scoring as: ${judgeSelect.value} — 1–5 scale (5 best, 1 worst)`;
+  }
+
+  /* === CASES === */
+  const caseSelect = document.getElementById('caseSelect');
+  CASES.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${c.presenter} — ${c.title}`;
+    caseSelect.appendChild(opt);
+  });
+
+  /* === RADIO GROUPS (1–5) === */
+  function scoreRadios(name){
+    const wrap = document.createElement('div');
+    wrap.className = 'radio-line';
+    for (let v=1; v<=5; v++){
+      const id = `${name}_${v}`;
+      wrap.insertAdjacentHTML('beforeend', `<label for="${id}"><input type="radio" id="${id}" name="${name}" value="${v}"> ${v}</label>`);
+    }
+    return wrap;
+  }
+  ['delivery','knowledge','relevance','media','resources','conclusion','overall'].forEach(key=>{
+    document.getElementById(`rad_${key}`).appendChild(scoreRadios(`case_${key}`));
+  });
+
+  /* === TOTAL === */
+  function getSelectedValue(name){
+    const el = document.querySelector(`input[name='${name}']:checked`);
+    return el ? Number(el.value) : null;
+  }
+  function calcTotal(){
+    const keys = ['delivery','knowledge','relevance','media','resources','conclusion','overall'];
+    const sum = keys.reduce((s,k)=> s + (getSelectedValue(`case_${k}`) || 0), 0);
+    document.getElementById('totalLine').textContent = `Total: ${sum} / 35`;
+    return sum;
+  }
+  document.addEventListener('change', (e)=>{
+    if (e.target && e.target.name && e.target.name.startsWith('case_')) calcTotal();
+  });
+
+  /* === SUBMIT === */
+  document.getElementById('submitBtn').addEventListener('click', async ()=>{
+    const judge = localStorage.getItem('ps_judge_case');
+    const msgEl = document.getElementById('caseMsg');
+    msgEl.textContent = '';
+
+    if (!judge){
+      judgeError.style.display='block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    const selectedId = caseSelect.value;
+    if (!selectedId){
+      msgEl.textContent = 'Please select a case before submitting.';
+      return;
+    }
+
+    const chosen = CASES.find(c => c.id === selectedId) || {};
+    const data = {
+      caseId: selectedId,
+      caseTitle: chosen.title || '',
+      casePresenter: chosen.presenter || '',
+      judge,
+      ts: new Date().toISOString()
+    };
+
+    const missing = [];
+    for (const c of ['delivery','knowledge','relevance','media','resources','conclusion','overall']){
+      const v = getSelectedValue(`case_${c}`);
+      if (v == null) missing.push(c);
+      data[c] = v ?? null;
+    }
+    data.comments = (document.getElementById('comments').value || '').trim();
+
+    if (missing.length){
+      msgEl.textContent = `Missing: ${missing.join(', ')}`;
+      return;
+    }
+
+    data.total = ['delivery','knowledge','relevance','media','resources','conclusion','overall'].reduce((s,k)=>s+data[k],0);
+
+    // stable doc id — overwrite rather than duplicate for same judge & case
+    const docId = `${selectedId}__${judge.replace(/\s+/g,'_')}`;
+    try{
+      await db.collection('casesScore').doc(docId).set(data, { merge: true });
+      msgEl.textContent = `Saved ✓ Total score ${data.total}`;
+    }catch(err){
+      console.error(err);
+      msgEl.textContent = `Error: ${err?.code || ''} ${err?.message || 'Failed to save'}`.trim();
+    }
+  });
+</script>
+</body>
+</html>
