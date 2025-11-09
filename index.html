@@ -53,38 +53,6 @@ body {
   padding-top: 80px; /* adjust to header height */
 }
 
-/* --- Mobile overflow fix (Nov 2025 polish) --- */
-html, body {
-  width: 100%;
-  overflow-x: hidden;     /* Prevent sideways scroll */
-}
-
-* {
-  box-sizing: border-box; /* Prevent width calculations from overflowing */
-  max-width: 100%;        /* Ensures no element exceeds screen width */
-}
-
-/* If your nav has a horizontal flex layout */
-nav, header.nav, .navbar {
-  flex-wrap: wrap;        /* Menu wraps on small screens */
-  overflow-x: auto;       /* Allows scroll within nav instead of whole page */
-}
-
-/* Stop any page-wide sideways scroll */
-html, body { max-width: 100%; overflow-x: hidden; }
-
-/* Common overflow culprit in flex layouts: children keep their width */
-* { box-sizing: border-box; }
-header, nav, .navbar, .wrap, .container { max-width: 100vw; }
-
-/* IMPORTANT for flex/grid children: allow them to shrink */
-.flex > *, [class*="row"] > *, .grid > * { min-width: 0; }
-
-/* Images / iframes / tables shouldn’t exceed the viewport */
-img, video, iframe, table { max-width: 100%; height: auto; }
-
-/* Long words/URLs won’t push the layout wide */
-body { word-break: break-word; overflow-wrap: anywhere; }
 
   </style>
 </head>
