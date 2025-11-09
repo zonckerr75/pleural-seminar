@@ -3,45 +3,38 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pleural Seminar — Case Results (Live)</title>
+  <title>Pleural Seminar — Case Results</title>
   <style>
-    :root{ --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8; --border:#1f2937; --accent:#38bdf8; --accent2:#22c55e }
-    html,body{height:100%}
-    body{ margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif; padding-top:64px; overflow-x:hidden }
-
-    /* Header */
-    header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.4)}
-    .wrap{max-width:1100px;margin:0 auto;padding:0 12px}
-    .nav-inner{display:flex;align-items:center;min-height:56px}
-    .brand{display:flex;align-items:center;gap:10px}
-    .brand h1{font-size:18px;margin:0}
-    .brand .dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);display:inline-block}
-    .nav-actions{margin-left:auto; display:flex; gap:8px; align-items:center}
-    a.btn{ background:#0b1222; color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:8px 12px; height:40px; text-decoration:none; display:inline-flex; align-items:center; gap:6px; white-space:nowrap }
-    a.btn.primary{ background:var(--accent); border-color:var(--accent); color:#06253a; font-weight:700 }
-    a.btn.ghost{ background:transparent }
-    .pill{ display:inline-block; padding:2px 10px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--muted) }
-
-    /* Layout */
-    main{ max-width:1100px; margin:18px auto 64px; padding:0 12px }
-    .card{ background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px; margin:12px 0; box-shadow:0 8px 24px rgba(0,0,0,.28) }
-    h1{margin:0 0 6px;font-size:20px}
-    h2{margin:0 0 10px;font-size:18px}
-    .muted{ color:var(--muted) }
-
-    /* Table */
-    table{ width:100%; border-collapse:collapse; margin-top:10px }
-    th, td{ padding:10px; border-bottom:1px solid var(--border); vertical-align:top }
-    th{text-align:left;font-weight:700}
-    td.right, th.right{ text-align:right }
-    .small{ font-size:14px; color:var(--muted) }
-
-    /* Mobile */
-    @media (max-width: 680px){
-      .brand h1{font-size:16px}
-      td:nth-child(1){width:52px}
-      td:nth-child(4), th:nth-child(4){width:110px}
-    }
+:root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;padding-top:80px}
+header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;min-height:64px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand h1{font-size:20px;margin:0}
+.brand .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block}
+.page{max-width:1100px;margin:0 auto;padding:24px}
+.card{background:var(--panel);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.35);border:1px solid var(--border)}
+h1{margin:0 0 6px;font-size:26px}
+h2{margin:14px 0 8px;font-size:20px}
+.muted{color:var(--muted)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0;align-items:center}
+.btn{appearance:none;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+.btn.primary{background:var(--accent);color:#052}
+.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--fg)}
+select,input{background:#0b1222;color:var(--fg);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font:inherit}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+th{text-align:left;font-weight:700}
+tr:hover td{background:#0c1526}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0b1220;border:1px solid var(--border);font-size:12px;color:var(--muted)}
+.badge{padding:2px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px}
+.rank-1{background:#173018}
+.rank-2{background:#1a2030}
+.rank-3{background:#302015}
+.small{font-size:12px}
   </style>
 </head>
 <body>
@@ -49,44 +42,90 @@
   <div class="wrap nav-inner">
     <div class="brand">
       <span class="dot" aria-hidden="true"></span>
-      <h1>Case Presentation Results</h1>
+      <h1>Welsh Pleural Seminar 2025</h1>
     </div>
-    <div class="nav-actions">
-      <a href="faculty.html" class="btn ghost" aria-label="Back to dashboard">← Back to dashboard</a>
-      <a href="results.html" class="btn">Poster Results</a>
-      <a id="exportCsv" class="btn primary" role="button" tabindex="0">Export CSV</a>
-      <span id="metaPill" class="pill">Connecting…</span>
+    <div class="row">
+      <a href="faculty.html" class="btn ghost small">← Back to dashboard</a>
+      <span class="pill">Case results (live)</span>
     </div>
   </div>
 </header>
 
-<main>
-  <section class="card">
-    <h2>Leaderboard</h2>
-    <p class="muted">Totals are the <em>sum of judges’ totals</em> per case (max per submission 35). Updates live.</p>
-    <table aria-describedby="meta">
-      <thead>
-        <tr>
-          <th style="width:60px">#</th>
-          <th style="width:240px">Presenter</th>
-          <th>Title</th>
-          <th class="right" style="width:120px">Total</th>
-          <th style="width:320px">Judges (individual totals)</th>
-        </tr>
-      </thead>
-      <tbody id="resultsBody">
-        <tr><td colspan="5" class="small">Listening for updates…</td></tr>
-      </tbody>
-    </table>
-    <p id="meta" class="small" style="margin-top:8px"></p>
-  </section>
-</main>
+<div class="page">
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <h1 style="margin:0">Case Rankings</h1>
+        <p class="muted" style="margin:4px 0 0">Live totals by case • updates in real time from Firestore</p>
+      </div>
+      <div class="row">
+        <label class="muted">Filter by judge</label>
+        <select id="judgeFilter">
+          <option value="">All judges</option>
+        </select>
+        <button id="exportCsv" class="btn ghost">Export CSV</button>
+      </div>
+    </div>
 
-<!-- Firebase SDKs (same project as scorer) -->
+    <div class="row small">
+      <span class="pill" id="countMeta">0 scores • 0 cases</span>
+      <span class="pill">Tie-break: higher Overall ➜ higher Conclusion ➜ higher Delivery</span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th style="width:36px">#</th>
+            <th>Case title</th>
+            <th>Presenter(s)</th>
+            <th>n</th>
+            <th>Total</th>
+            <th>Delivery</th>
+            <th>Knowledge</th>
+            <th>Relevance</th>
+            <th>Media</th>
+            <th>Resources</th>
+            <th>Conclusion</th>
+            <th>Overall</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>Raw submissions (debug)</h2>
+    <p class="muted">For troubleshooting: shows each saved score entry.</p>
+    <div class="table-wrap">
+      <table id="raw">
+        <thead>
+          <tr>
+            <th>When</th>
+            <th>Judge</th>
+            <th>Case</th>
+            <th>Delivery</th>
+            <th>Knowledge</th>
+            <th>Relevance</th>
+            <th>Media</th>
+            <th>Resources</th>
+            <th>Conclusion</th>
+            <th>Overall</th>
+            <th>Total</th>
+            <th>Comments</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
 <script>
-  /* === FIREBASE (same config as your scorer pages) === */
   const firebaseConfig = {
     apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
     authDomain: "pleural-seminar-2025.firebaseapp.com",
@@ -98,109 +137,155 @@
   if (!firebase.apps || !firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
   const db = firebase.firestore();
 
-  /* === LIVE LOAD FROM casesScore === */
-  const COLLECTION = 'casesScore';
-  const body = document.getElementById('resultsBody');
-  const meta = document.getElementById('meta');
-  const metaPill = document.getElementById('metaPill');
-  let unsubscribe = null;
+  const JUDGES = [
+    "Alina Ionescu",
+    "Ruth Williams",
+    "Narendra Chinnappa",
+    "Arte Gonzalez",
+    "Andrew Griffiths",
+    "Elizabeth Green",
+    "Ali Thahseen"
+  ];
 
-  function aggregateRows(snapshot){
-    const byKey = new Map();
-    snapshot.forEach(doc=>{
-      const d = doc.data();
-      const presenter = d.casePresenter || d.presenter || '';
-      const title = d.caseTitle || d.title || '';
-      const total = parseInt(d.total || 0, 10) || 0;
-      const judge = d.judge || '—';
-      const key = `${presenter}|||${title}`;
+  const judgeFilter = document.getElementById('judgeFilter');
+  JUDGES.forEach(j => { const o=document.createElement('option'); o.value=j; o.textContent=j; judgeFilter.appendChild(o); });
 
-      const cur = byKey.get(key) || { presenter, title, total:0, judges:[] };
-      cur.total += total;
-      cur.judges.push({ judge, total });
-      byKey.set(key, cur);
+  const tBody = document.querySelector('#tbl tbody');
+  const rBody = document.querySelector('#raw tbody');
+  const countMeta = document.getElementById('countMeta');
+  let rawRows = [];
+
+  function fmtTime(iso){ try{ return new Date(iso).toLocaleString(); }catch(e){ return iso||""; } }
+
+  function aggregate(rows){
+    const map = new Map();
+    rows.forEach(r => {
+      const key = r.caseTitle + '|' + r.casePresenter;
+      if (!map.has(key)) map.set(key, { title:r.caseTitle, presenter:r.casePresenter, n:0,
+        delivery:0, knowledge:0, relevance:0, media:0, resources:0, conclusion:0, overall:0, total:0 });
+      const a = map.get(key); a.n += 1;
+      a.delivery   += Number(r.delivery||0);
+      a.knowledge  += Number(r.knowledge||0);
+      a.relevance  += Number(r.relevance||0);
+      a.media      += Number(r.media||0);
+      a.resources  += Number(r.resources||0);
+      a.conclusion += Number(r.conclusion||0);
+      a.overall    += Number(r.overall||0);
+      a.total      += Number(r.total||0);
     });
-    return Array.from(byKey.values()).sort((a,b)=> b.total - a.total);
+    const list = Array.from(map.values()).map(a => ({
+      title:a.title, presenter:a.presenter, n:a.n,
+      deliveryAvg: a.delivery/a.n,
+      knowledgeAvg:a.knowledge/a.n,
+      relevanceAvg:a.relevance/a.n,
+      mediaAvg:    a.media/a.n,
+      resourcesAvg:a.resources/a.n,
+      conclusionAvg:a.conclusion/a.n,
+      overallAvg:  a.overall/a.n,
+      totalAvg:    a.total/a.n
+    }));
+    list.sort((a,b)=>{
+      if (b.totalAvg !== a.totalAvg) return b.totalAvg - a.totalAvg;
+      if (b.overallAvg !== a.overallAvg) return b.overallAvg - a.overallAvg;
+      if (b.conclusionAvg !== a.conclusionAvg) return b.conclusionAvg - a.conclusionAvg;
+      return b.deliveryAvg - a.deliveryAvg;
+    });
+    return list;
   }
 
-  function render(rows){
-    if (!rows.length){
-      body.innerHTML = `<tr><td colspan="5" class="small">No case scores yet.</td></tr>`;
-      meta.textContent = '';
-      metaPill.textContent = '0 cases · 0 submissions';
-      return;
-    }
-    body.innerHTML = rows.map((r,i)=>`
-      <tr>
+  function renderAgg(list){
+    tBody.innerHTML = '';
+    list.forEach((row, i) => {
+      const tr = document.createElement('tr');
+      if (i===0) tr.classList.add('rank-1');
+      if (i===1) tr.classList.add('rank-2');
+      if (i===2) tr.classList.add('rank-3');
+      tr.innerHTML = `
         <td>${i+1}</td>
-        <td>${r.presenter}</td>
-        <td>${r.title}</td>
-        <td class="right">${r.total}</td>
-        <td>${r.judges.map(j => `${j.judge} (${j.total})`).join('<br>')}</td>
-      </tr>
-    `).join('');
-    const subs = rows.reduce((n,r)=> n + r.judges.length, 0);
-    meta.textContent = `Showing ${rows.length} case(s); ${subs} judge submission(s) aggregated.`;
-    metaPill.textContent = `${rows.length} cases · ${subs} submissions`;
-  }
-
-  function startLive(){
-    try{
-      // Order by timestamp for stable snapshot ordering; not required for aggregation
-      unsubscribe = db.collection(COLLECTION)
-        .orderBy('ts', 'asc')
-        .onSnapshot(
-          (snap)=>{
-            const rows = aggregateRows(snap);
-            render(rows);
-            window.__caseRows = rows; // for CSV export
-          },
-          (err)=>{
-            console.error(err);
-            body.innerHTML = `<tr><td colspan="5" class="small">Error loading results. Check permissions/network.</td></tr>`;
-            meta.textContent = '';
-            metaPill.textContent = 'Error';
-          }
-        );
-      metaPill.textContent = 'Live';
-    }catch(err){
-      console.error(err);
-      metaPill.textContent = 'Error';
-    }
-  }
-
-  /* === CSV Export of aggregated results === */
-  function toCsv(rows){
-    const header = ['Rank','Presenter','Title','Total','Judges'];
-    const lines = [header.join(',')];
-    rows.forEach((r, i)=>{
-      const judges = r.judges.map(j => `${j.judge} (${j.total})`).join(' | ');
-      const cells = [
-        i+1,
-        `"${(r.presenter||'').replace(/"/g,'""')}"`,
-        `"${(r.title||'').replace(/"/g,'""')}"`,
-        r.total,
-        `"${judges.replace(/"/g,'""')}"`,
-      ];
-      lines.push(cells.join(','));
+        <td>${row.title}</td>
+        <td>${row.presenter}</td>
+        <td>${row.n}</td>
+        <td>${row.totalAvg.toFixed(2)}</td>
+        <td>${row.deliveryAvg.toFixed(2)}</td>
+        <td>${row.knowledgeAvg.toFixed(2)}</td>
+        <td>${row.relevanceAvg.toFixed(2)}</td>
+        <td>${row.mediaAvg.toFixed(2)}</td>
+        <td>${row.resourcesAvg.toFixed(2)}</td>
+        <td>${row.conclusionAvg.toFixed(2)}</td>
+        <td>${row.overallAvg.toFixed(2)}</td>
+      `;
+      tBody.appendChild(tr);
     });
-    return lines.join('\n');
   }
 
-  document.getElementById('exportCsv').addEventListener('click', ()=>{
-    const rows = window.__caseRows || [];
-    const csv = toCsv(rows);
-    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'case-results.csv';
-    document.body.appendChild(a); a.click(); a.remove();
-    URL.revokeObjectURL(url);
+  function renderRaw(rows){
+    rBody.innerHTML = '';
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${fmtTime(r.ts)}</td>
+        <td>${r.judge}</td>
+        <td><strong>${r.caseTitle}</strong><br><span class="muted small">${r.casePresenter}</span></td>
+        <td>${r.delivery}</td>
+        <td>${r.knowledge}</td>
+        <td>${r.relevance}</td>
+        <td>${r.media}</td>
+        <td>${r.resources}</td>
+        <td>${r.conclusion}</td>
+        <td>${r.overall}</td>
+        <td>${r.total}</td>
+        <td>${(r.comments||'').replaceAll('\n',' ')}</td>
+      `;
+      rBody.appendChild(tr);
+    });
+  }
+
+  function applyFilter(){
+    const j = judgeFilter.value;
+    const filtered = j ? rawRows.filter(r => r.judge === j) : rawRows.slice();
+    const agg = aggregate(filtered);
+    renderAgg(agg); renderRaw(filtered);
+    countMeta.textContent = `${filtered.length} score${filtered.length===1?'':'s'} • ${agg.length} case${agg.length===1?'':'s'}`;
+  }
+
+  db.collection('casesScore').orderBy('ts','desc').onSnapshot(snap => {
+    rawRows = [];
+    snap.forEach(doc => rawRows.push(doc.data()));
+    applyFilter();
   });
 
-  startLive();
-  // (Optional) stop listening if you ever navigate away via SPA etc:
-  // window.addEventListener('beforeunload', ()=> unsubscribe && unsubscribe());
+  judgeFilter.addEventListener('change', applyFilter);
+
+  // CSV export identical style
+  function toCsvValue(v){ if (v==null) return ""; const s=String(v).replace(/"/g,'""'); return /[",\n]/.test(s)?`"${s}"`:s; }
+  function exportCsv(){
+    const j = judgeFilter.value;
+    const filtered = j ? rawRows.filter(r => r.judge === j) : rawRows.slice();
+    const agg = aggregate(filtered);
+
+    const aggHeaders = ["rank","case_title","presenter","n","total_avg","delivery_avg","knowledge_avg","relevance_avg","media_avg","resources_avg","conclusion_avg","overall_avg"];
+    const rawHeaders = ["timestamp","judge","case_title","presenter","delivery","knowledge","relevance","media","resources","conclusion","overall","total","comments"];
+
+    const aggLines = [aggHeaders.join(",")];
+    agg.forEach((r,i)=>{
+      const row = [i+1,r.title,r.presenter,r.n,r.totalAvg.toFixed(2),r.deliveryAvg.toFixed(2),r.knowledgeAvg.toFixed(2),r.relevanceAvg.toFixed(2),r.mediaAvg.toFixed(2),r.resourcesAvg.toFixed(2),r.conclusionAvg.toFixed(2),r.overallAvg.toFixed(2)].map(toCsvValue);
+      aggLines.push(row.join(","));
+    });
+
+    const rawLines = [rawHeaders.join(",")];
+    filtered.forEach(r=>{
+      const row = [r.ts,r.judge,r.caseTitle,r.casePresenter,r.delivery,r.knowledge,r.relevance,r.media,r.resources,r.conclusion,r.overall,r.total,(r.comments||'').replaceAll('\n',' ')].map(toCsvValue);
+      rawLines.push(row.join(","));
+    });
+
+    const combined = ["# Aggregated rankings", ...aggLines, "", "# Raw submissions", ...rawLines].join("\n");
+    const blob = new Blob([combined], {type: "text/csv"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = j?`case_results_${j.replace(/\s+/g,'_')}.csv`:'case_results_all.csv';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }
+  document.getElementById('exportCsv')?.addEventListener('click', exportCsv);
 </script>
 </body>
 </html>
