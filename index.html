@@ -72,13 +72,13 @@
         <div class="brand">Pleural Seminar Wales 2025</div>
       </div>
       <nav class="sb" aria-label="Main navigation">
-        <a href="index.fixed.v3.html" class="active">Home</a>
-        <a href="agenda.html">Agenda</a>
-        <a href="venue.final.html">Venue</a>
-        <a href="posters.final.html">Posters</a>
-        <a href="feedback.final.html">Feedback</a>
-        <a href="faculty.final.html">Faculty</a>
-        <a href="about.final.html">About</a>
+        <a href="./index.fixed.v3.html" class="active">Home</a>
+        <a href="./agenda.html">Agenda</a>
+        <a href="./venue.final.html">Venue</a>
+        <a href="./posters.final.html">Posters</a>
+        <a href="./feedback.final.html">Feedback</a>
+        <a href="./faculty.final.html">Faculty</a>
+        <a href="./about.final.html">About</a>
       </nav>
     </aside>
 
@@ -114,16 +114,16 @@
             <div class="card">
               <h2 style="margin-top:0">Quick links</h2>
               <ul>
-                <li><a href="posters.final.html">Poster Gallery & Scoring</a></li>
-                <li><a href="feedback.final.html">Feedback Form</a></li>
-                <li><a href="faculty.final.html">Faculty</a></li>
+                <li><a href="./posters.final.html">Poster Gallery & Scoring</a></li>
+                <li><a href="./feedback.final.html">Feedback Form</a></li>
+                <li><a href="./faculty.final.html">Faculty</a></li>
               </ul>
             </div>
           </div>
           <div class="col-12">
             <div class="card">
               <h3 style="margin-top:0">Venue & Housekeeping</h3>
-              <p>See <a href="venue.final.html">Venue</a> for getting here, Wi‑Fi, parking, and session timings.</p>
+              <p>See <a href="./venue.final.html">Venue</a> for getting here, Wi‑Fi, parking, and session timings.</p>
             </div>
           </div>
         </div>
@@ -139,13 +139,13 @@
         <div class="brand">Pleural Seminar Wales 2025</div>
       </div>
       <nav class="sb" aria-label="Mobile navigation">
-        <a href="index.fixed.v3.html">Home</a>
-        <a href="agenda.html">Agenda</a>
-        <a href="venue.final.html">Venue</a>
-        <a href="posters.final.html">Posters</a>
-        <a href="feedback.final.html">Feedback</a>
-        <a href="faculty.final.html">Faculty</a>
-        <a href="about.final.html">About</a>
+        <a href="./index.fixed.v3.html">Home</a>
+        <a href="./agenda.html">Agenda</a>
+        <a href="./venue.final.html">Venue</a>
+        <a href="./posters.final.html">Posters</a>
+        <a href="./feedback.final.html">Feedback</a>
+        <a href="./faculty.final.html">Faculty</a>
+        <a href="./about.final.html">About</a>
       </nav>
     </aside>
     <div class="backdrop" id="backdrop"></div>
@@ -182,6 +182,14 @@
       openBtn && openBtn.addEventListener('click', openDrawer);
       backdrop && backdrop.addEventListener('click', closeDrawer);
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
+
+      // Close drawer on link click (mobile)
+      drawer.querySelectorAll('a').forEach(a=>{
+        a.addEventListener('click', ()=>{
+          // allow navigation but close the drawer immediately for better UX
+          closeDrawer();
+        });
+      });
     })();
   </script>
 </body>
