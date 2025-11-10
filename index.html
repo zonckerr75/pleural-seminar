@@ -89,7 +89,7 @@
     <div class="content">
       <!-- Mobile top bar -->
       <div class="topbar">
-        <button class="hamburger" id="openMenu" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false">☰</button>
+        <button class="hamburger" id="openMenu" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false" type="button">☰</button>
         <span class="title">Pleural Seminar Wales 2025</span>
       </div>
 
@@ -159,9 +159,11 @@
       const openBtn = document.getElementById('openMenu');
       const drawer = document.getElementById('mobileDrawer');
       const backdrop = document.getElementById('backdrop');
+      if(!openBtn || !drawer || !backdrop){ return; }
       let lastFocus = null;
 
-      function openDrawer(){
+      function openDrawer(e){
+        if(e){ e.preventDefault(); }
         lastFocus = document.activeElement;
         drawer.hidden = false;
         requestAnimationFrame(()=>{
@@ -172,7 +174,8 @@
         });
         backdrop.classList.add('show');
       }
-      function closeDrawer(){
+      function closeDrawer(e){
+        if(e){ e.preventDefault(); }
         drawer.classList.remove('open');
         backdrop.classList.remove('show');
         document.body.style.overflow = '';
@@ -182,16 +185,15 @@
         if(lastFocus) lastFocus.focus();
       }
 
-      openBtn && openBtn.addEventListener('click', openDrawer);
-      backdrop && backdrop.addEventListener('click', closeDrawer);
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
-
-      // Close drawer on link click (mobile)
+      ['click','touchstart','pointerdown'].forEach(ev=>{
+        openBtn.addEventListener(ev, openDrawer, { passive:false });
+      });
+      backdrop.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(e); });
+      // Close drawer on link tap (mobile)
       drawer.querySelectorAll('a').forEach(a=>{
-        a.addEventListener('click', ()=>{
-          // allow navigation but close the drawer immediately for better UX
-          closeDrawer();
-        });
+        a.addEventListener('click', closeDrawer);
+        a.addEventListener('touchstart', closeDrawer, { passive:false });
       });
     })();
   </script>
