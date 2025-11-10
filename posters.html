@@ -4,130 +4,241 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Posters — Pleural Seminar Wales 2025</title>
-  <meta name="color-scheme" content="dark">
+
+  <!-- PDF.js (non-module build for simplicity) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js" defer></script>
+  <script>
+    // Configure worker as soon as pdfjsLib loads
+    window.addEventListener('load', () => {
+      if (window['pdfjsLib']) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
+      }
+    });
+  </script>
+
   <style>
-    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
-    html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-    .app{display:flex;min-height:100dvh}
-    .sidebar{width:264px;background:var(--panel);border-right:1px solid var(--border);position:sticky;top:0;align-self:flex-start;height:100dvh;overflow:auto}
-    .content{flex:1;min-width:0}
-    .sb-header{display:flex;align-items:center;gap:.75rem;padding:16px 18px;border-bottom:1px solid var(--border)}
-    .sb-header img{height:36px;width:auto;display:block}
-    .brand{font-weight:600;letter-spacing:.2px}
-    nav.sb{display:flex;flex-direction:column;padding:10px}
-    nav.sb a{color:var(--fg);text-decoration:none;padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:.6rem}
-    nav.sb a:hover{background:#0b1226}
-    nav.sb a.active{background:#0c1b31;outline:1px solid #16233f}
-    .topbar{display:none;position:sticky;top:0;z-index:999;background:var(--panel);border-bottom:1px solid var(--border);padding:10px 14px;align-items:center;gap:10px}
-    .hamburger{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer}
-    .hamburger:focus{outline:2px solid #1e3a8a}
-    .topbar .title{font-weight:600}
-    .hero{position:relative;padding:40px 24px 20px;background:linear-gradient(180deg,rgba(24,37,67,.6),rgba(11,19,32,0));border-bottom:1px solid var(--border)}
-    .hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px}
-    .hero h1{margin:0;font-size:28px}
-    .hero p{margin:.25rem 0 0;color:var(--muted)}
-    .container{max-width:1100px;margin:0 auto;padding:24px}
-    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
-    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:1000}
-    .backdrop.show{opacity:1;pointer-events:auto}
-    .drawer{position:fixed;inset:0;display:none;z-index:1000}
-    .drawer.open{display:flex}
-    .drawer .sidebar{transform:translateX(-100%);transition:transform .2s ease;position:relative;z-index:1001}
-    .drawer.open .sidebar{transform:translateX(0)}
-    @media (max-width: 900px){
-      .app > .sidebar{display:none}
-      .topbar{display:flex}
-      .content{width:100%}
+    :root{
+      --bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937
     }
-    /* Posters grid copied from your existing page */
-    .muted{color:var(--muted)}
-    #posterGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-    @media (max-width:900px){ #posterGrid{grid-template-columns:repeat(2,minmax(0,1fr))} }
-    @media (max-width:600px){ #posterGrid{grid-template-columns:1fr} }
+    html,body{height:100%}
+    body{
+      margin:0;background:var(--bg);color:var(--fg);
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+      display:flex;min-height:100vh
+    }
+    /* Sidebar placeholder (assumes your site already has this on other pages) */
+    aside.nav{
+      width:260px;background:var(--panel);border-right:1px solid var(--border);
+      position:sticky;top:0;height:100vh;padding:20px;display:none
+    }
+    main{flex:1;min-width:0;padding:24px}
+    header.page{display:flex;align-items:flex-end;gap:12px;margin-bottom:18px}
+    header.page h1{font-size:24px;margin:0}
+    header.page p{color:var(--muted);margin:0}
+
+    /* Grid */
+    .grid{
+      display:grid;gap:16px;
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    @media (min-width: 640px){ .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (min-width: 1024px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+    /* Card */
+    .card{
+      background:var(--panel);border:1px solid var(--border);border-radius:16px;
+      overflow:hidden;display:flex;flex-direction:column;min-height:240px
+    }
+    .thumb{
+      aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;
+      border-bottom:1px solid var(--border);position:relative
+    }
+    .thumb canvas{width:100%;height:100%;display:block}
+    .thumb .fallback{
+      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+      font-weight:700;letter-spacing:0.08em;color:var(--muted)
+    }
+    .info{padding:12px}
+    .title{font-weight:600;margin:0 0 6px 0}
+    .meta{color:var(--muted);font-size:14px;margin:0}
+    .open{
+      text-decoration:none;color:var(--fg);display:block
+    }
+    .open:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:12px}
+    .badge{
+      position:absolute;top:8px;left:8px;background:rgba(34,197,94,.15);color:#86efac;
+      font-weight:600;font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid rgba(134,239,172,.3)
+    }
+
+    /* Mobile sidebar trigger placeholder (if you have a hamburger) */
+    @media (min-width: 1024px){ aside.nav{display:block} }
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar" aria-label="Primary">
-      <div class="sb-header">
-        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
-        <div class="brand">Pleural Seminar Wales 2025</div>
-      </div>
-      <nav class="sb" aria-label="Main navigation">
-        <a href="index.html">Home</a>
-        <a href="index.html#programme">Agenda</a>
-        <a href="venue.html">Venue</a>
-        <a href="posters.html" class="active">Posters</a>
-        <a href="feedback.html">Feedback</a>
-        <a href="faculty.html">Faculty</a>
-        <a href="about.html">About</a>
-      </nav>
-    </aside>
+  <!-- Optional: include your existing sidebar component here to keep nav consistent -->
+  <aside class="nav">
+    <h3 style="margin-top:0">Pleural Seminar</h3>
+    <nav>
+      <a href="index.html" style="display:block;color:var(--fg);margin:8px 0">Home</a>
+      <a href="venue.html" style="display:block;color:var(--fg);margin:8px 0">Venue</a>
+      <a href="faculty.html" style="display:block;color:var(--fg);margin:8px 0">Faculty</a>
+      <a href="feedback.html" style="display:block;color:var(--fg);margin:8px 0">Feedback</a>
+      <a href="about.html" style="display:block;color:var(--fg);margin:8px 0">About</a>
+      <span style="display:block;color:var(--muted);margin:8px 0">Posters</span>
+    </nav>
+  </aside>
 
-    <div class="content">
-      <div class="topbar">
-        <button class="hamburger" id="openMenu" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false" type="button" onclick="window.__openDrawer && window.__openDrawer()">☰</button>
-        <span class="title">Posters</span>
-      </div>
+  <main>
+    <header class="page">
+      <h1>Posters</h1>
+      <p>Click a thumbnail to open the full PDF in a new tab.</p>
+    </header>
 
-      <section class="hero" role="banner">
-        <div class="hero-inner">
-          <h1>Poster Gallery</h1>
-          <p>Click a thumbnail to open the PDF.</p>
-        </div>
-      </section>
-
-      <!-- Main content from your original posters page -->
-      <main class="container" id="main">
-        <div class="card">
-          <div id="posterGrid"></div>
-        </div>
-      </main>
-    </div>
-  </div>
-
-  <!-- Mobile drawer -->
-  <div class="drawer" id="mobileDrawer" aria-hidden="true" hidden>
-    <aside class="sidebar" role="dialog" aria-label="Mobile menu">
-      <div class="sb-header">
-        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
-        <div class="brand">Pleural Seminar Wales 2025</div>
-      </div>
-      <nav class="sb" aria-label="Mobile navigation">
-        <a href="index.html">Home</a>
-        <a href="index.html#programme">Agenda</a>
-        <a href="venue.html">Venue</a>
-        <a href="posters.html" class="active">Posters</a>
-        <a href="feedback.html">Feedback</a>
-        <a href="faculty.html">Faculty</a>
-        <a href="about.html">About</a>
-      </nav>
-    </aside>
-    <div class="backdrop" id="backdrop"></div>
-  </div>
+    <section class="grid" id="posterGrid" aria-live="polite"></section>
+  </main>
 
   <script>
     (function(){
-      const openBtn = document.getElementById('openMenu');
-      const drawer = document.getElementById('mobileDrawer');
-      const backdrop = document.getElementById('backdrop');
-      if(!openBtn || !drawer || !backdrop){ return; }
-      let lastFocus = null;
-      function openDrawer(){ lastFocus=document.activeElement; drawer.hidden=false; drawer.classList.add('open'); document.body.style.overflow='hidden'; openBtn.setAttribute('aria-expanded','true'); drawer.setAttribute('aria-hidden','false'); backdrop.classList.add('show'); }
-      function closeDrawer(){ drawer.classList.remove('open'); backdrop.classList.remove('show'); document.body.style.overflow=''; openBtn.setAttribute('aria-expanded','false'); drawer.setAttribute('aria-hidden','true'); setTimeout(()=>{ drawer.hidden=true; },200); if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
-      window.__openDrawer = openDrawer;
-      openBtn.addEventListener('click', openDrawer);
-      openBtn.addEventListener('touchstart', openDrawer, {passive:true});
-      backdrop.addEventListener('click', closeDrawer);
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
-      drawer.querySelectorAll('a').forEach(a=>{ a.addEventListener('click', ()=>{ closeDrawer(); }); });
-    })();
-  </script>
+      const grid = document.getElementById('posterGrid');
+      const PREFIX = '/assets/posters/';        // Folder holding PDFs
+      const STEM   = 'P';                        // Filename stem: P01.pdf, P02.pdf, ...
+      const MAX    = 99;                         // Upper bound of probe
+      const PAD = n => n.toString().padStart(2,'0');
 
-  <!-- If you had poster JS on the old page, include it below -->
-  <script>
-    // Example: you can populate #posterGrid here using your existing logic
+      // Stop early if we hit many misses in a row (helps on sparse sets)
+      const MAX_CONSEC_MISSES = 15;
+
+      // Lazy render with IntersectionObserver
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const el = entry.target;
+            io.unobserve(el);
+            renderThumb(el);
+          }
+        });
+      }, { rootMargin: '200px' });
+
+      function makeCard(href, label){
+        const a = document.createElement('a');
+        a.href = href;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.className = 'open';
+
+        const card = document.createElement('article');
+        card.className = 'card';
+
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb';
+        thumb.dataset.pdf = href;
+
+        // Badge with ID derived from filename
+        const id = href.split('/').pop().replace('.pdf','');
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = id;
+        thumb.appendChild(badge);
+
+        // Fallback label (hidden if canvas renders)
+        const fb = document.createElement('div');
+        fb.className = 'fallback';
+        fb.textContent = 'PDF';
+        thumb.appendChild(fb);
+
+        const info = document.createElement('div');
+        info.className = 'info';
+        const title = document.createElement('h3');
+        title.className = 'title';
+        title.textContent = label || id;
+        const meta = document.createElement('p');
+        meta.className  = 'meta';
+        meta.textContent = 'Loading details…';
+        info.appendChild(title);
+        info.appendChild(meta);
+
+        card.appendChild(thumb);
+        card.appendChild(info);
+        a.appendChild(card);
+
+        // Observe for lazy render
+        io.observe(thumb);
+        return a;
+      }
+
+      async function renderThumb(thumbEl){
+        const url = thumbEl.dataset.pdf;
+        try {
+          const pdf = await pdfjsLib.getDocument(url).promise;
+
+          // Get metadata (Title/Author) — not all PDFs have these
+          try {
+            const meta = await pdf.getMetadata();
+            const title = meta?.info?.Title || null;
+            const author = meta?.info?.Author || null;
+            const infoEl = thumbEl.parentElement.querySelector('.info');
+            const titleEl = infoEl.querySelector('.title');
+            const metaEl  = infoEl.querySelector('.meta');
+
+            if (title) titleEl.textContent = title;
+            if (author) {
+              metaEl.textContent = author;
+            } else {
+              // fallback to filename without extension
+              metaEl.textContent = url.split('/').pop().replace('.pdf','');
+            }
+          } catch(e){ /* ignore metadata errors, keep fallbacks */ }
+
+          const page = await pdf.getPage(1);
+          const viewport = page.getViewport({ scale: 0.35 }); // scale for ~3:4 look
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          canvas.width  = viewport.width;
+          canvas.height = viewport.height;
+
+          await page.render({ canvasContext: ctx, viewport }).promise;
+
+          // Hide fallback and show canvas
+          const fb = thumbEl.querySelector('.fallback');
+          if (fb) fb.style.display = 'none';
+          thumbEl.appendChild(canvas);
+        } catch (err){
+          // Leave fallback visible; add subtle hint
+          thumbEl.querySelector('.fallback').textContent = 'Preview unavailable';
+          console.warn('Thumbnail render failed for', url, err);
+        }
+      }
+
+      async function probeExists(url){
+        try{
+          const res = await fetch(url, { method: 'HEAD' });
+          return res.ok;
+        }catch{ return false; }
+      }
+
+      (async function build(){
+        let misses = 0;
+        for (let n = 1; n <= MAX; n++){
+          const file = `${STEM}${PAD(n)}.pdf`;
+          const url  = PREFIX + file;
+          const ok   = await probeExists(url);
+          if (ok){
+            misses = 0;
+            grid.appendChild(makeCard(url, file.replace('.pdf','')));
+          } else {
+            misses++;
+            if (misses >= MAX_CONSEC_MISSES) break;
+          }
+        }
+        if (!grid.children.length){
+          const empty = document.createElement('p');
+          empty.style.color = 'var(--muted)';
+          empty.textContent = 'No posters found. Upload PDFs as P01.pdf, P02.pdf, … into /assets/posters/.';
+          grid.appendChild(empty);
+        }
+      })();
+    })();
   </script>
 </body>
 </html>
