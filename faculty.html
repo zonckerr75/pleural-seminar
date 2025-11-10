@@ -4,332 +4,129 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Faculty — Pleural Seminar Wales 2025</title>
+  <meta name="color-scheme" content="dark">
   <style>
-:root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
-/* Base */
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;padding-top:80px}
-/* Fixed header */
-header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.4)}
-.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;min-height:64px}
-.brand{display:flex;align-items:center;gap:10px}
-.brand h1{font-size:20px;margin:0}
-.brand .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block}
-.nav-list{list-style:none;margin:0;padding:0;display:flex;gap:18px;align-items:center}
-.nav-list a{color:#e5e7eb;text-decoration:none;padding:10px 6px;display:inline-block}
-.nav-list a:hover{text-decoration:underline}
-
-.page{max-width:1100px;margin:0 auto;padding:24px}
-.card{background:var(--panel);border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-h1{margin:0 0 6px;font-size:26px}
-h2{margin:14px 0 8px;font-size:20px}
-.muted{color:var(--muted)}
-.row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
-.btn{appearance:none;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
-.btn.primary{background:var(--accent);color:#052}
-.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--fg)}
-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
-th,td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
-th{text-align:left;font-weight:700}
-tr:hover td{background:#0c1526}
-.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0b1220;border:1px solid var(--border);font-size:12px;color:var(--muted)}
-.gate{max-width:420px;margin:60px auto}
-input[type=password]{width:100%;background:#0b1220;border:1px solid var(--border);border-radius:10px;color:#fff;padding:10px 12px;margin:8px 0}
-.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.spacer{flex:1}
-.hide{display:none}
-code{background:#0b1220;padding:2px 6px;border-radius:6px}
-
-/* --- New: Faculty Actions grid buttons --- */
-.action-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 12px}
-.action-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap:16px;
-}
-.action-btn{
-  display:flex; align-items:center; gap:14px;
-  padding:16px 18px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius:14px;
-  text-decoration:none; color: var(--fg);
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
-  transition: transform .06s ease, box-shadow .15s ease, border-color .15s ease;
-  outline: none;
-}
-.action-btn .icon{ font-size:24px; }
-.action-btn .text{ display:flex; flex-direction:column; line-height:1.2; }
-.action-btn strong{ font-weight:700; }
-.action-btn em{ font-style:normal; opacity:.75; font-size:.9rem; }
-.action-btn:hover{
-  transform: translateY(-1px);
-  border-color: var(--accent);
-  box-shadow: 0 6px 16px rgba(0,0,0,.28);
-}
-.action-btn:active{
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
-}
-.action-btn:focus-visible{
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-color: var(--accent);
-}
+    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+    .app{display:flex;min-height:100dvh}
+    .sidebar{width:264px;background:var(--panel);border-right:1px solid var(--border);position:sticky;top:0;align-self:flex-start;height:100dvh;overflow:auto}
+    .content{flex:1;min-width:0}
+    .sb-header{display:flex;align-items:center;gap:.75rem;padding:16px 18px;border-bottom:1px solid var(--border)}
+    .sb-header img{height:36px;width:auto;display:block}
+    .brand{font-weight:600;letter-spacing:.2px}
+    nav.sb{display:flex;flex-direction:column;padding:10px}
+    nav.sb a{color:var(--fg);text-decoration:none;padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:.6rem}
+    nav.sb a:hover{background:#0b1226}
+    nav.sb a.active{background:#0c1b31;outline:1px solid #16233f}
+    .topbar{display:none;position:sticky;top:0;z-index:999;background:var(--panel);border-bottom:1px solid var(--border);padding:10px 14px;align-items:center;gap:10px}
+    .hamburger{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer}
+    .hamburger:focus{outline:2px solid #1e3a8a}
+    .topbar .title{font-weight:600}
+    .hero{position:relative;padding:40px 24px 20px;background:linear-gradient(180deg,rgba(24,37,67,.6),rgba(11,19,32,0));border-bottom:1px solid var(--border)}
+    .hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{margin:.25rem 0 0;color:var(--muted)}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
+    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:1000}
+    .backdrop.show{opacity:1;pointer-events:auto}
+    .drawer{position:fixed;inset:0;display:none;z-index:1000}
+    .drawer.open{display:flex}
+    .drawer .sidebar{transform:translateX(-100%);transition:transform .2s ease;position:relative;z-index:1001}
+    .drawer.open .sidebar{transform:translateX(0)}
+    @media (max-width: 900px){
+      .app > .sidebar{display:none}
+      .topbar{display:flex}
+      .content{width:100%}
+    }
+    /* Basic grid for faculty cards */
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(3,minmax(0,1fr))}
+    @media (max-width: 900px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media (max-width: 600px){ .grid{grid-template-columns:1fr} }
+    .faculty-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
+    .muted{color:var(--muted)}
   </style>
 </head>
 <body>
-  
-<header class="nav">
-  <div class="wrap nav-inner">
-    <div class="brand">
-      <span class="dot" aria-hidden="true"></span>
-      <h1>Welsh Pleural Seminar 2025</h1>
-    </div>
-    <nav aria-label="Primary">
-      <ul class="nav-list">
-        <li><a href="/#programme">Agenda</a></li>
-        <li><a href="/#house">Housekeeping</a></li>
-        <li><a href="/#livestream">Livestream</a></li>
-        <li><a href="/feedback.html">Feedback</a></li>
-        <li><a href="/faculty.html" rel="nofollow">Faculty</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
-
-
-  <div class="page">
-    <div id="gate" class="card gate">
-      <h2>Faculty access</h2>
-      <p class="muted">Enter the faculty code to view live feedback and scoring tools.</p>
-      <input id="code" type="password" placeholder="Access code" autocomplete="current-password" />
-      <div class="row">
-        <button id="enter" class="btn primary">Enter</button>
-        <span id="gateMsg" class="muted"></span>
+  <div class="app">
+    <aside class="sidebar" aria-label="Primary">
+      <div class="sb-header">
+        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
+        <div class="brand">Pleural Seminar Wales 2025</div>
       </div>
-      <p class="muted" style="margin-top:8px;">We’ll switch this to proper sign-in shortly (Firebase Auth). For now this is a shared code.</p>
-    </div>
+      <nav class="sb" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="index.html#programme">Agenda</a>
+        <a href="venue.html">Venue</a>
+        <a href="posters.html">Posters</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="faculty.html" class="active">Faculty</a>
+        <a href="about.html">About</a>
+      </nav>
+    </aside>
 
-    <div id="dash" class="card hide">
-      <div class="action-header">
-        <div>
-          <h1>Faculty Dashboard</h1>
-          <p class="muted" style="margin:4px 0 0;">Pleural Seminar Wales 2025 • Live data from Firestore</p>
-        </div>
-        <span id="who" class="pill"></span>
+    <div class="content">
+      <div class="topbar">
+        <button class="hamburger" id="openMenu" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false" type="button" onclick="window.__openDrawer && window.__openDrawer()">☰</button>
+        <span class="title">Faculty</span>
       </div>
 
-      <!-- NEW: 2×2 action buttons -->
-      <section aria-label="Faculty actions" style="margin:8px 0 18px;">
-        <div class="action-grid">
-          <a class="action-btn" href="/posters-score.html" aria-label="Score posters">
-            <span class="icon" aria-hidden="true">🖼️</span>
-            <span class="text">
-              <strong>Score posters</strong>
-              <em>Judge poster submissions</em>
-            </span>
-          </a>
-
-          <a class="action-btn" href="/cases-score.html" aria-label="Score cases">
-            <span class="icon" aria-hidden="true">🩺</span>
-            <span class="text">
-              <strong>Score cases</strong>
-              <em>Judge case presentations</em>
-            </span>
-          </a>
-
-          <a class="action-btn" href="/results.html" aria-label="View poster results">
-            <span class="icon" aria-hidden="true">🏆</span>
-            <span class="text">
-              <strong>View poster results</strong>
-              <em>Live ranks & totals</em>
-            </span>
-          </a>
-
-         
-
- 		<a class="action-btn" href="/case-results.html" aria-label="View case results">
-            		<span class="icon" aria-hidden="true">🏆</span>
-            		<span class="text">
-              			<strong>View case results</strong>
-              			<em>Live ranks & totals</em>
-            		</span>
-          	</a>
-
-
- 		<a class="action-btn" href="/feedback-results.html" aria-label="View feedback">
-            		<span class="icon" aria-hidden="true">📊</span>
-           		 <span class="text">
-              			<strong>View feedback</strong>
-              			<em>Charts & summaries</em>
-            		</span>
-          	</a>
-
+      <section class="hero" role="banner">
+        <div class="hero-inner">
+          <h1>Faculty</h1>
+          <p>Speakers and session leads</p>
         </div>
       </section>
 
-      <h2 id="feedback">Feedback responses</h2>
-      <div class="toolbar">
-        <button id="exportCsv" class="btn primary">Export CSV</button>
-        <span class="muted" id="countLabel">0 responses</span>
-        <span class="spacer"></span>
-        <label class="muted">Latest first</label>
-      </div>
-
-      <div style="overflow:auto">
-        <table id="tbl">
-          <thead>
-            <tr>
-              <th>When</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Q1</th>
-              <th>Q2</th>
-              <th>Q3</th>
-              <th>Q4–Q14 (sessions)</th>
-              <th>Q15 best</th>
-              <th>Q16 worst</th>
-              <th>Q17 impact</th>
-              <th>Q18 comments</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <p class="muted" style="margin-top:10px">
-        Tip: Use <code>Ctrl/Cmd + F</code> to search. CSV export includes all fields (Q1–Q20).
-      </p>
+      <!-- Main content: paste your existing faculty content here -->
+      <main class="container" id="main">
+        <div class="grid" id="facultyGrid">
+          <!-- If your original faculty page had static content, paste it here.
+               If it was dynamic, include the same JS below to populate -->
+        </div>
+      </main>
     </div>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+  <!-- Mobile drawer -->
+  <div class="drawer" id="mobileDrawer" aria-hidden="true" hidden>
+    <aside class="sidebar" role="dialog" aria-label="Mobile menu">
+      <div class="sb-header">
+        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
+        <div class="brand">Pleural Seminar Wales 2025</div>
+      </div>
+      <nav class="sb" aria-label="Mobile navigation">
+        <a href="index.html">Home</a>
+        <a href="index.html#programme">Agenda</a>
+        <a href="venue.html">Venue</a>
+        <a href="posters.html">Posters</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="faculty.html" class="active">Faculty</a>
+        <a href="about.html">About</a>
+      </nav>
+    </aside>
+    <div class="backdrop" id="backdrop"></div>
+  </div>
+
   <script>
-    // -------- Robust faculty gate + single Firebase init --------
-    const ACCESS_CODE = "pleural2025"; // change this if needed
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
-      authDomain: "pleural-seminar-2025.firebaseapp.com",
-      projectId: "pleural-seminar-2025",
-      storageBucket: "pleural-seminar-2025.appspot.com",
-      messagingSenderId: "914784082205",
-      appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
-    };
-
-    // Initialise Firebase only once
-    if (!firebase.apps || !firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    const gate = document.getElementById('gate');
-    const dash = document.getElementById('dash');
-    const enterBtn = document.getElementById('enter');
-    const codeEl = document.getElementById('code');
-    const msgEl = document.getElementById('gateMsg');
-    const who = document.getElementById('who');
-
-    function normalise(s){ return (s||"").toString().trim().replace(/\s+/g,''); }
-    function openDash(){
-      gate?.classList.add('hide');
-      dash?.classList.remove('hide');
-      if (who) who.textContent = "Faculty access granted";
-      sessionStorage.setItem('psw25_gate','ok');
-    }
-
-    // If previously unlocked in this tab
-    if (sessionStorage.getItem('psw25_gate') === 'ok') {
-      openDash();
-    } else {
-      // Or unlock via URL ?code=... or #code=...
-      const params = new URLSearchParams(location.search);
-      const q = params.get('code');
-      const hash = new URLSearchParams(location.hash.slice(1));
-      const hq = hash.get('code');
-      const urlCode = normalise(q || hq);
-      if (urlCode && urlCode.toLowerCase() === normalise(ACCESS_CODE).toLowerCase()) {
-        openDash();
-      }
-    }
-
-    enterBtn?.addEventListener('click', () => {
-      const val = normalise(codeEl?.value);
-      if (!val) { msgEl.textContent = "Enter the access code."; return; }
-      if (val.toLowerCase() !== normalise(ACCESS_CODE).toLowerCase()) {
-        msgEl.textContent = "Incorrect code.";
-        return;
-      }
-      msgEl.textContent = "";
-      openDash();
-      setTimeout(()=>document.getElementById('exportCsv')?.focus(), 50);
-    });
-
-    codeEl?.addEventListener('keydown', (e)=>{
-      if (e.key === 'Enter') { e.preventDefault(); enterBtn?.click(); }
-    });
-
-    // ---- Feedback live view ----
-    const tbody = document.querySelector('#tbl tbody');
-    const countLabel = document.getElementById('countLabel');
-
-    function fmtTime(ts){ if (!ts) return ""; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString(); }
-    function renderRow(doc){
-      const r = doc.data(); const res = r.responses || {};
-      const sessions = []; for (let i=4;i<=14;i++) sessions.push(`${i}:${res['q'+i]||''}`);
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${fmtTime(r.submittedAt)}</td>
-        <td>${res.certificate_name || ""}</td>
-        <td>${res.email || ""}</td>
-        <td>${res.q1||""}</td>
-        <td>${res.q2||""}</td>
-        <td>${res.q3||""}</td>
-        <td>${sessions.join(' · ')}</td>
-        <td>${(res.q15||"").replaceAll("\n"," ")}</td>
-        <td>${(res.q16||"").replaceAll("\n"," ")}</td>
-        <td>${(res.q17||"").replaceAll("\n"," ")}</td>
-        <td>${(res.q18||"").replaceAll("\n"," ")}</td>`;
-      return tr;
-    }
-
-    let rowsData = [];
-    db.collection('feedback').orderBy('submittedAt','desc')
-      .onSnapshot(snap => {
-        rowsData = []; tbody.innerHTML = "";
-        snap.forEach(doc => { rowsData.push({ id: doc.id, ...doc.data() }); tbody.appendChild(renderRow(doc)); });
-        countLabel.textContent = `${rowsData.length} response${rowsData.length===1?"":"s"}`;
-      });
-
-    function toCsvValue(v){ if (v == null) return ""; const s = String(v).replace(/"/g,'""'); return /[",\n]/.test(s) ? `"${s}"` : s; }
-    function exportCsv(){ 
-      const headers = ["docId","submittedAt","name","email","q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12","q13","q14","q15","q16","q17","q18"];
-      const lines = [headers.join(",")];
-      rowsData.forEach(d => {
-        const res = d.responses || {};
-        const row = [
-          d.id,
-          d.submittedAt?.toDate ? d.submittedAt.toDate().toISOString() : "",
-          res.certificate_name||"",
-          res.email||"",
-          res.q1||"",res.q2||"",res.q3||"",
-          res.q4||"",res.q5||"",res.q6||"",res.q7||"",res.q8||"",res.q9||"",res.q10||"",res.q11||"",res.q12||"",res.q13||"",res.q14||"",
-          (res.q15||"").replaceAll("\n"," "),
-          (res.q16||"").replaceAll("\n"," "),
-          (res.q17||"").replaceAll("\n"," "),
-          (res.q18||"").replaceAll("\n"," ")
-        ].map(toCsvValue);
-        lines.push(row.join(","));
-      });
-      const blob = new Blob([lines.join("\n")], {type: "text/csv"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = "feedback_export.csv";
-      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1000);
-    }
-    document.getElementById('exportCsv')?.addEventListener('click', exportCsv);
+    (function(){
+      const openBtn = document.getElementById('openMenu');
+      const drawer = document.getElementById('mobileDrawer');
+      const backdrop = document.getElementById('backdrop');
+      if(!openBtn || !drawer || !backdrop){ return; }
+      let lastFocus = null;
+      function openDrawer(){ lastFocus=document.activeElement; drawer.hidden=false; drawer.classList.add('open'); document.body.style.overflow='hidden'; openBtn.setAttribute('aria-expanded','true'); drawer.setAttribute('aria-hidden','false'); backdrop.classList.add('show'); }
+      function closeDrawer(){ drawer.classList.remove('open'); backdrop.classList.remove('show'); document.body.style.overflow=''; openBtn.setAttribute('aria-expanded','false'); drawer.setAttribute('aria-hidden','true'); setTimeout(()=>{ drawer.hidden=true; },200); if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
+      window.__openDrawer = openDrawer;
+      openBtn.addEventListener('click', openDrawer);
+      openBtn.addEventListener('touchstart', openDrawer, {passive:true});
+      backdrop.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
+      drawer.querySelectorAll('a').forEach(a=>{ a.addEventListener('click', ()=>{ closeDrawer(); }); });
+    })();
   </script>
+
+  <!-- If your original faculty page used scripts (Firebase, etc.), include them below unchanged -->
 </body>
 </html>

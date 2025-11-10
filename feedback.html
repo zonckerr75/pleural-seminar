@@ -3,28 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pleural Seminar Wales 2025 — Feedback</title>
+  <title>Feedback — Pleural Seminar Wales 2025</title>
+  <meta name="color-scheme" content="dark">
   <meta name="description" content="Event feedback form with instant certificate generation and optional email." />
   <style>
-    
-:root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
-/* Base */
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;padding-top:80px}
-/* Fixed header */
-header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.4)}
-.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;min-height:64px}
-.brand{display:flex;align-items:center;gap:10px}
-.brand h1{font-size:20px;margin:0}
-.brand .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block}
-.nav-list{list-style:none;margin:0;padding:0;display:flex;gap:18px;align-items:center}
-.nav-list a{color:#e5e7eb;text-decoration:none;padding:10px 6px;display:inline-block}
-.nav-list a:hover{text-decoration:underline}
-
-    /* Page layout */
-    .page-wrap{max-width:980px;margin:0 auto;padding:22px}
-    .card{background:var(--panel);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:22px}
+    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+    .app{display:flex;min-height:100dvh}
+    .sidebar{width:264px;background:var(--panel);border-right:1px solid var(--border);position:sticky;top:0;align-self:flex-start;height:100dvh;overflow:auto}
+    .content{flex:1;min-width:0}
+    .sb-header{display:flex;align-items:center;gap:.75rem;padding:16px 18px;border-bottom:1px solid var(--border)}
+    .sb-header img{height:36px;width:auto;display:block}
+    .brand{font-weight:600;letter-spacing:.2px}
+    nav.sb{display:flex;flex-direction:column;padding:10px}
+    nav.sb a{color:var(--fg);text-decoration:none;padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:.6rem}
+    nav.sb a:hover{background:#0b1226}
+    nav.sb a.active{background:#0c1b31;outline:1px solid #16233f}
+    .topbar{display:none;position:sticky;top:0;z-index:999;background:var(--panel);border-bottom:1px solid var(--border);padding:10px 14px;align-items:center;gap:10px}
+    .hamburger{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer}
+    .hamburger:focus{outline:2px solid #1e3a8a}
+    .topbar .title{font-weight:600}
+    .hero{position:relative;padding:40px 24px 20px;background:linear-gradient(180deg,rgba(24,37,67,.6),rgba(11,19,32,0));border-bottom:1px solid var(--border)}
+    .hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{margin:.25rem 0 0;color:var(--muted)}
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
+    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:1000}
+    .backdrop.show{opacity:1;pointer-events:auto}
+    .drawer{position:fixed;inset:0;display:none;z-index:1000}
+    .drawer.open{display:flex}
+    .drawer .sidebar{transform:translateX(-100%);transition:transform .2s ease;position:relative;z-index:1001}
+    .drawer.open .sidebar{transform:translateX(0)}
+    @media (max-width: 900px){
+      .app > .sidebar{display:none}
+      .topbar{display:flex}
+      .content{width:100%}
+    }
+    /* Form styles from your existing page */
+    .page-wrap{max-width:980px;margin:0 auto}
     h1{margin:6px 0 8px;font-size:28px}
     h2{margin:20px 0 10px;font-size:20px;color:#fff}
     h3{margin:16px 0 8px;font-size:18px;color:#fff}
@@ -42,211 +60,265 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
   </style>
 </head>
 <body>
-  
-<header class="nav">
-  <div class="wrap nav-inner">
-    <div class="brand">
-      <span class="dot" aria-hidden="true"></span>
-      <h1>Welsh Pleural Seminar 2025</h1>
+  <div class="app">
+    <aside class="sidebar" aria-label="Primary">
+      <div class="sb-header">
+        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
+        <div class="brand">Pleural Seminar Wales 2025</div>
+      </div>
+      <nav class="sb" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="index.html#programme">Agenda</a>
+        <a href="venue.html">Venue</a>
+        <a href="posters.html">Posters</a>
+        <a href="feedback.html" class="active">Feedback</a>
+        <a href="faculty.html">Faculty</a>
+        <a href="about.html">About</a>
+      </nav>
+    </aside>
+
+    <div class="content">
+      <div class="topbar">
+        <button class="hamburger" id="openMenu" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false" type="button" onclick="window.__openDrawer && window.__openDrawer()">☰</button>
+        <span class="title">Feedback</span>
+      </div>
+
+      <section class="hero" role="banner">
+        <div class="hero-inner">
+          <h1>Event Feedback</h1>
+          <p>Submit your evaluation and receive your certificate instantly.</p>
+        </div>
+      </section>
+
+      <!-- Main content: your original feedback form -->
+      <main class="container" id="main">
+        <div class="card page-wrap">
+          <!-- Inserted from your original page -->
+          <div class="progress" aria-label="Form progress"><div class="bar" id="progressBar"></div></div>
+          <p class="small"><span id="progressText">0</span>/20 questions answered</p>
+
+          <!-- BEGIN: original form markup -->
+          <form id="feedback-form" name="feedback-form">
+            <!-- Q1 -->
+            <div class="form-group likert" data-q="1">
+              <label><strong>1. How useful did you find this event?</strong></label>
+              <label><input type="radio" name="q1" value="Extremely useful" required> Extremely useful</label>
+              <label><input type="radio" name="q1" value="Useful"> Useful</label>
+              <label><input type="radio" name="q1" value="Fairly useful"> Fairly useful</label>
+              <label><input type="radio" name="q1" value="Not useful"> Not useful</label>
+            </div>
+            <!-- Q2 -->
+            <div class="form-group likert" data-q="2">
+              <label><strong>2. What was your overall impression of the programme of this event?</strong></label>
+              <label><input type="radio" name="q2" value="Excellent" required> Excellent</label>
+              <label><input type="radio" name="q2" value="Good"> Good</label>
+              <label><input type="radio" name="q2" value="Fairly good"> Fairly good</label>
+              <label><input type="radio" name="q2" value="Poor"> Poor</label>
+              <label><input type="radio" name="q2" value="Very poor"> Very poor</label>
+            </div>
+            <!-- Q3 -->
+            <div class="form-group likert" data-q="3">
+              <label><strong>3. What was your overall impression of the organisation of this event?</strong></label>
+              <label><input type="radio" name="q3" value="Excellent" required> Excellent</label>
+              <label><input type="radio" name="q3" value="Good"> Good</label>
+              <label><input type="radio" name="q3" value="Fairly good"> Fairly good</label>
+              <label><input type="radio" name="q3" value="Poor"> Poor</label>
+              <label><input type="radio" name="q3" value="Very poor"> Very poor</label>
+            </div>
+
+            <!-- Sessions (Q4–Q14) -->
+            <hr class="divider">
+            <h3>Sessions (Q4–Q14)</h3>
+
+            <div class="form-group likert" data-q="4">
+              <label><strong>Q4 — ‘Diagnostic Pathway in MPE – New Data on “Straight-to-Biopsy”’ by Prof. Naj Rahman</strong></label>
+              <label><input type="radio" name="q4" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q4" value="4"> Useful</label>
+              <label><input type="radio" name="q4" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q4" value="2"> Not useful</label>
+              <label><input type="radio" name="q4" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="5">
+              <label><strong>Q5 — ‘Update in Mesothelioma Research – HIT-MESO Trial’ by Dr. Paul Shaw</strong></label>
+              <label><input type="radio" name="q5" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q5" value="4"> Useful</label>
+              <label><input type="radio" name="q5" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q5" value="2"> Not useful</label>
+              <label><input type="radio" name="q5" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="6">
+              <label><strong>Q6 — ‘Local Anaesthetic Thoracoscopy’ by Dr. Richard Westley</strong></label>
+              <label><input type="radio" name="q6" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q6" value="4"> Useful</label>
+              <label><input type="radio" name="q6" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q6" value="2"> Not useful</label>
+              <label><input type="radio" name="q6" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="7">
+              <label><strong>Q7 — ‘Clinical Applications of Artificial Intelligence’ by Prof. Alan Fraser</strong></label>
+              <label><input type="radio" name="q7" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q7" value="4"> Useful</label>
+              <label><input type="radio" name="q7" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q7" value="2"> Not useful</label>
+              <label><input type="radio" name="q7" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="8">
+              <label><strong>Q8 — ‘A Pathway for the Management of Hepatic Hydrothorax’ by Dr. Sam Ryan</strong></label>
+              <label><input type="radio" name="q8" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q8" value="4"> Useful</label>
+              <label><input type="radio" name="q8" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q8" value="2"> Not useful</label>
+              <label><input type="radio" name="q8" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="9">
+              <label><strong>Q9 — ‘Legal Aspects in Asbestos-related Pleural Disease’ by speaker from Irwin Mitchell</strong></label>
+              <label><input type="radio" name="q9" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q9" value="4"> Useful</label>
+              <label><input type="radio" name="q9" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q9" value="2"> Not useful</label>
+              <label><input type="radio" name="q9" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="10">
+              <label><strong>Q10 — ‘Thoracic Ultrasound Training’ by Dr. Rebecca Pearce</strong></label>
+              <label><input type="radio" name="q10" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q10" value="4"> Useful</label>
+              <label><input type="radio" name="q10" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q10" value="2"> Not useful</label>
+              <label><input type="radio" name="q10" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="11">
+              <label><strong>Q11 — ‘How Did We Manage Pneumothoraces?’ by Dr. Natnael Afesha</strong></label>
+              <label><input type="radio" name="q11" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q11" value="4"> Useful</label>
+              <label><input type="radio" name="q11" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q11" value="2"> Not useful</label>
+              <label><input type="radio" name="q11" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="12">
+              <label><strong>Q12 — ‘Outcomes of Empyema’ by Dr. Nora Ramley</strong></label>
+              <label><input type="radio" name="q12" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q12" value="4"> Useful</label>
+              <label><input type="radio" name="q12" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q12" value="2"> Not useful</label>
+              <label><input type="radio" name="q12" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="13">
+              <label><strong>Q13 — ‘Ten Years of Ambulatory Pleural Procedure Service at SBUHB’ by Dr. N. Chinnappa</strong></label>
+              <label><input type="radio" name="q13" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q13" value="4"> Useful</label>
+              <label><input type="radio" name="q13" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q13" value="2"> Not useful</label>
+              <label><input type="radio" name="q13" value="1"> Not relevant</label>
+            </div>
+
+            <div class="form-group likert" data-q="14">
+              <label><strong>Q14 — Case Presentation session</strong></label>
+              <label><input type="radio" name="q14" value="5" required> Extremely useful</label>
+              <label><input type="radio" name="q14" value="4"> Useful</label>
+              <label><input type="radio" name="q14" value="3"> Fairly useful</label>
+              <label><input type="radio" name="q14" value="2"> Not useful</label>
+              <label><input type="radio" name="q14" value="1"> Not relevant</label>
+            </div>
+
+            <hr class="divider">
+
+            <!-- Free text -->
+            <div class="form-group" data-q="15">
+              <label for="q15"><strong>15. What was the best aspect of this event?</strong></label>
+              <textarea id="q15" name="q15" rows="3" placeholder="Type your response here..." required></textarea>
+            </div>
+            <div class="form-group" data-q="16">
+              <label for="q16"><strong>16. What was the worst aspect of this event?</strong></label>
+              <textarea id="q16" name="q16" rows="3" placeholder="Type your response here..." required></textarea>
+            </div>
+            <div class="form-group" data-q="17">
+              <label for="q17"><strong>17. What impact will this event have on your future practice?</strong></label>
+              <textarea id="q17" name="q17" rows="3" placeholder="Type your response here..." required></textarea>
+            </div>
+            <div class="form-group" data-q="18">
+              <label for="q18"><strong>18. Any additional comments or suggestions for future topics of discussion?</strong></label>
+              <textarea id="q18" name="q18" rows="3" placeholder="Type your response here..." required></textarea>
+            </div>
+            <div class="form-group" data-q="19">
+              <label for="q19"><strong>19. Enter your name as it should appear on your certificate</strong></label>
+              <input type="text" id="q19" name="certificate_name" placeholder="Your full name" required>
+            </div>
+            <div class="form-group" data-q="20">
+              <label for="q20"><strong>20. Email address</strong></label>
+              <input type="email" id="q20" name="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="row-actions">
+              <button type="submit" class="btn primary">Submit Feedback</button>
+              <button type="button" id="saveDraft" class="btn ghost" title="Saves in this browser only">Save draft</button>
+              <button type="button" id="clearDraft" class="btn ghost" title="Clears saved draft">Clear</button>
+            </div>
+
+            <div id="cert-actions" style="display:none; margin-top:24px;">
+              <hr class="divider">
+              <h2>Your certificate</h2>
+              <p class="small">Choose how you’d like to receive it:</p>
+              <div class="row-actions">
+                <button type="button" id="downloadCert" class="btn primary">Download Certificate</button>
+                <button type="button" id="emailCert" class="btn ghost" title="Email option will be available shortly.">Email Certificate</button>
+              </div>
+            </div>
+          </form>
+          <!-- END: original form markup -->
+        </div>
+      </main>
     </div>
-    <nav aria-label="Primary">
-      <ul class="nav-list">
-        <li><a href="/#programme">Agenda</a></li>
-        <li><a href="/#house">Housekeeping</a></li>
-        <li><a href="/#livestream">Livestream</a></li>
-        <li><a href="/feedback.html">Feedback</a></li>
-        <li><a href="/faculty.html" rel="nofollow">Faculty</a></li>
-      </ul>
-    </nav>
-  </div>
-</header>
-
-  <div class="page-wrap">
-    <div class="card">
-      <h1>Pleural Seminar Wales 2025 – Evaluation</h1>
-      <p class="small">Thank you for joining us. Please complete this short form. After submitting, you can instantly download or email your certificate.</p>
-
-      <div class="progress" aria-label="Form progress"><div class="bar" id="progressBar"></div></div>
-      <p class="small"><span id="progressText">0</span>/20 questions answered</p>
-
-      <form id="feedback-form" name="feedback-form">
-        <!-- Q1 -->
-        <div class="form-group likert" data-q="1">
-          <label><strong>1. How useful did you find this event?</strong></label>
-          <label><input type="radio" name="q1" value="Extremely useful" required> Extremely useful</label>
-          <label><input type="radio" name="q1" value="Useful"> Useful</label>
-          <label><input type="radio" name="q1" value="Fairly useful"> Fairly useful</label>
-          <label><input type="radio" name="q1" value="Not useful"> Not useful</label>
-        </div>
-        <!-- Q2 -->
-        <div class="form-group likert" data-q="2">
-          <label><strong>2. What was your overall impression of the programme of this event?</strong></label>
-          <label><input type="radio" name="q2" value="Excellent" required> Excellent</label>
-          <label><input type="radio" name="q2" value="Good"> Good</label>
-          <label><input type="radio" name="q2" value="Fairly good"> Fairly good</label>
-          <label><input type="radio" name="q2" value="Poor"> Poor</label>
-          <label><input type="radio" name="q2" value="Very poor"> Very poor</label>
-        </div>
-        <!-- Q3 -->
-        <div class="form-group likert" data-q="3">
-          <label><strong>3. What was your overall impression of the organisation of this event?</strong></label>
-          <label><input type="radio" name="q3" value="Excellent" required> Excellent</label>
-          <label><input type="radio" name="q3" value="Good"> Good</label>
-          <label><input type="radio" name="q3" value="Fairly good"> Fairly good</label>
-          <label><input type="radio" name="q3" value="Poor"> Poor</label>
-          <label><input type="radio" name="q3" value="Very poor"> Very poor</label>
-        </div>
-<!-- Sessions (Q4–Q14) -->
-<hr class="divider">
-<h3>Sessions (Q4–Q14)</h3>
-
-<div class="form-group likert" data-q="4">
-  <label><strong>Q4 — ‘Diagnostic Pathway in MPE – New Data on “Straight-to-Biopsy”’ by Prof. Naj Rahman</strong></label>
-  <label><input type="radio" name="q4" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q4" value="4"> Useful</label>
-  <label><input type="radio" name="q4" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q4" value="2"> Not useful</label>
-  <label><input type="radio" name="q4" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="5">
-  <label><strong>Q5 — ‘Update in Mesothelioma Research – HIT-MESO Trial’ by Dr. Paul Shaw</strong></label>
-  <label><input type="radio" name="q5" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q5" value="4"> Useful</label>
-  <label><input type="radio" name="q5" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q5" value="2"> Not useful</label>
-  <label><input type="radio" name="q5" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="6">
-  <label><strong>Q6 — ‘Local Anaesthetic Thoracoscopy’ by Dr. Richard Westley</strong></label>
-  <label><input type="radio" name="q6" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q6" value="4"> Useful</label>
-  <label><input type="radio" name="q6" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q6" value="2"> Not useful</label>
-  <label><input type="radio" name="q6" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="7">
-  <label><strong>Q7 — ‘Clinical Applications of Artificial Intelligence’ by Prof. Alan Fraser</strong></label>
-  <label><input type="radio" name="q7" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q7" value="4"> Useful</label>
-  <label><input type="radio" name="q7" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q7" value="2"> Not useful</label>
-  <label><input type="radio" name="q7" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="8">
-  <label><strong>Q8 — ‘A Pathway for the Management of Hepatic Hydrothorax’ by Dr. Sam Ryan</strong></label>
-  <label><input type="radio" name="q8" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q8" value="4"> Useful</label>
-  <label><input type="radio" name="q8" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q8" value="2"> Not useful</label>
-  <label><input type="radio" name="q8" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="9">
-  <label><strong>Q9 — ‘Legal Aspects in Asbestos-related Pleural Disease’ by speaker from Irwin Mitchell</strong></label>
-  <label><input type="radio" name="q9" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q9" value="4"> Useful</label>
-  <label><input type="radio" name="q9" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q9" value="2"> Not useful</label>
-  <label><input type="radio" name="q9" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="10">
-  <label><strong>Q10 — ‘Thoracic Ultrasound Training’ by Dr. Rebecca Pearce</strong></label>
-  <label><input type="radio" name="q10" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q10" value="4"> Useful</label>
-  <label><input type="radio" name="q10" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q10" value="2"> Not useful</label>
-  <label><input type="radio" name="q10" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="11">
-  <label><strong>Q11 — ‘How Did We Manage Pneumothoraces?’ by Dr. Natnael Afesha</strong></label>
-  <label><input type="radio" name="q11" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q11" value="4"> Useful</label>
-  <label><input type="radio" name="q11" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q11" value="2"> Not useful</label>
-  <label><input type="radio" name="q11" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="12">
-  <label><strong>Q12 — ‘Outcomes of Empyema’ by Dr. Nora Ramley</strong></label>
-  <label><input type="radio" name="q12" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q12" value="4"> Useful</label>
-  <label><input type="radio" name="q12" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q12" value="2"> Not useful</label>
-  <label><input type="radio" name="q12" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="13">
-  <label><strong>Q13 — ‘Ten Years of Ambulatory Pleural Procedure Service at SBUHB’ by Dr. N. Chinnappa</strong></label>
-  <label><input type="radio" name="q13" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q13" value="4"> Useful</label>
-  <label><input type="radio" name="q13" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q13" value="2"> Not useful</label>
-  <label><input type="radio" name="q13" value="1"> Not relevant</label>
-</div>
-
-<div class="form-group likert" data-q="14">
-  <label><strong>Q14 — Case Presentation session</strong></label>
-  <label><input type="radio" name="q14" value="5" required> Extremely useful</label>
-  <label><input type="radio" name="q14" value="4"> Useful</label>
-  <label><input type="radio" name="q14" value="3"> Fairly useful</label>
-  <label><input type="radio" name="q14" value="2"> Not useful</label>
-  <label><input type="radio" name="q14" value="1"> Not relevant</label>
-</div>
-
-       
-        <hr class="divider">
-
-        <!-- Free text -->
-        <div class="form-group" data-q="15">
-          <label for="q15"><strong>15. What was the best aspect of this event?</strong></label>
-          <textarea id="q15" name="q15" rows="3" placeholder="Type your response here..." required></textarea>
-        </div>
-        <div class="form-group" data-q="16">
-          <label for="q16"><strong>16. What was the worst aspect of this event?</strong></label>
-          <textarea id="q16" name="q16" rows="3" placeholder="Type your response here..." required></textarea>
-        </div>
-        <div class="form-group" data-q="17">
-          <label for="q17"><strong>17. What impact will this event have on your future practice?</strong></label>
-          <textarea id="q17" name="q17" rows="3" placeholder="Type your response here..." required></textarea>
-        </div>
-        <div class="form-group" data-q="18">
-          <label for="q18"><strong>18. Any additional comments or suggestions for future topics of discussion?</strong></label>
-          <textarea id="q18" name="q18" rows="3" placeholder="Type your response here..." required></textarea>
-        </div>
-        <div class="form-group" data-q="19">
-          <label for="q19"><strong>19. Enter your name as it should appear on your certificate</strong></label>
-          <input type="text" id="q19" name="certificate_name" placeholder="Your full name" required>
-        </div>
-        <div class="form-group" data-q="20">
-          <label for="q20"><strong>20. Email address</strong></label>
-          <input type="email" id="q20" name="email" placeholder="you@example.com" required>
-        </div>
-
-        <div class="row-actions">
-          <button type="submit" class="btn primary">Submit Feedback</button>
-          <button type="button" id="saveDraft" class="btn ghost" title="Saves in this browser only">Save draft</button>
-          <button type="button" id="clearDraft" class="btn ghost" title="Clears saved draft">Clear</button>
-        </div>
-
-        <div id="cert-actions" style="display:none; margin-top:24px;">
-          <hr class="divider">
-          <h2>Your certificate</h2>
-          <p class="small">Choose how you’d like to receive it:</p>
-          <div class="row-actions">
-            <button type="button" id="downloadCert" class="btn primary">Download Certificate</button>
-            <button type="button" id="emailCert" class="btn ghost" title="Email option will be available shortly.">Email Certificate</button>
-          </div>
-        </div>
-      </form>
-    </div>
   </div>
 
+  <!-- Mobile drawer -->
+  <div class="drawer" id="mobileDrawer" aria-hidden="true" hidden>
+    <aside class="sidebar" role="dialog" aria-label="Mobile menu">
+      <div class="sb-header">
+        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
+        <div class="brand">Pleural Seminar Wales 2025</div>
+      </div>
+      <nav class="sb" aria-label="Mobile navigation">
+        <a href="index.html">Home</a>
+        <a href="index.html#programme">Agenda</a>
+        <a href="venue.html">Venue</a>
+        <a href="posters.html">Posters</a>
+        <a href="feedback.html" class="active">Feedback</a>
+        <a href="faculty.html">Faculty</a>
+        <a href="about.html">About</a>
+      </nav>
+    </aside>
+    <div class="backdrop" id="backdrop"></div>
+  </div>
+
+  <!-- Drawer JS (same as index working version) -->
+  <script>
+    (function(){
+      const openBtn = document.getElementById('openMenu');
+      const drawer = document.getElementById('mobileDrawer');
+      const backdrop = document.getElementById('backdrop');
+      if(!openBtn || !drawer || !backdrop){ return; }
+      let lastFocus = null;
+      function openDrawer(){ lastFocus=document.activeElement; drawer.hidden=false; drawer.classList.add('open'); document.body.style.overflow='hidden'; openBtn.setAttribute('aria-expanded','true'); drawer.setAttribute('aria-hidden','false'); backdrop.classList.add('show'); }
+      function closeDrawer(){ drawer.classList.remove('open'); backdrop.classList.remove('show'); document.body.style.overflow=''; openBtn.setAttribute('aria-expanded','false'); drawer.setAttribute('aria-hidden','true'); setTimeout(()=>{ drawer.hidden=true; },200); if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
+      window.__openDrawer = openDrawer;
+      openBtn?.addEventListener('click', openDrawer);
+      openBtn?.addEventListener('touchstart', openDrawer, {passive:true});
+      backdrop?.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
+      drawer.querySelectorAll('a').forEach(a=>{ a.addEventListener('click', ()=>{ closeDrawer(); }); });
+    })();
+  </script>
+
+  <!-- ======= Original scripts from your feedback page (unchanged) ======= -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script>
     const $ = (s, r=document)=>r.querySelector(s);
@@ -307,7 +379,7 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
     });
   </script>
 
-  <!-- Firebase save -->
+  <!-- Firebase save (kept intact) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
   <script>
@@ -319,7 +391,7 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
       messagingSenderId: "914784082205",
       appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
     };
-    firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps || !firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('feedback-form');
@@ -342,19 +414,18 @@ header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;b
     });
   </script>
 
-<script>
-  (async function(){
-    try{
-      const res = await fetch('/assets/feedback-questions.json', {cache:'no-store'});
-      if(!res.ok) return;
-      const qText = await res.json();
-      for(let q=4;q<=14;q++){
-        const strong = document.querySelector(`.form-group[data-q="${q}"] label strong`);
-        if(strong && qText[`q${q}`]) strong.textContent = qText[`q${q}`];
-      }
-    }catch(_){ /* ignore */ }
-  })();
-</script>
-
+  <script>
+    (async function(){
+      try{
+        const res = await fetch('/assets/feedback-questions.json', {cache:'no-store'});
+        if(!res.ok) return;
+        const qText = await res.json();
+        for(let q=4;q<=14;q++){
+          const strong = document.querySelector(`.form-group[data-q="${q}"] label strong`);
+          if(strong && qText[`q${q}`]) strong.textContent = qText[`q${q}`];
+        }
+      }catch(_){ /* ignore */ }
+    })();
+  </script>
 </body>
 </html>
