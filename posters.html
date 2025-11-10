@@ -15,7 +15,6 @@
       font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
       display:flex;min-height:100vh
     }
-    /* Optional sidebar placeholder; replace with your site's sidebar include */
     aside.nav{
       width:260px;background:var(--panel);border-right:1px solid var(--border);
       position:sticky;top:0;height:100vh;padding:20px;display:none
@@ -26,7 +25,6 @@
     header.page h1{font-size:24px;margin:0}
     header.page p{color:var(--muted);margin:0}
 
-    /* Grid */
     .grid{
       display:grid;gap:16px;
       grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -34,16 +32,15 @@
     @media (min-width: 640px){ .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
     @media (min-width: 1024px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
 
-    /* Card */
     .card{
       background:var(--panel);border:1px solid var(--border);border-radius:16px;
       overflow:hidden;display:flex;flex-direction:column;min-height:260px
     }
     .thumb{
       aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;
-      border-bottom:1px solid var(--border);position:relative
+      border-bottom:1px solid var(--border);position:relative;background:#0c1527
     }
-    .thumb object,.thumb canvas{width:100%;height:100%;display:block}
+    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
     .thumb .fallback{
       position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
       font-weight:700;letter-spacing:0.08em;color:var(--muted)
@@ -51,9 +48,7 @@
     .info{padding:12px}
     .title{font-weight:600;margin:0 0 6px 0}
     .meta{color:var(--muted);font-size:14px;margin:0}
-    .open{
-      text-decoration:none;color:var(--fg);display:block
-    }
+    .open{ text-decoration:none;color:var(--fg);display:block }
     .open:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:12px}
     .badge{
       position:absolute;top:8px;left:8px;background:rgba(34,197,94,.15);color:#86efac;
@@ -62,7 +57,6 @@
   </style>
 </head>
 <body>
-  <!-- Optional sidebar placeholder; keep or remove per your layout -->
   <aside class="nav">
     <h3 style="margin-top:0">Pleural Seminar</h3>
     <nav>
@@ -78,22 +72,12 @@
   <main>
     <header class="page">
       <h1>Posters</h1>
-      <p>Click a thumbnail to open the full PDF in a new tab.</p>
+      <p>Tap a thumbnail to open the full PDF in a new tab.</p>
       <p style="display:none" id="csvStatus"></p>
     </header>
 
     <section class="grid" id="posterGrid" aria-live="polite"></section>
   </main>
-
-  <!-- PDF.js for MOBILE-ONLY thumbnail rendering -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
-  <script>
-    // Configure worker
-    if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
-    }
-  </script>
 
   <script>
   (function(){
@@ -101,34 +85,26 @@
     const csvStatus = document.getElementById('csvStatus');
 
     // === CONFIG ===
-    const PREFIX = 'assets/posters/'; // NOTE: no leading slash
-    const STEM = 'P';
+    const PREFIX = 'assets/posters/'; // NOTE: relative path
+    const STEM = 'P';                 // IDs: P01, P02, ...
     const MAX = 99;
-    const PAD = n => n.toString().padStart(2,'0');
+    const PAD  = n => n.toString().padStart(2,'0');
     const MAX_CONSEC_MISSES = 15;
 
-    // Optional CSV mapping (id,title,authors)
+    // Optional CSV mapping (id,title,authors) at assets/posters/posters.csv
     const CSV_URL = PREFIX + 'posters.csv';
 
-    // Inline fallback mapping
+    // Inline fallback mapping if no CSV provided
     const TITLE_MAP = {
-      // 'P01': { title: 'Example', authors: 'A Smith; B Jones' },
+      // 'P01': { title: 'Ultrasound-guided Pleural Procedures', authors: 'A Jones; B Smith' },
     };
 
-    // --- Environment detection ---
-    const ua = navigator.userAgent || "";
-    const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-    const isAndroid = /Android/.test(ua);
-    const isSmallScreen = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
-    // Many mobile browsers don't render <object type="application/pdf"> reliably.
-    const preferCanvas = (isIOS || isAndroid || isSmallScreen) && !!window.pdfjsLib;
-
-    // --- Utilities ---
+    // Utilities
     function parseCSV(text){
       const out = {};
       const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
       for (const line of lines){
-        if (/^id\s*,/i.test(line)) continue; // skip header
+        if (/^id\s*,/i.test(line)) continue; // skip header if present
         const parts = line.split(',').map(s => s.trim());
         if (parts.length >= 3){
           const id = parts[0];
@@ -157,9 +133,22 @@
       }
     }
 
-    function makeCardShell(id, url, meta){
+    // Check if a resource exists (HEAD with GET range fallback)
+    async function exists(url){
+      try{
+        const r = await fetch(url, { method:'HEAD', cache:'no-store' });
+        return r.ok;
+      }catch{
+        try{
+          const r = await fetch(url, { method:'GET', headers:{ 'Range':'bytes=0-0' }, cache:'no-store' });
+          return r.ok;
+        }catch{ return false; }
+      }
+    }
+
+    function makeCard(id, pdfUrl, meta, thumbCandidates){
       const a = document.createElement('a');
-      a.href = url; a.target = '_blank'; a.rel = 'noopener';
+      a.href = pdfUrl; a.target = '_blank'; a.rel = 'noopener';
       a.className = 'open';
 
       const card = document.createElement('article');
@@ -168,14 +157,20 @@
       const thumb = document.createElement('div');
       thumb.className = 'thumb';
 
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.alt = (meta?.title ? meta.title + ' — ' : '') + id + ' thumbnail';
+      // We'll set src lazily when in view
+
       const badge = document.createElement('span');
       badge.className = 'badge';
       badge.textContent = id;
 
       const fb = document.createElement('div');
       fb.className = 'fallback';
-      fb.textContent = 'PDF';
+      fb.textContent = 'Preview';
 
+      thumb.appendChild(img);
       thumb.appendChild(badge);
       thumb.appendChild(fb);
 
@@ -184,126 +179,91 @@
       const title = document.createElement('h3'); title.className = 'title';
       title.textContent = meta?.title || id;
       const metaP = document.createElement('p'); metaP.className = 'meta';
-      metaP.textContent = meta?.authors ? meta.authors : 'Click to open';
+      metaP.textContent = meta?.authors ? meta.authors : 'Tap to open';
 
       info.appendChild(title); info.appendChild(metaP);
       card.appendChild(thumb); card.appendChild(info); a.appendChild(card);
-      return {anchor:a, thumb, fb};
-    }
 
-    // Desktop: <object> preview
-    function addObjectPreview(thumb, url){
-      const obj = document.createElement('object');
-      obj.type = 'application/pdf';
-      obj.setAttribute('aria-label', 'Poster preview');
-      obj.style.width = '100%';
-      obj.style.height = '100%';
-      obj.dataset.src = url + '#page=1&view=FitH';
-      thumb.prepend(obj); // below the badge/fallback stacking order
-      obj.addEventListener('error', () => {
-        const fb = thumb.querySelector('.fallback');
-        if (fb) fb.textContent = 'Preview unavailable';
-      });
-      return obj;
-    }
-
-    // Mobile: PDF.js canvas render
-    async function renderCanvasInto(thumb, url){
-      try{
-        const loadingTask = pdfjsLib.getDocument({ url });
-        const pdf = await loadingTask.promise;
-        const page = await pdf.getPage(1);
-        // choose scale for mobile-friendly resolution
-        const viewport = page.getViewport({ scale: 0.5 });
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = Math.floor(viewport.width);
-        canvas.height = Math.floor(viewport.height);
-        await page.render({ canvasContext: ctx, viewport }).promise;
-        // Insert below badge
-        thumb.prepend(canvas);
-        const fb = thumb.querySelector('.fallback');
-        if (fb) fb.style.display = 'none';
-      }catch(e){
-        const fb = thumb.querySelector('.fallback');
-        if (fb) fb.textContent = 'Preview unavailable';
-        console.warn('Mobile canvas render failed for', url, e);
+      // Lazy-load & multi-case fallback for thumbnails
+      let tried = 0;
+      async function tryNext(){
+        if (tried >= thumbCandidates.length){
+          fb.textContent = 'No thumbnail';
+          img.style.display = 'none';
+          return;
+        }
+        const candidate = thumbCandidates[tried++];
+        if (await exists(candidate)){
+          img.src = candidate;
+          fb.style.display = 'none';
+        } else {
+          tryNext();
+        }
       }
+
+      return { anchor:a, thumb, loadThumb:tryNext };
     }
 
-    // Lazy loader
+    // Lazy observer for loading thumbnails
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
         if(entry.isIntersecting){
           const el = entry.target;
           io.unobserve(el);
-          const url = el.dataset.url;
-          if (!url) return;
-          if (preferCanvas){
-            if (!el.dataset.loaded){
-              el.dataset.loaded = '1';
-              renderCanvasInto(el, url);
-            }
-          } else {
-            if (!el.dataset.loaded){
-              el.dataset.loaded = '1';
-              const obj = addObjectPreview(el, url);
-              const src = obj.dataset.src;
-              // force attribute write on next frame to trigger load
-              requestAnimationFrame(()=> obj.setAttribute('data', src));
-            }
+          const loader = el._loadThumb;
+          if (loader && !el._loaded){
+            el._loaded = true;
+            loader();
           }
         }
       });
     }, { rootMargin: '200px' });
-
-    async function probe(url){
-      try{
-        const res = await fetch(url, { method:'HEAD', cache:'no-store' });
-        return res.ok;
-      }catch{
-        try{
-          const res = await fetch(url, { method:'GET', headers:{ 'Range':'bytes=0-0' }, cache:'no-store' });
-          return res.ok;
-        }catch{ return false; }
-      }
-    }
 
     (async function build(){
       const map = await loadCSVMap();
       let misses = 0;
       const cards = [];
 
-      for(let n=1;n<=MAX;n++){
-        const id = STEM + PAD(n);
-        const file = `${id}.pdf`;
-        const url  = PREFIX + file;
-        const ok = await probe(url);
-        if(ok){
+      for (let n=1; n<=MAX; n++){
+        const id = STEM + PAD(n);              // e.g., P01
+        const pdf = `${id}.pdf`;               // P01.pdf
+        const pdfUrl = PREFIX + pdf;
+        if (await exists(pdfUrl)){
           misses = 0;
           const meta = map[id] || null;
-          cards.push({ id, url, meta });
-        }else{
+          // Thumbnail candidates in common casings: P01.png, p01.png, P01.PNG
+          const thumbCandidates = [
+            PREFIX + `${id}.png`,
+            PREFIX + `${id}.jpg`,
+            PREFIX + `${id}.webp`,
+            PREFIX + `${id.toLowerCase()}.png`,
+            PREFIX + `${id.toLowerCase()}.jpg`,
+            PREFIX + `${id.toLowerCase()}.webp`,
+            PREFIX + `${id.toUpperCase()}.png`,
+            PREFIX + `${id.toUpperCase()}.jpg`,
+            PREFIX + `${id.toUpperCase()}.webp`,
+          ];
+          cards.push({ id, pdfUrl, meta, thumbCandidates });
+        } else {
           misses++;
-          if(misses >= MAX_CONSEC_MISSES) break;
+          if (misses >= MAX_CONSEC_MISSES) break;
         }
       }
 
-      // Sort by numeric id
       cards.sort((a,b)=> a.id.localeCompare(b.id, undefined, { numeric:true }));
 
-      if(!cards.length){
+      if (!cards.length){
         const p = document.createElement('p');
         p.style.color = 'var(--muted)';
-        p.textContent = 'No posters found. Upload PDFs as P01.pdf, P02.pdf, … into assets/posters/. Optionally add posters.csv (id,title,authors).';
+        p.textContent = 'No posters found. Ensure PDFs are named P01.pdf, P02.pdf, … in assets/posters/. Optional thumbnails: p01.png (any case) in the same folder. Optional titles in posters.csv';
         grid.appendChild(p);
         return;
       }
 
-      for(const c of cards){
-        const {anchor, thumb} = makeCardShell(c.id, c.url, c.meta);
-        thumb.dataset.url = c.url;
+      for (const c of cards){
+        const { anchor, thumb, loadThumb } = makeCard(c.id, c.pdfUrl, c.meta, c.thumbCandidates);
         grid.appendChild(anchor);
+        thumb._loadThumb = loadThumb;
         io.observe(thumb);
       }
     })();
