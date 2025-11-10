@@ -98,6 +98,22 @@
     <section class="grid" id="posterGrid" aria-live="polite"></section>
   </main>
 
+  </main>
+
+  <!-- PDF.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
+  <script>
+    // Point PDF.js to its worker file on the same CDN
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
+  </script>
+
+  <script>
+    (function(){
+   
+
+
+
   <script>
     (function(){
       const grid = document.getElementById('posterGrid');
