@@ -30,7 +30,6 @@
     .container{max-width:1100px;margin:0 auto;padding:24px}
     .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
 
-    /* Drawer */
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:1000}
     .backdrop.show{opacity:1;pointer-events:auto}
     .drawer{position:fixed;inset:0;display:none;z-index:1000}
@@ -44,7 +43,6 @@
       .content{width:100%}
     }
 
-    /* Faculty page UI */
     .muted{color:var(--muted)}
     .row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
     .btn{appearance:none;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
@@ -52,7 +50,6 @@
     .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--fg)}
     .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0b1220;border:1px solid var(--border);font-size:12px;color:var(--muted)}
     .hide{display:none}
-
     .action-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 12px}
     .action-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
     .action-btn{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--panel);border:1px solid var(--border);border-radius:14px;text-decoration:none;color:var(--fg);box-shadow:0 2px 8px rgba(0,0,0,.2)}
@@ -96,7 +93,6 @@
       </section>
 
       <main class="container" id="main">
-        <!-- Gate -->
         <div id="gate" class="card">
           <h2>Faculty access</h2>
           <p class="muted">Enter the faculty code to view live feedback and scoring tools.</p>
@@ -108,7 +104,6 @@
           <p class="muted" style="margin-top:8px;">This is a shared code for now; we can swap to Firebase Auth later.</p>
         </div>
 
-        <!-- Dashboard -->
         <div id="dash" class="card hide">
           <div class="action-header">
             <div>
@@ -120,11 +115,11 @@
 
           <section aria-label="Faculty actions" style="margin:8px 0 18px;">
             <div class="action-grid">
-              <a class="action-btn" href="posters-score.html" aria-label="Score posters"><span class="icon">🖼️</span><span class="text"><strong>Score posters</strong><em>Judge poster submissions</em></span></a>
-              <a class="action-btn" href="cases-score.html" aria-label="Score cases"><span class="icon">🩺</span><span class="text"><strong>Score cases</strong><em>Judge case presentations</em></span></a>
-              <a class="action-btn" href="results.html" aria-label="View poster results"><span class="icon">🏆</span><span class="text"><strong>View poster results</strong><em>Live ranks & totals</em></span></a>
-              <a class="action-btn" href="case-results.html" aria-label="View case results"><span class="icon">🏆</span><span class="text"><strong>View case results</strong><em>Live ranks & totals</em></span></a>
-              <a class="action-btn" href="feedback-results.html" aria-label="View feedback"><span class="icon">📊</span><span class="text"><strong>View feedback</strong><em>Charts & summaries</em></span></a>
+              <a class="action-btn" href="posters-score.html"><span class="icon">🖼️</span><span><strong>Score posters</strong><em>Judge poster submissions</em></span></a>
+              <a class="action-btn" href="cases-score.html"><span class="icon">🩺</span><span><strong>Score cases</strong><em>Judge case presentations</em></span></a>
+              <a class="action-btn" href="results.html"><span class="icon">🏆</span><span><strong>View poster results</strong><em>Live ranks & totals</em></span></a>
+              <a class="action-btn" href="case-results.html"><span class="icon">🏆</span><span><strong>View case results</strong><em>Live ranks & totals</em></span></a>
+              <a class="action-btn" href="feedback-results.html"><span class="icon">📊</span><span><strong>View feedback</strong><em>Charts & summaries</em></span></a>
             </div>
           </section>
 
@@ -145,7 +140,6 @@
     </div>
   </div>
 
-  <!-- Mobile drawer -->
   <div class="drawer" id="mobileDrawer" aria-hidden="true" hidden>
     <aside class="sidebar" role="dialog" aria-label="Mobile menu">
       <div class="sb-header">
@@ -165,105 +159,78 @@
     <div class="backdrop" id="backdrop"></div>
   </div>
 
-  <!-- Drawer JS -->
   <script>
     (function(){
-      const openBtn = document.getElementById('openMenu');
-      const drawer = document.getElementById('mobileDrawer');
-      const backdrop = document.getElementById('backdrop');
-      if(!drawer || !backdrop){ return; }
-      let lastFocus = null;
-      function openDrawer(){ lastFocus=document.activeElement; drawer.hidden=false; drawer.classList.add('open'); document.body.style.overflow='hidden'; if(openBtn) openBtn.setAttribute('aria-expanded','true'); drawer.setAttribute('aria-hidden','false'); backdrop.classList.add('show'); }
-      function closeDrawer(){ drawer.classList.remove('open'); backdrop.classList.remove('show'); document.body.style.overflow=''; if(openBtn) openBtn.setAttribute('aria-expanded','false'); drawer.setAttribute('aria-hidden','true'); setTimeout(()=>{ drawer.hidden=true; },200); if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
-      window.__openDrawer = openDrawer;
-      openBtn?.addEventListener('click', openDrawer);
-      openBtn?.addEventListener('touchstart', openDrawer, {passive:true});
-      backdrop.addEventListener('click', closeDrawer);
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
-      drawer.querySelectorAll('a').forEach(a=>{ a.addEventListener('click', ()=>{ closeDrawer(); }); });
+      const openBtn=document.getElementById('openMenu');
+      const drawer=document.getElementById('mobileDrawer');
+      const backdrop=document.getElementById('backdrop');
+      if(!drawer||!backdrop){return;}
+      let lastFocus=null;
+      function openDrawer(){lastFocus=document.activeElement;drawer.hidden=false;drawer.classList.add('open');document.body.style.overflow='hidden';if(openBtn)openBtn.setAttribute('aria-expanded','true');drawer.setAttribute('aria-hidden','false');backdrop.classList.add('show');}
+      function closeDrawer(){drawer.classList.remove('open');backdrop.classList.remove('show');document.body.style.overflow='';if(openBtn)openBtn.setAttribute('aria-expanded','false');drawer.setAttribute('aria-hidden','true');setTimeout(()=>{drawer.hidden=true;},200);if(lastFocus&&lastFocus.focus)lastFocus.focus();}
+      window.__openDrawer=openDrawer;
+      openBtn?.addEventListener('click',openDrawer);
+      openBtn?.addEventListener('touchstart',openDrawer,{passive:true});
+      backdrop.addEventListener('click',closeDrawer);
+      document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeDrawer();});
+      drawer.querySelectorAll('a').forEach(a=>{a.addEventListener('click',()=>{closeDrawer();});});
     })();
   </script>
 
-  <!-- Firebase (ESM) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-    // TODO: replace ACCESS_CODE to your shared code
-    const ACCESS_CODE = (localStorage.getItem('psw25_access_code')) || '';
+    const firebaseConfig={apiKey:"AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",authDomain:"pleural-seminar-2025.firebaseapp.com",projectId:"pleural-seminar-2025",storageBucket:"pleural-seminar-2025.firebasestorage.app",messagingSenderId:"914784082205",appId:"1:914784082205:web:448e2d4fe8e9579075a9f4"};
+    const app=initializeApp(firebaseConfig);
+    const db=getFirestore(app);
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
-      authDomain: "pleural-seminar-2025.firebaseapp.com",
-      projectId: "pleural-seminar-2025",
-      storageBucket: "pleural-seminar-2025.firebasestorage.app",
-      messagingSenderId: "914784082205",
-      appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    const $=(s,r=document)=>r.querySelector(s);
+    const gate=$('#gate');
+    const dash=$('#dash');
+    const code=$('#code');
+    const enterBtn=$('#enter');
+    const gateMsg=$('#gateMsg');
+    const who=$('#who');
 
-    const $ = (s, r=document)=>r.querySelector(s);
-    const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+    function openDash(){gate.classList.add('hide');dash.classList.remove('hide');who.textContent='Faculty';loadFeedback();}
+    function deny(msg){gateMsg.textContent=msg||'Incorrect code';gateMsg.style.color='#f88';}
 
-    const gate = $('#gate');
-    const dash = $('#dash');
-    const code = $('#code');
-    const enterBtn = $('#enter');
-    const gateMsg = $('#gateMsg');
-    const who = $('#who');
-
-    function openDash(){ gate.classList.add('hide'); dash.classList.remove('hide'); who.textContent = 'Faculty'; }
-    function deny(msg){ gateMsg.textContent = msg || 'Incorrect code'; gateMsg.style.color = '#f88'; }
-
-    // If we already have a code saved, just show dash (you can tighten this later)
-    if (ACCESS_CODE) openDash();
-
-    enterBtn.addEventListener('click', ()=>{
-      const val = (code.value||'').trim();
-      if(!val){ deny('Enter the access code'); return; }
-      // Basic client-side check only (replace with your own logic if needed)
-      localStorage.setItem('psw25_access_code', val);
+    enterBtn.addEventListener('click',()=>{
+      const val=(code.value||'').trim().toLowerCase();
+      if(!val){deny('Enter the access code');return;}
+      if(val!=='pleural2025'){deny('Incorrect access code');return;}
+      localStorage.setItem('psw25_access_code',val);
       openDash();
     });
 
-    // Fetch feedback rows
     async function loadFeedback(){
-      const tbody = $('#fbTable tbody');
-      if(!tbody) return;
+      const tbody=document.querySelector('#fbTable tbody');
+      if(!tbody)return;
       try{
-        const qRef = query(collection(db, 'feedback2025'), orderBy('submittedAt','desc'));
-        const snap = await getDocs(qRef);
-        $('#countLabel').textContent = `${snap.size} responses`;
-        tbody.innerHTML = '';
+        const qRef=query(collection(db,'feedback2025'),orderBy('submittedAt','desc'));
+        const snap=await getDocs(qRef);
+        document.querySelector('#countLabel').textContent=`${snap.size} responses`;
+        tbody.innerHTML='';
         snap.forEach(doc=>{
-          const r = doc.data();
-          const tr = document.createElement('tr');
-          const submitted = r.submittedAt?.toDate ? r.submittedAt.toDate().toLocaleString() : '';
-          tr.innerHTML = `<td>${submitted||''}</td><td>${r.certificate_name||r.q19||''}</td><td>${r.email||r.q20||''}</td><td>${r.q1||''}</td><td>${r.q2||''}</td><td>${r.q3||''}</td><td>…</td>`;
+          const r=doc.data();
+          const tr=document.createElement('tr');
+          const submitted=r.submittedAt?.toDate?r.submittedAt.toDate().toLocaleString():'';
+          tr.innerHTML=`<td>${submitted}</td><td>${r.certificate_name||r.q19||''}</td><td>${r.email||r.q20||''}</td><td>${r.q1||''}</td><td>${r.q2||''}</td><td>${r.q3||''}</td><td>…</td>`;
           tbody.appendChild(tr);
         });
-      }catch(e){ console.error(e); }
+      }catch(e){console.error(e);}
     }
 
-    // CSV export
-    function tableToCsv(table){
+    document.querySelector('#exportCsv').addEventListener('click',()=>{
+      const table=document.querySelector('#fbTable');
       const rows=[...table.querySelectorAll('tr')].map(tr=>[...tr.children].map(td=>`"${(td.textContent||'').replace(/"/g,'""')}"`).join(','));
-      return rows.join('\n');
-    }
-    $('#exportCsv').addEventListener('click', ()=>{
-      const csv = tableToCsv($('#fbTable'));
-      const blob = new Blob([csv], {type:'text/csv'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'feedback_export.csv';
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 1000);
+      const csv=rows.join('\n');
+      const blob=new Blob([csv],{type:'text/csv'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;a.download='feedback_export.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1e3);
     });
-
-    // Kick off if dash is visible
-    const observer = new MutationObserver(()=>{ if(!dash.classList.contains('hide')) loadFeedback(); });
-    observer.observe(dash, {attributes:true});
   </script>
 </body>
 </html>
