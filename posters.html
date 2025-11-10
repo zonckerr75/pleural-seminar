@@ -20,39 +20,42 @@
       position:sticky;top:0;height:100vh;padding:20px;display:none
     }
     @media (min-width: 1024px){ aside.nav{display:block} }
-    main{flex:1;min-width:0;padding:24px}
-    header.page{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
-    header.page h1{font-size:24px;margin:0}
+    main{flex:1;min-width:0;padding:20px}
+    header.page{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+    header.page h1{font-size:22px;margin:0}
     header.page p{color:var(--muted);margin:0}
 
     .grid{
-      display:grid;gap:16px;
+      display:grid;gap:12px;
       grid-template-columns: repeat(1, minmax(0, 1fr));
     }
     @media (min-width: 640px){ .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
     @media (min-width: 1024px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
 
     .card{
-      background:var(--panel);border:1px solid var(--border);border-radius:16px;
-      overflow:hidden;display:flex;flex-direction:column;min-height:260px
+      background:var(--panel);border:1px solid var(--border);border-radius:14px;
+      overflow:hidden;display:flex;flex-direction:column;min-height:240px
     }
     .thumb{
       aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;
       border-bottom:1px solid var(--border);position:relative;background:#0c1527
     }
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .thumb img{
+      width:100%;height:100%;object-fit:contain;display:block;
+      image-rendering:auto; /* keep browser defaults for best quality */
+    }
     .thumb .fallback{
       position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
       font-weight:700;letter-spacing:0.08em;color:var(--muted)
     }
-    .info{padding:12px}
-    .title{font-weight:600;margin:0 0 6px 0}
-    .meta{color:var(--muted);font-size:14px;margin:0}
+    .info{padding:10px}
+    .title{font-weight:600;margin:0 0 4px 0;font-size:15px;line-height:1.3}
+    .meta{color:var(--muted);font-size:13px;margin:0}
     .open{ text-decoration:none;color:var(--fg);display:block }
     .open:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:12px}
     .badge{
       position:absolute;top:8px;left:8px;background:rgba(34,197,94,.15);color:#86efac;
-      font-weight:600;font-size:12px;padding:4px 8px;border-radius:999px;border:1px solid rgba(134,239,172,.3)
+      font-weight:600;font-size:12px;padding:3px 7px;border-radius:999px;border:1px solid rgba(134,239,172,.3)
     }
   </style>
 </head>
@@ -85,26 +88,25 @@
     const csvStatus = document.getElementById('csvStatus');
 
     // === CONFIG ===
-    const PREFIX = 'assets/posters/'; // NOTE: relative path
-    const STEM = 'P';                 // IDs: P01, P02, ...
+    const PREFIX = 'assets/posters/'; // relative path
+    const STEM = 'P';
     const MAX = 99;
     const PAD  = n => n.toString().padStart(2,'0');
     const MAX_CONSEC_MISSES = 15;
 
-    // Optional CSV mapping (id,title,authors) at assets/posters/posters.csv
+    // Optional CSV mapping
     const CSV_URL = PREFIX + 'posters.csv';
+    const TITLE_MAP = {};
 
-    // Inline fallback mapping if no CSV provided
-    const TITLE_MAP = {
-      // 'P01': { title: 'Ultrasound-guided Pleural Procedures', authors: 'A Jones; B Smith' },
-    };
+    // Responsive size hints for sharper <img>
+    // Approx card width: desktop ~28vw, tablet ~44vw, mobile ~92vw (minus padding)
+    const SIZES_ATTR = '(min-width:1024px) 28vw, (min-width:640px) 44vw, 92vw';
 
-    // Utilities
     function parseCSV(text){
       const out = {};
       const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
       for (const line of lines){
-        if (/^id\s*,/i.test(line)) continue; // skip header if present
+        if (/^id\s*,/i.test(line)) continue;
         const parts = line.split(',').map(s => s.trim());
         if (parts.length >= 3){
           const id = parts[0];
@@ -133,7 +135,6 @@
       }
     }
 
-    // Check if a resource exists (HEAD with GET range fallback)
     async function exists(url){
       try{
         const r = await fetch(url, { method:'HEAD', cache:'no-store' });
@@ -146,7 +147,14 @@
       }
     }
 
-    function makeCard(id, pdfUrl, meta, thumbCandidates){
+    function buildSrcset(baseJpg){
+      // If you have @2x thumbnails (e.g., p01@2x.jpg), use them for Retina/HiDPI.
+      const at2x = baseJpg.replace(/\.jpg$/i, '@2x.jpg');
+      const at3x = baseJpg.replace(/\.jpg$/i, '@3x.jpg');
+      return { at2x, at3x };
+    }
+
+    function makeCard(id, pdfUrl, meta, thumbJpg, retina){
       const a = document.createElement('a');
       a.href = pdfUrl; a.target = '_blank'; a.rel = 'noopener';
       a.className = 'open';
@@ -159,8 +167,9 @@
 
       const img = document.createElement('img');
       img.loading = 'lazy';
+      img.decoding = 'async';
       img.alt = (meta?.title ? meta.title + ' — ' : '') + id + ' thumbnail';
-      // We'll set src lazily when in view
+      img.sizes = SIZES_ATTR;
 
       const badge = document.createElement('span');
       badge.className = 'badge';
@@ -184,27 +193,28 @@
       info.appendChild(title); info.appendChild(metaP);
       card.appendChild(thumb); card.appendChild(info); a.appendChild(card);
 
-      // Lazy-load & multi-case fallback for thumbnails
-      let tried = 0;
-      async function tryNext(){
-        if (tried >= thumbCandidates.length){
-          fb.textContent = 'No thumbnail';
-          img.style.display = 'none';
-          return;
-        }
-        const candidate = thumbCandidates[tried++];
-        if (await exists(candidate)){
-          img.src = candidate;
-          fb.style.display = 'none';
+      // Lazy loader with retina srcset handling
+      let tried = false;
+      async function load(){
+        if (tried) return; tried = true;
+        // Prefer retina if it exists
+        const has2x = await exists(retina.at2x);
+        const has3x = await exists(retina.at3x);
+        if (has3x && has2x){
+          img.srcset = `${thumbJpg} 1x, ${retina.at2x} 2x, ${retina.at3x} 3x`;
+          img.src = thumbJpg;
+        } else if (has2x){
+          img.srcset = `${thumbJpg} 1x, ${retina.at2x} 2x`;
+          img.src = thumbJpg;
         } else {
-          tryNext();
+          img.src = thumbJpg;
         }
+        fb.style.display = 'none';
       }
 
-      return { anchor:a, thumb, loadThumb:tryNext };
+      return { anchor:a, thumb, loadThumb:load };
     }
 
-    // Lazy observer for loading thumbnails
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
         if(entry.isIntersecting){
@@ -226,24 +236,30 @@
 
       for (let n=1; n<=MAX; n++){
         const id = STEM + PAD(n);              // e.g., P01
-        const pdf = `${id}.pdf`;               // P01.pdf
-        const pdfUrl = PREFIX + pdf;
+        const pdfUrl = PREFIX + `${id}.pdf`;
         if (await exists(pdfUrl)){
           misses = 0;
           const meta = map[id] || null;
-          // Thumbnail candidates in common casings: P01.png, p01.png, P01.PNG
-          const thumbCandidates = [
-            PREFIX + `${id}.png`,
-            PREFIX + `${id}.jpg`,
-            PREFIX + `${id}.webp`,
-            PREFIX + `${id.toLowerCase()}.png`,
+
+          // Prefer lower-case jpg names per your current setup (p01.jpg),
+          // but accept multiple casings and extensions for safety.
+          const baseCandidates = [
             PREFIX + `${id.toLowerCase()}.jpg`,
-            PREFIX + `${id.toLowerCase()}.webp`,
-            PREFIX + `${id.toUpperCase()}.png`,
+            PREFIX + `${id}.jpg`,
             PREFIX + `${id.toUpperCase()}.jpg`,
-            PREFIX + `${id.toUpperCase()}.webp`,
+            PREFIX + `${id.toLowerCase()}.png`,
+            PREFIX + `${id}.png`,
+            PREFIX + `${id.toLowerCase()}.webp`,
+            PREFIX + `${id}.webp`,
           ];
-          cards.push({ id, pdfUrl, meta, thumbCandidates });
+
+          let thumb = null;
+          for (const c of baseCandidates){
+            if (await exists(c)){ thumb = c; break; }
+          }
+          // If no thumbnail, we still render the card with "Preview" placeholder.
+          const retina = thumb ? buildSrcset(thumb) : { at2x: '', at3x: '' };
+          cards.push({ id, pdfUrl, meta, thumb, retina });
         } else {
           misses++;
           if (misses >= MAX_CONSEC_MISSES) break;
@@ -255,13 +271,13 @@
       if (!cards.length){
         const p = document.createElement('p');
         p.style.color = 'var(--muted)';
-        p.textContent = 'No posters found. Ensure PDFs are named P01.pdf, P02.pdf, … in assets/posters/. Optional thumbnails: p01.png (any case) in the same folder. Optional titles in posters.csv';
+        p.textContent = 'No posters found. Ensure PDFs are named P01.pdf, P02.pdf, … in assets/posters/. Thumbnails: p01.jpg (plus optional p01@2x.jpg / p01@3x.jpg) in the same folder. Titles from posters.csv (id,title,authors).';
         grid.appendChild(p);
         return;
       }
 
       for (const c of cards){
-        const { anchor, thumb, loadThumb } = makeCard(c.id, c.pdfUrl, c.meta, c.thumbCandidates);
+        const { anchor, thumb, loadThumb } = makeCard(c.id, c.pdfUrl, c.meta, c.thumb || '', c.retina);
         grid.appendChild(anchor);
         thumb._loadThumb = loadThumb;
         io.observe(thumb);
