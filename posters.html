@@ -16,7 +16,6 @@
       font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
       display:flex;min-height:100vh
     }
-    /* Optional sidebar placeholder */
     aside.nav{
       width:260px;background:var(--panel);border-right:1px solid var(--border);
       position:sticky;top:0;height:100vh;padding:20px;display:none
@@ -27,7 +26,6 @@
     header.page h1{font-size:22px;margin:0}
     header.page p{color:var(--muted);margin:0}
 
-    /* Grid */
     .grid{
       display:grid;gap:12px;
       grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -36,13 +34,11 @@
     @media (min-width: 1024px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
     @media (min-width: 1280px){ .grid{ grid-template-columns: repeat(4, minmax(0,1fr)); } }
 
-    /* Card */
     .card{
       background:var(--panel);border:1px solid var(--border);border-radius:14px;
       overflow:hidden;display:flex;flex-direction:column;min-height:200px
     }
     .thumb{
-      /* flatter style: 4:3 */
       aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
       border-bottom:1px solid var(--border);position:relative;background:#0c1527
     }
@@ -64,7 +60,6 @@
       font-weight:600;font-size:12px;padding:3px 7px;border-radius:999px;border:1px solid rgba(134,239,172,.3)
     }
 
-    /* Modal gallery */
     .modal{
       position:fixed;inset:0;background:var(--overlay);
       display:none;align-items:stretch;justify-content:center;z-index:1000;
@@ -88,19 +83,19 @@
     .viewframe .pdfembed, .viewframe canvas{
       position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b1224
     }
-    .controls{
-      display:flex;align-items:center;gap:8px
+    .loading{
+      position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+      color:var(--muted);font-size:14px
     }
+    .loading.active{ display:flex }
+    .controls{ display:flex;align-items:center;gap:8px }
     .btn{
       background:#0f1a33;border:1px solid var(--border);color:var(--fg);
       padding:6px 10px;border-radius:10px;cursor:pointer;font-size:14px
     }
     .btn:hover{ background:#122043 }
     .btn.secondary{ background:transparent }
-    .spacer{ flex:1 }
-    .indexdot{
-      font-feature-settings:"tnum" 1; font-variant-numeric: tabular-nums; color:var(--muted); font-size:12px
-    }
+    .indexdot{ font-feature-settings:"tnum" 1; font-variant-numeric: tabular-nums; color:var(--muted); font-size:12px }
     @media (max-width: 640px){
       .viewer{ height:88vh;width:96vw }
       .viewer header{ padding:8px }
@@ -148,13 +143,14 @@
         </div>
       </header>
       <div class="viewframe" id="viewframe">
+        <div class="loading" id="loading">Loading…</div>
         <embed id="pdfEmbed" class="pdfembed" type="application/pdf" />
         <canvas id="pdfCanvas" style="display:none;"></canvas>
       </div>
     </div>
   </div>
 
-  <!-- PDF.js (used for mobile rendering only) -->
+  <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
   <script>
     if (window.pdfjsLib) {
@@ -177,22 +173,15 @@
     const btnNext = document.getElementById('btnNext');
     const btnClose= document.getElementById('btnClose');
     const indexDot = document.getElementById('indexDot');
+    const loading = document.getElementById('loading');
 
-    // === CONFIG ===
-    const PREFIX = 'assets/posters/'; // relative path
-    const STEM = 'P';
-    const MAX = 99;
-    const PAD  = n => n.toString().padStart(2,'0');
+    const PREFIX = 'assets/posters/';
+    const STEM = 'P'; const MAX = 99; const PAD = n => n.toString().padStart(2,'0');
     const MAX_CONSEC_MISSES = 15;
 
-    // Optional CSV mapping
-    const CSV_URL = PREFIX + 'posters.csv';
-    const TITLE_MAP = {};
-
-    // Responsive size hints for sharp <img>
+    const CSV_URL = PREFIX + 'posters.csv'; const TITLE_MAP = {};
     const SIZES_ATTR = '(min-width:1280px) 22vw, (min-width:1024px) 30vw, (min-width:640px) 44vw, 92vw';
 
-    // Environment detection
     const ua = navigator.userAgent || "";
     const isIOS = /iPad|iPhone|iPod/.test(ua);
     const isAndroid = /Android/.test(ua);
@@ -206,9 +195,7 @@
         if (/^id\s*,/i.test(line)) continue;
         const parts = line.split(',').map(s => s.trim());
         if (parts.length >= 3){
-          const id = parts[0];
-          const title = parts[1];
-          const authors = parts.slice(2).join(', ');
+          const id = parts[0], title = parts[1], authors = parts.slice(2).join(', ');
           out[id] = { title, authors };
         }
       }
@@ -227,20 +214,14 @@
           return map;
         }
         throw new Error('CSV empty');
-      }catch(e){
-        return TITLE_MAP;
-      }
+      }catch(e){ return TITLE_MAP; }
     }
 
     async function exists(url){
-      try{
-        const r = await fetch(url, { method:'HEAD', cache:'no-store' });
-        return r.ok;
-      }catch{
-        try{
-          const r = await fetch(url, { method:'GET', headers:{ 'Range':'bytes=0-0' }, cache:'no-store' });
-          return r.ok;
-        }catch{ return false; }
+      try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; }
+      catch{
+        try{ const r = await fetch(url, { method:'GET', headers:{ 'Range':'bytes=0-0' }, cache:'no-store' }); return r.ok; }
+        catch{ return false; }
       }
     }
 
@@ -250,90 +231,9 @@
       return { at2x, at3x };
     }
 
-    function makeCard(idx, id, pdfUrl, meta, thumbJpg, retina){
-      const a = document.createElement('a');
-      a.href = '#'; a.className = 'open'; a.addEventListener('click', (e)=>{
-        e.preventDefault();
-        openModal(idx);
-      });
-
-      const card = document.createElement('article');
-      card.className = 'card';
-
-      const thumb = document.createElement('div');
-      thumb.className = 'thumb';
-
-      const img = document.createElement('img');
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      img.alt = (meta?.title ? meta.title + ' — ' : '') + id + ' thumbnail';
-      img.sizes = SIZES_ATTR;
-
-      const badge = document.createElement('span');
-      badge.className = 'badge';
-      badge.textContent = id;
-
-      const fb = document.createElement('div');
-      fb.className = 'fallback';
-      fb.textContent = 'Preview';
-
-      thumb.appendChild(img);
-      thumb.appendChild(badge);
-      thumb.appendChild(fb);
-
-      const info = document.createElement('div');
-      info.className = 'info';
-      const title = document.createElement('h3'); title.className = 'title';
-      title.textContent = meta?.title || id;
-      const metaP = document.createElement('p'); metaP.className = 'meta';
-      metaP.textContent = meta?.authors ? meta.authors : 'Tap to open';
-
-      info.appendChild(title); info.appendChild(metaP);
-      card.appendChild(thumb); card.appendChild(info); a.appendChild(card);
-
-      // Lazy loader
-      let tried = false;
-      async function loadThumb(){
-        if (tried) return; tried = true;
-        if (thumbJpg){
-          const has2x = await exists(retina.at2x);
-          const has3x = await exists(retina.at3x);
-          if (has3x && has2x){
-            img.srcset = `${thumbJpg} 1x, ${retina.at2x} 2x, ${retina.at3x} 3x`;
-            img.src = thumbJpg;
-          } else if (has2x){
-            img.srcset = `${thumbJpg} 1x, ${retina.at2x} 2x`;
-            img.src = thumbJpg;
-          } else {
-            img.src = thumbJpg;
-          }
-          fb.style.display = 'none';
-        } else {
-          // no thumbnail; keep fallback
-        }
-      }
-
-      return { anchor:a, thumb, loadThumb };
-    }
-
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        if(entry.isIntersecting){
-          const el = entry.target;
-          io.unobserve(el);
-          const loader = el._loadThumb;
-          if (loader && !el._loaded){
-            el._loaded = true;
-            loader();
-          }
-        }
-      });
-    }, { rootMargin: '200px' });
-
-    const posters = []; // array of {id, title, authors, pdfUrl}
+    const posters = [];
     let currentIndex = 0;
 
-    // --- Modal logic ---
     function openModal(index){
       if (!posters.length) return;
       currentIndex = (index + posters.length) % posters.length;
@@ -343,8 +243,7 @@
       indexDot.textContent = (currentIndex+1) + ' / ' + posters.length;
 
       if (preferCanvas){
-        pdfEmbed.style.display = 'none';
-        pdfEmbed.removeAttribute('src');
+        pdfEmbed.style.display = 'none'; pdfEmbed.removeAttribute('src');
         pdfCanvas.style.display = 'block';
         renderPdfToCanvas(p.pdfUrl, pdfCanvas);
       } else {
@@ -371,9 +270,7 @@
     btnNext.addEventListener('click', nextModal);
     btnPrev.addEventListener('click', prevModal);
     btnClose.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e)=>{
-      if (e.target === modal) closeModal();
-    });
+    modal.addEventListener('click', (e)=>{ if (e.target === modal) closeModal(); });
     window.addEventListener('keydown', (e)=>{
       if (!modal.classList.contains('active')) return;
       if (e.key === 'Escape') closeModal();
@@ -381,8 +278,9 @@
       if (e.key === 'ArrowLeft') prevModal();
     });
 
-    // Touch swipe support
+    // Swipe
     let touchStartX = 0, touchStartY = 0, touchActive = false;
+    const viewframe = document.getElementById('viewframe');
     viewframe.addEventListener('touchstart', (e)=>{
       if (!modal.classList.contains('active')) return;
       const t = e.changedTouches[0];
@@ -394,27 +292,54 @@
       const t = e.changedTouches[0];
       const dx = t.clientX - touchStartX;
       const dy = t.clientY - touchStartY;
-      const absX = Math.abs(dx), absY = Math.abs(dy);
-      // horizontal swipe with threshold and angle tolerance
-      if (absX > 50 && absX > absY * 1.5){
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5){
         if (dx < 0) nextModal(); else prevModal();
       }
     }, { passive: true });
 
-    async function renderPdfToCanvas(url, canvas){
+    async function getPdfDoc(url){
+      // First try direct URL with mobile-friendly flags
       try{
-        const loadingTask = pdfjsLib.getDocument({ url });
-        const pdf = await loadingTask.promise;
+        const task = pdfjsLib.getDocument({
+          url,
+          disableRange: true,
+          disableStream: true,
+          isEvalSupported: true,
+          useSystemFonts: true,
+        });
+        return await task.promise;
+      }catch(e){
+        // Fallback: fetch as ArrayBuffer to avoid CORS/range issues
+        try{
+          const res = await fetch(url, { cache:'no-store' });
+          if (!res.ok) throw new Error('Fetch failed ' + res.status);
+          const buf = await res.arrayBuffer();
+          const task = pdfjsLib.getDocument({ data: buf, isEvalSupported: true, useSystemFonts: true });
+          return await task.promise;
+        }catch(err){
+          throw err;
+        }
+      }
+    }
+
+    async function renderPdfToCanvas(url, canvas){
+      loading.classList.add('active');
+      try{
+        const pdf = await getPdfDoc(url);
         const page = await pdf.getPage(1);
-        // Fit to canvas size based on container
-        const rect = viewframe.getBoundingClientRect();
-        const targetW = rect.width;
-        const targetH = rect.height;
+
+        // Fit canvas into container with devicePixelRatio for crispness
+        const rect = canvas.parentElement.getBoundingClientRect();
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
         const viewport = page.getViewport({ scale: 1 });
-        const scale = Math.min(targetW / viewport.width, targetH / viewport.height);
-        const scaled = page.getViewport({ scale });
+        const scale = Math.min(rect.width / viewport.width, rect.height / viewport.height);
+        const scaled = page.getViewport({ scale: scale * dpr });
+
         canvas.width = Math.floor(scaled.width);
         canvas.height = Math.floor(scaled.height);
+        canvas.style.width = Math.floor(scaled.width / dpr) + 'px';
+        canvas.style.height = Math.floor(scaled.height / dpr) + 'px';
+
         const ctx = canvas.getContext('2d', { alpha:false });
         await page.render({ canvasContext: ctx, viewport: scaled }).promise;
       } catch (e){
@@ -426,21 +351,23 @@
         ctx.font = '16px system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif';
         ctx.fillText('Preview unavailable — use “Open in new tab”.', 20, 40);
         console.warn('PDF canvas render failed for', url, e);
+      } finally {
+        loading.classList.remove('active');
       }
     }
 
+    // Build grid
     (async function build(){
       const map = await loadCSVMap();
       let misses = 0;
       const cards = [];
 
       for (let n=1; n<=MAX; n++){
-        const id = STEM + PAD(n);              // e.g., P01
+        const id = STEM + PAD(n);
         const pdfUrl = PREFIX + `${id}.pdf`;
         if (await exists(pdfUrl)){
           misses = 0;
           const meta = map[id] || null;
-
           const baseCandidates = [
             PREFIX + `${id.toLowerCase()}.jpg`,
             PREFIX + `${id}.jpg`,
@@ -450,21 +377,16 @@
             PREFIX + `${id.toLowerCase()}.webp`,
             PREFIX + `${id}.webp`,
           ];
-
           let thumb = null;
-          for (const c of baseCandidates){
-            if (await exists(c)){ thumb = c; break; }
-          }
+          for (const c of baseCandidates){ if (await exists(c)){ thumb = c; break; } }
           const retina = thumb ? buildSrcset(thumb) : { at2x:'', at3x:'' };
           cards.push({ id, pdfUrl, meta, thumb, retina });
         } else {
-          misses++;
-          if (misses >= MAX_CONSEC_MISSES) break;
+          misses++; if (misses >= MAX_CONSEC_MISSES) break;
         }
       }
 
       cards.sort((a,b)=> a.id.localeCompare(b.id, undefined, { numeric:true }));
-
       if (!cards.length){
         const p = document.createElement('p');
         p.style.color = 'var(--muted)';
@@ -473,9 +395,8 @@
         return;
       }
 
-      const TITLE_FALLBACK = (id)=> id;
-
-      // Fill poster array for modal navigation
+      // Fill poster array
+      posters.length = 0;
       for (const c of cards){
         posters.push({
           id: c.id,
@@ -500,27 +421,20 @@
         thumb.className = 'thumb';
 
         const img = document.createElement('img');
-        img.loading = 'lazy';
-        img.decoding = 'async';
+        img.loading = 'lazy'; img.decoding = 'async';
         img.alt = (c.meta?.title ? c.meta.title + ' — ' : '') + c.id + ' thumbnail';
         img.sizes = SIZES_ATTR;
 
         const badge = document.createElement('span');
-        badge.className = 'badge';
-        badge.textContent = c.id;
+        badge.className = 'badge'; badge.textContent = c.id;
 
-        const fb = document.createElement('div');
-        fb.className = 'fallback';
-        fb.textContent = 'Preview';
+        const fb = document.createElement('div'); fb.className = 'fallback'; fb.textContent = 'Preview';
 
-        thumb.appendChild(img);
-        thumb.appendChild(badge);
-        thumb.appendChild(fb);
+        thumb.appendChild(img); thumb.appendChild(badge); thumb.appendChild(fb);
 
-        const info = document.createElement('div');
-        info.className = 'info';
+        const info = document.createElement('div'); info.className = 'info';
         const title = document.createElement('h3'); title.className = 'title';
-        title.textContent = c.meta?.title || TITLE_FALLBACK(c.id);
+        title.textContent = c.meta?.title || c.id;
         const metaP = document.createElement('p'); metaP.className = 'meta';
         metaP.textContent = c.meta?.authors ? c.meta.authors : 'Tap to open';
 
@@ -528,26 +442,37 @@
         card.appendChild(thumb); card.appendChild(info); a.appendChild(card);
         grid.appendChild(a);
 
-        // lazy load for thumbnail
+        // lazy load thumbnail
         thumb._loadThumb = async function(){
           if (c.thumb){
             const has2x = await exists(c.retina.at2x);
             const has3x = await exists(c.retina.at3x);
             if (has3x && has2x){
-              img.srcset = `${c.thumb} 1x, ${c.retina.at2x} 2x, ${c.retina.at3x} 3x`;
-              img.src = c.thumb;
+              img.srcset = `${c.thumb} 1x, ${c.retina.at2x} 2x, ${c.retina.at3x} 3x`; img.src = c.thumb;
             } else if (has2x){
-              img.srcset = `${c.thumb} 1x, ${c.retina.at2x} 2x`;
-              img.src = c.thumb;
-            } else {
-              img.src = c.thumb;
-            }
+              img.srcset = `${c.thumb} 1x, ${c.retina.at2x} 2x`; img.src = c.thumb;
+            } else { img.src = c.thumb; }
             fb.style.display = 'none';
           }
         };
         io.observe(thumb);
       });
     })();
+
+    // Lazy observer
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          const el = entry.target;
+          io.unobserve(el);
+          const loader = el._loadThumb;
+          if (loader && !el._loaded){
+            el._loaded = true; loader();
+          }
+        }
+      });
+    }, { rootMargin: '200px' });
+
   })();
   </script>
 </body>
