@@ -6,29 +6,50 @@
   <title>Posters — Pleural Seminar Wales 2025</title>
   <meta name="color-scheme" content="dark light">
   <style>
-    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
+    :root{
+      --bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937;
+      --overlay: rgba(2,6,23,0.6);
+    }
     html,body{height:100%}
     body{
       margin:0;background:var(--bg);color:var(--fg);
       font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
       display:flex;min-height:100vh
     }
-    /* Left sidebar */
+
+    /* Sidebar + mobile header */
     aside.nav{
       width:260px;background:var(--panel);border-right:1px solid var(--border);
-      position:sticky;top:0;height:100vh;padding:20px;display:none
+      position:sticky;top:0;height:100vh;padding:20px;display:none;z-index:20
     }
-    @media (min-width: 1024px){ aside.nav{display:block} }
     aside.nav h3{margin:0 0 10px}
-    aside.nav a, aside.nav span{
-      display:block;margin:8px 0;color:var(--fg);text-decoration:none
-    }
+    aside.nav a, aside.nav span{display:block;margin:8px 0;color:var(--fg);text-decoration:none}
     aside.nav span{color:var(--muted)}
+    @media (min-width: 1024px){ aside.nav{display:block} }
+
+    header.mobile{
+      position:fixed;top:0;left:0;right:0;z-index:30;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--border);
+    }
+    header.mobile h1{font-size:18px;margin:0}
+    .hamburger{width:36px;height:32px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;background:#0f1a33;cursor:pointer}
+    .hamburger span{display:block;width:18px;height:2px;background:var(--fg);position:relative}
+    .hamburger span::before,.hamburger span::after{content:"";position:absolute;left:0;width:18px;height:2px;background:var(--fg)}
+    .hamburger span::before{top:-6px}.hamburger span::after{top:6px}
+
+    .drawer{position:fixed;inset:0;display:none;z-index:25}
+    .drawer.active{display:block}
+    .drawer .backdrop{position:absolute;inset:0;background:var(--overlay)}
+    .drawer .panel{position:absolute;top:0;left:0;width:260px;height:100%;background:var(--panel);border-right:1px solid var(--border);padding:20px}
 
     /* Main */
     main{flex:1;min-width:0;padding:20px}
+    .spacer{height:56px;display:none} /* for mobile header spacing */
+    @media (max-width:1023px){ .spacer{display:block} }
+
     header.page{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
-    header.page h1{font-size:22px;margin:0}
+    header.page h2{font-size:22px;margin:0}
     header.page p{color:var(--muted);margin:0}
     #status{color:var(--muted);font-size:14px;margin:8px 0 0 0;display:none}
 
@@ -40,26 +61,51 @@
       padding:10px;text-decoration:none;color:inherit
     }
     .row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-    @media (hover:hover){
-      .row:hover{border-color:#284266;background:#0c162a}
-    }
+    @media (hover:hover){ .row:hover{border-color:#284266;background:#0c162a} }
 
     .thumb{
-      width:84px;height:64px;flex:0 0 auto;border-radius:8px;overflow:hidden;
+      width:92px;height:72px;flex:0 0 auto;border-radius:8px;overflow:hidden;
       background:#0c1527;border:1px solid var(--border);display:flex;align-items:center;justify-content:center
     }
     .thumb img{width:100%;height:100%;object-fit:contain;display:block}
     @media (max-width:480px){
-      .thumb{width:68px;height:52px}
+      .thumb{width:88px;height:68px}
     }
 
     .text{min-width:0}
-    .title{margin:0 0 2px;font-weight:600;font-size:15px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .title{margin:0 0 4px;font-weight:600;font-size:15px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .meta{margin:0;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* On small screens allow wrapping to two lines */
+    @media (max-width:600px){
+      .title,.meta{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    }
+
     .badge{margin-left:auto;color:var(--muted);font-size:12px;border:1px solid var(--border);padding:2px 6px;border-radius:999px}
   </style>
 </head>
 <body>
+  <!-- Mobile header -->
+  <header class="mobile">
+    <button id="btnHamburger" class="hamburger" aria-label="Open menu"><span></span></button>
+    <h1>Posters</h1>
+    <div style="width:36px;height:32px"></div>
+  </header>
+  <div class="drawer" id="drawer">
+    <div class="backdrop" id="backdrop"></div>
+    <div class="panel">
+      <h3 style="margin-top:0">Pleural Seminar</h3>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="venue.html">Venue</a>
+        <a href="faculty.html">Faculty</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="about.html">About</a>
+        <span style="color:var(--muted)">Posters</span>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Desktop sidebar -->
   <aside class="nav">
     <h3>Pleural Seminar</h3>
     <nav>
@@ -73,8 +119,9 @@
   </aside>
 
   <main>
+    <div class="spacer"></div>
     <header class="page">
-      <h1>Posters</h1>
+      <h2>Posters</h2>
       <p>Tap a row to open the PDF in a new tab.</p>
       <p id="status"></p>
     </header>
@@ -84,6 +131,15 @@
 
   <script>
   (function(){
+    // Hamburger / drawer
+    const btn = document.getElementById('btnHamburger');
+    const drawer = document.getElementById('drawer');
+    const backdrop = document.getElementById('backdrop');
+    function openDrawer(){ drawer.classList.add('active'); document.body.style.overflow='hidden'; }
+    function closeDrawer(){ drawer.classList.remove('active'); document.body.style.overflow=''; }
+    btn.addEventListener('click', openDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+
     const CSV_URL = 'assets/posters/posters.csv';
     const list = document.getElementById('list');
     const status = document.getElementById('status');
@@ -95,7 +151,6 @@
       let start = 0;
       let idIdx = 0, titleIdx = 1, authorsIdx = 2;
 
-      // Header-aware
       const hdr = lines[0].split(',').map(s => s.trim().toLowerCase());
       if (hdr.includes('id') && hdr.includes('title')){
         idIdx = hdr.indexOf('id');
@@ -107,10 +162,12 @@
       const rows = [];
       for (let i=start; i<lines.length; i++){
         const parts = lines[i].split(',').map(s => s.trim());
-        const id = (parts[idIdx] || '').toUpperCase();
+        const rawId = (parts[idIdx] || '').trim();
+        if (!rawId) continue;
+        const id = rawId.toUpperCase().replace(/^P?/, 'P'); // normalise: 'P01'
         if (!/^P\d+/.test(id)) continue;
-        const title = parts[titleIdx] || id;
-        const authors = parts.slice(authorsIdx).join(', ');
+        const title = (parts[titleIdx] || '').trim() || id;
+        const authors = parts.slice(authorsIdx).join(', ').trim();
         rows.push({ id, title, authors });
       }
       return rows;
@@ -118,7 +175,15 @@
 
     function makeRow({ id, title, authors }){
       const pdf = 'assets/posters/' + id + '.pdf';
-      const png = 'assets/posters/' + id.toLowerCase() + '.png';
+
+      // Robust PNG resolution: try several casings, then .jpg as last resort
+      const candidates = [
+        'assets/posters/' + id.toLowerCase() + '.png',
+        'assets/posters/' + id + '.png',
+        'assets/posters/' + id.toUpperCase() + '.png',
+        'assets/posters/' + id.toLowerCase() + '.jpg', // just in case
+        'assets/posters/' + id + '.jpg'
+      ];
 
       const a = document.createElement('a');
       a.className = 'row';
@@ -131,17 +196,23 @@
       thumb.className = 'thumb';
 
       const img = document.createElement('img');
-      img.src = png;
       img.alt = id + ' thumbnail';
       img.loading = 'lazy';
       img.decoding = 'async';
-      img.onerror = function(){ this.style.display = 'none'; };
+      img.dataset.fallbacks = candidates.slice(1).join('|');
+      img.src = candidates[0];
+      img.onerror = function(){
+        const list = (this.dataset.fallbacks || '').split('|').filter(Boolean);
+        if (!list.length){ this.onerror=null; this.style.display='none'; return; }
+        this.src = list.shift();
+        this.dataset.fallbacks = list.join('|');
+      };
 
       thumb.appendChild(img);
 
       const text = document.createElement('div');
       text.className = 'text';
-      const t = document.createElement('p'); t.className = 'title'; t.textContent = id + ' — ' + title;
+      const t = document.createElement('p'); t.className = 'title'; t.textContent = title ? (id + ' — ' + title) : id;
       const m = document.createElement('p'); m.className = 'meta'; m.textContent = authors || 'Tap to open';
 
       text.appendChild(t);
