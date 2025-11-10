@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agenda — Pleural Seminar Wales 2025</title>
+  <link rel="icon" href="assets/branding/logo.png" />
+  <style>
+    :root {
+      --bg:#0b1320;
+      --panel:#0f172a;
+      --fg:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#22c55e;
+      --border:#1f2937;
+    }
+    body {
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+      padding-top:80px;
+    }
+    main {
+      max-width:900px;
+      margin:auto;
+      padding:2rem 1.5rem 4rem;
+    }
+    h1,h2,h3 { color:var(--fg); margin-top:0; }
+    h2 { margin-top:3rem; border-left:4px solid var(--accent); padding-left:0.6rem; }
+    p.intro { color:var(--muted); margin-bottom:2rem; }
+
+    /* Timeline */
+    .timeline {
+      position:relative;
+      margin-left:2rem;
+      padding-left:2rem;
+      border-left:3px solid var(--accent);
+    }
+    .session {
+      position:relative;
+      margin:1.5rem 0;
+      padding:1rem 1.25rem;
+      background:var(--panel);
+      border-radius:0.75rem;
+      box-shadow:0 0 0 1px var(--border);
+      transition:all 0.25s ease;
+    }
+    .session:hover {
+      box-shadow:0 0 8px var(--accent);
+      transform:translateY(-2px);
+    }
+    .session::before {
+      content:"";
+      position:absolute;
+      left:-2.35rem;
+      top:1.2rem;
+      width:0.9rem;
+      height:0.9rem;
+      background:var(--accent);
+      border-radius:50%;
+    }
+    .time {
+      color:var(--accent);
+      font-weight:600;
+      margin-bottom:0.4rem;
+    }
+    .title {
+      font-weight:600;
+      font-size:1.05rem;
+    }
+    .speaker {
+      color:var(--muted);
+      font-size:0.95rem;
+      margin-top:0.3rem;
+    }
+    .break {
+      background:#1a2438;
+      color:var(--muted);
+      font-style:italic;
+    }
+
+    /* CPD note */
+    .cpd {
+      margin-top:3rem;
+      padding:1rem;
+      border-left:4px solid var(--accent);
+      background:#101827;
+      color:var(--muted);
+      font-size:0.95rem;
+    }
+
+    /* Sponsor row */
+    .sponsors {
+      margin-top:2.5rem;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:2rem;
+      flex-wrap:wrap;
+    }
+    .sponsors img {
+      height:60px;
+      width:auto;
+      filter:brightness(0) invert(1);
+      opacity:0.8;
+      transition:all 0.3s;
+    }
+    .sponsors img:hover {
+      opacity:1;
+      filter:drop-shadow(0 0 6px var(--accent)) brightness(1.2);
+    }
+
+    @media (max-width:640px) {
+      .timeline { margin-left:1rem; padding-left:1.25rem; }
+      .session::before { left:-1.65rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <!-- existing sidebar/header structure loads here -->
+  </header>
+
+  <main>
+    <h1>Pleural Seminar Wales 2025 — Programme</h1>
+    <p class="intro">Below is the programme for Pleural Seminar Wales 2025. Times may vary slightly on the day.</p>
+
+    <h2>Morning Session</h2>
+    <div class="timeline">
+      <div class="session"><div class="time">08:40 – 08:55</div><div class="title">Registration and coffee</div></div>
+      <div class="session"><div class="time">08:55 – 09:00</div><div class="title">Welcome and Introduction</div><div class="speaker">Dr Alina Ionescu — Consultant Respiratory Physician, ABUHB</div></div>
+      <div class="session"><div class="time">09:00 – 09:45</div><div class="title">Straight to biopsy?</div><div class="speaker">Prof Najib Rahman — Oxford Centre for Respiratory Medicine</div></div>
+      <div class="session"><div class="time">09:45 – 10:15</div><div class="title">Update in mesothelioma research – HIT-MESO trial</div><div class="speaker">Dr Paul Shaw — Velindre Cancer Centre</div></div>
+      <div class="session"><div class="time">10:15 – 10:45</div><div class="title">Local anaesthetic thoracoscopy practice in the UK 2024: A snapshot survey</div><div class="speaker">Richard Westley — Glenfield Hospital, Leicester</div></div>
+      <div class="session break"><div class="time">10:45 – 11:15</div><div class="title">Coffee Break</div></div>
+      <div class="session"><div class="time">11:15 – 12:00</div><div class="title">Evidence for clinical applications of Artificial Intelligence</div><div class="speaker">Prof Alan Fraser — Cardiff University</div></div>
+      <div class="session"><div class="time">12:00 – 12:20</div><div class="title">Current chest drain practice at the Grange University Hospital – a clinical audit</div><div class="speaker">Natnael Afesha — Trainee, ABUHB</div></div>
+      <div class="session"><div class="time">12:20 – 13:00</div><div class="title">Legal aspects in asbestos-related pleural disease</div><div class="speaker">Hayley Hill & Satinder Bains — Partners, Irwin Mitchell LLP</div></div>
+      <div class="session break"><div class="time">13:00 – 13:50</div><div class="title">Lunch Break</div></div>
+    </div>
+
+    <h2>Afternoon Session</h2>
+    <div class="timeline">
+      <div class="session"><div class="time">13:50 – 14:00</div><div class="title">Pleural standards – collaboration group for Wales</div><div class="speaker">Dr Alina Ionescu</div></div>
+      <div class="session"><div class="time">14:00 – 14:15</div><div class="title">Thoracic Ultrasound training – an interactive teaching tool for trainees and students</div><div class="speaker">Rebecca Pearce & Alina Ionescu — ABUHB</div></div>
+      <div class="session"><div class="time">14:15 – 14:30</div><div class="title">Retrospective analysis of 10 years of Ambulatory Pleural Procedure Service (APPS) at SBUHB</div><div class="speaker">Dr Narendra Chinnappa — Swansea Bay UHB</div></div>
+      <div class="session"><div class="time">14:30 – 14:45</div><div class="title">Empyema – how do we manage it?</div><div class="speaker">Nora Ramley — Trainee, ABUHB</div></div>
+      <div class="session"><div class="time">14:45 – 16:30</div><div class="title">Case Competition — Coffee available during the session</div>
+        <div class="speaker">
+          Case 1: Sara Davies — ANP, Swansea Bay UHB<br>
+          Case 2: Sarah Case — SpR, Wales<br>
+          Case 3: Sion Freeman (IMT) & Eilish Yarman (SpR), Wales<br>
+          Case 4: Dana Bendajki — Trainee, ABUHB
+        </div>
+      </div>
+      <div class="session"><div class="time">16:30 – 16:35</div><div class="title">Decision on best presentation and prize winner</div></div>
+      <div class="session"><div class="time">16:35 – 16:45</div><div class="title">Prize presentation, feedback and conclusions</div></div>
+      <div class="session"><div class="time">16:45</div><div class="title">End of meeting</div></div>
+    </div>
+
+    <div class="cpd">
+      <strong>CPD Accreditation:</strong><br>
+      16th Pleural Seminar for Wales has been approved by the Federation of the Royal Colleges of Physicians of the United Kingdom for 6 Category 1 (external) CPD credits. Code 153330.
+    </div>
+
+    <div class="sponsors">
+      <img src="assets/sponsors/irwinmitchell.png" alt="Irwin Mitchell LLP" title="Irwin Mitchell LLP">
+      <img src="assets/sponsors/pleurx.png" alt="PleurX" title="PleurX">
+      <img src="assets/sponsors/wolfuk.png" alt="Wolf UK" title="Wolf UK">
+      <img src="assets/sponsors/astrazeneca.png" alt="AstraZeneca UK" title="AstraZeneca UK">
+      <img src="assets/sponsors/pulmonx.png" alt="PulmonX" title="PulmonX">
+    </div>
+  </main>
+</body>
+</html>
