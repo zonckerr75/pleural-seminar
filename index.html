@@ -56,7 +56,8 @@
 
     /* Responsive */
     @media (max-width: 900px){
-      .sidebar{display:none}
+      /* Hide only the DESKTOP sidebar, not the mobile drawer's sidebar */
+      .app > .sidebar{display:none}
       .topbar{display:flex}
       .content{width:100%}
       .hero-inner{grid-template-columns:80px 1fr}
