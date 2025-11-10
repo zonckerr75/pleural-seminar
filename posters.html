@@ -6,42 +6,186 @@
   <title>Posters — Pleural Seminar Wales 2025</title>
   <meta name="color-scheme" content="dark light">
   <style>
-    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--border:#1f2937}
+    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
     html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-    main{max-width:980px;margin:0 auto;padding:20px}
-    h1{font-size:22px;margin:0 0 8px}
-    p{color:var(--muted);margin:0 0 16px}
-    .card{
-      background:var(--panel);border:1px solid var(--border);border-radius:14px;
-      overflow:hidden;display:block;text-decoration:none;color:inherit
+    body{
+      margin:0;background:var(--bg);color:var(--fg);
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+      display:flex;min-height:100vh
     }
-    .thumb{aspect-ratio:4/3;background:#0c1527;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center}
-    .thumb img{width:100%;height:100%;object-fit:contain;display:block}
-    .info{padding:10px}
-    .title{margin:0 0 4px;font-weight:600}
-    .meta{margin:0;color:var(--muted);font-size:14px}
+    /* Left sidebar */
+    aside.nav{
+      width:260px;background:var(--panel);border-right:1px solid var(--border);
+      position:sticky;top:0;height:100vh;padding:20px;display:none
+    }
+    @media (min-width: 1024px){ aside.nav{display:block} }
+    aside.nav h3{margin:0 0 10px}
+    aside.nav a, aside.nav span{
+      display:block;margin:8px 0;color:var(--fg);text-decoration:none
+    }
+    aside.nav span{color:var(--muted)}
+
+    /* Main */
+    main{flex:1;min-width:0;padding:20px}
+    header.page{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+    header.page h1{font-size:22px;margin:0}
+    header.page p{color:var(--muted);margin:0}
+    #status{color:var(--muted);font-size:14px;margin:8px 0 0 0;display:none}
+
+    /* List */
+    .list{display:flex;flex-direction:column;gap:10px}
+    .row{
+      display:flex;align-items:center;gap:12px;
+      background:var(--panel);border:1px solid var(--border);border-radius:12px;
+      padding:10px;text-decoration:none;color:inherit
+    }
+    .row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
     @media (hover:hover){
-      .card:hover{outline:2px solid #22c55e33;outline-offset:2px}
+      .row:hover{border-color:#284266;background:#0c162a}
     }
+
+    .thumb{
+      width:84px;height:64px;flex:0 0 auto;border-radius:8px;overflow:hidden;
+      background:#0c1527;border:1px solid var(--border);display:flex;align-items:center;justify-content:center
+    }
+    .thumb img{width:100%;height:100%;object-fit:contain;display:block}
+    @media (max-width:480px){
+      .thumb{width:68px;height:52px}
+    }
+
+    .text{min-width:0}
+    .title{margin:0 0 2px;font-weight:600;font-size:15px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .meta{margin:0;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .badge{margin-left:auto;color:var(--muted);font-size:12px;border:1px solid var(--border);padding:2px 6px;border-radius:999px}
   </style>
 </head>
 <body>
+  <aside class="nav">
+    <h3>Pleural Seminar</h3>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="venue.html">Venue</a>
+      <a href="faculty.html">Faculty</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="about.html">About</a>
+      <span>Posters</span>
+    </nav>
+  </aside>
+
   <main>
-    <h1>Poster</h1>
-    <p>Tap the thumbnail to open the PDF in a new tab.</p>
+    <header class="page">
+      <h1>Posters</h1>
+      <p>Tap a row to open the PDF in a new tab.</p>
+      <p id="status"></p>
+    </header>
 
-    <!-- CHANGE THESE TWO PATHS to your actual file names -->
-    <a class="card" href="assets/posters/P01.pdf" target="_blank" rel="noopener" aria-label="Open poster PDF">
-      <div class="thumb">
-        <img src="assets/posters/p01.jpg" alt="Poster P01 thumbnail" loading="lazy" decoding="async">
-      </div>
-      <div class="info">
-        <h2 class="title">P01 — Poster title here</h2>
-        <p class="meta">Author names here</p>
-      </div>
-    </a>
-
+    <div id="list" class="list" aria-live="polite"></div>
   </main>
+
+  <script>
+  (function(){
+    const CSV_URL = 'assets/posters/posters.csv';
+    const list = document.getElementById('list');
+    const status = document.getElementById('status');
+
+    function parseCSV(text){
+      text = text.replace(/^\uFEFF/, '');
+      const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
+      if (!lines.length) return [];
+      let start = 0;
+      let idIdx = 0, titleIdx = 1, authorsIdx = 2;
+
+      // Header-aware
+      const hdr = lines[0].split(',').map(s => s.trim().toLowerCase());
+      if (hdr.includes('id') && hdr.includes('title')){
+        idIdx = hdr.indexOf('id');
+        titleIdx = hdr.indexOf('title');
+        authorsIdx = hdr.indexOf('authors') >= 0 ? hdr.indexOf('authors') : Math.max(2, hdr.length-1);
+        start = 1;
+      }
+
+      const rows = [];
+      for (let i=start; i<lines.length; i++){
+        const parts = lines[i].split(',').map(s => s.trim());
+        const id = (parts[idIdx] || '').toUpperCase();
+        if (!/^P\d+/.test(id)) continue;
+        const title = parts[titleIdx] || id;
+        const authors = parts.slice(authorsIdx).join(', ');
+        rows.push({ id, title, authors });
+      }
+      return rows;
+    }
+
+    function makeRow({ id, title, authors }){
+      const pdf = 'assets/posters/' + id + '.pdf';
+      const png = 'assets/posters/' + id.toLowerCase() + '.png';
+
+      const a = document.createElement('a');
+      a.className = 'row';
+      a.href = pdf;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.setAttribute('aria-label', 'Open ' + id + ' poster');
+
+      const thumb = document.createElement('div');
+      thumb.className = 'thumb';
+
+      const img = document.createElement('img');
+      img.src = png;
+      img.alt = id + ' thumbnail';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.onerror = function(){ this.style.display = 'none'; };
+
+      thumb.appendChild(img);
+
+      const text = document.createElement('div');
+      text.className = 'text';
+      const t = document.createElement('p'); t.className = 'title'; t.textContent = id + ' — ' + title;
+      const m = document.createElement('p'); m.className = 'meta'; m.textContent = authors || 'Tap to open';
+
+      text.appendChild(t);
+      text.appendChild(m);
+
+      const badge = document.createElement('span');
+      badge.className = 'badge';
+      badge.textContent = id;
+
+      a.appendChild(thumb);
+      a.appendChild(text);
+      a.appendChild(badge);
+
+      return a;
+    }
+
+    async function init(){
+      try{
+        const res = await fetch(CSV_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error('posters.csv not found');
+        const text = await res.text();
+        const rows = parseCSV(text);
+        rows.sort((a,b)=> a.id.localeCompare(b.id, undefined, { numeric: true }));
+        status.textContent = 'Loaded ' + rows.length + ' posters';
+        status.style.display = 'none';
+
+        if (!rows.length){
+          const p = document.createElement('p');
+          p.style.color = 'var(--muted)';
+          p.textContent = 'No posters listed in posters.csv';
+          list.appendChild(p);
+          return;
+        }
+
+        rows.forEach(row => list.appendChild(makeRow(row)));
+      } catch (e){
+        status.textContent = 'Could not load posters.csv — ensure it exists at assets/posters/posters.csv';
+        status.style.display = 'block';
+        console.warn(e);
+      }
+    }
+
+    init();
+  })();
+  </script>
 </body>
 </html>
