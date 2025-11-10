@@ -4,145 +4,263 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>About — Pleural Seminar Wales 2025</title>
-  <meta name="color-scheme" content="dark">
+  <meta name="description" content="About Pleural Seminar Wales — objectives, Wales Pleural Group, contact details, acknowledgements, and past events." />
   <style>
-    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
+    :root{
+      --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8;
+      --accent:#22c55e; --border:#1f2937; --link:#8dd8a8
+    }
     html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-    .app{display:flex;min-height:100dvh}
-    .sidebar{width:264px;background:var(--panel);border-right:1px solid var(--border);position:sticky;top:0;align-self:flex-start;height:100dvh;overflow:auto}
-    .content{flex:1;min-width:0}
-    .sb-header{display:flex;align-items:center;gap:.75rem;padding:16px 18px;border-bottom:1px solid var(--border)}
-    .sb-header img{height:36px;width:auto;display:block}
-    .brand{font-weight:600;letter-spacing:.2px}
-    nav.sb{display:flex;flex-direction:column;padding:10px}
-    nav.sb a{color:var(--fg);text-decoration:none;padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:.6rem}
-    nav.sb a:hover{background:#0b1226}
-    nav.sb a.active{background:#0c1b31;outline:1px solid #16233f}
-    .topbar{display:none;position:sticky;top:0;z-index:999;background:var(--panel);border-bottom:1px solid var(--border);padding:10px 14px;align-items:center;gap:10px}
-    .hamburger{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer}
-    .hamburger:focus{outline:2px solid #1e3a8a}
-    .topbar .title{font-weight:600}
-    .hero{position:relative;padding:40px 24px 20px;background:linear-gradient(180deg,rgba(24,37,67,.6),rgba(11,19,32,0));border-bottom:1px solid var(--border)}
-    .hero-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px}
-    .hero h1{margin:0;font-size:28px}
-    .hero p{margin:.25rem 0 0;color:var(--muted)}
-    .container{max-width:1100px;margin:0 auto;padding:24px}
-    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
-    .grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
-    .col-6{grid-column:span 6}
-    .col-12{grid-column:span 12}
-    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:1000}
-    .backdrop.show{opacity:1;pointer-events:auto}
-    .drawer{position:fixed;inset:0;display:none;z-index:1000}
-    .drawer.open{display:flex}
-    .drawer .sidebar{transform:translateX(-100%);transition:transform .2s ease;position:relative;z-index:1001}
-    .drawer.open .sidebar{transform:translateX(0)}
+    body{margin:0;background:var(--bg);color:var(--fg);
+      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+    a{color:var(--link);}
+    /* Layout */
+    .app{display:grid; grid-template-columns: 260px 1fr; min-height:100vh}
+    nav.sidebar{
+      position:sticky; top:0; align-self:start; height:100vh; overflow:auto;
+      background:var(--panel); border-right:1px solid var(--border); padding:1rem
+    }
+    .brand{display:flex; align-items:center; gap:.6rem; margin-bottom:1rem}
+    .brand .logo{width:36px; height:36px; border:1px solid var(--border); border-radius:8px; display:grid; place-items:center; font-weight:700}
+    .brand h1{font-size:1rem; margin:0; line-height:1.2}
+    .navlinks{display:flex; flex-direction:column; gap:.25rem; margin-top:.5rem}
+    .navlinks a{display:block; padding:.5rem .6rem; border-radius:8px; text-decoration:none; color:var(--fg); border:1px solid transparent}
+    .navlinks a:hover{border-color:var(--border); background:rgba(255,255,255,.02)}
+    .navlinks a.active{border-color:var(--accent);}
+    main{padding:2rem; max-width:1100px}
+    header.pagehead{margin-bottom:1.25rem}
+    header.pagehead h2{margin:0 0 .25rem 0; font-size:1.6rem}
+    header.pagehead p{margin:0; color:var(--muted)}
+    section{margin:2rem 0}
+    h3{margin:.2rem 0 1rem 0}
+    .lead{color:var(--muted)}
+    /* Two-column definition list for group section */
+    .kv{display:grid; grid-template-columns: 220px 1fr; gap:.5rem 1rem; border:1px solid var(--border); background:var(--panel); border-radius:12px; padding:1rem}
+    .kv dt{font-weight:700}
+    .kv dd{margin:0}
+    /* Cards grid for Past Events */
+    .cards{display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:1rem}
+    .card{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:.75rem}
+    .card header{display:flex; justify-content:space-between; align-items:baseline; gap:.5rem}
+    .card .year{margin:0; font-size:1.1rem; line-height:1.2}
+    .card .type{color:var(--muted); font-size:.9rem}
+    .thumb{border:0; padding:0; background:transparent; cursor:pointer; border-radius:10px; overflow:hidden; line-height:0}
+    .thumb img{width:100%; height:auto; display:block; aspect-ratio:4/5; object-fit:cover}
+    .btn{display:inline-block; text-decoration:none; font-weight:600; border:1px solid var(--border);
+      padding:.5rem .75rem; border-radius:10px; background:var(--bg); color:var(--fg)}
+    .btn:hover{outline:2px solid var(--accent); outline-offset:2px}
+    /* Contact card */
+    .contact{border:1px solid var(--border); background:var(--panel); border-radius:12px; padding:1rem; max-width:600px}
+    /* Image modal */
+    .img-modal{position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.7); z-index:2000; padding:2rem}
+    .img-modal[aria-hidden="false"]{display:grid}
+    .img-modal img{max-width:min(100%, 1000px); max-height:85vh; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.5)}
+    .img-modal .close{position:absolute; top:1rem; right:1rem; background:#000; color:#fff; border:0; width:40px; height:40px; border-radius:999px; font-size:1.5rem; cursor:pointer}
+    /* Mobile */
+    .hamburger{display:none}
     @media (max-width: 900px){
-      .app > .sidebar{display:none}
-      .topbar{display:flex}
-      .content{width:100%}
-      .grid{grid-template-columns:1fr}
-      .col-6,.col-12{grid-column:1/-1}
+      .app{grid-template-columns: 1fr}
+      nav.sidebar{position:fixed; left:0; top:0; bottom:0; transform:translateX(-100%); transition:transform .25s ease}
+      nav.sidebar.open{transform:none}
+      .hamburger{display:block; position:fixed; top:.75rem; left:.75rem; z-index:2100; background:var(--panel); border:1px solid var(--border); color:var(--fg); padding:.5rem .65rem; border-radius:8px}
+      main{padding:4rem 1rem 2rem}
+      .kv{grid-template-columns: 1fr}
+    }
+    /* Light theme fallback */
+    @media (prefers-color-scheme: light){
+      body{background:#f7f8fb; color:#111827}
+      .card,.contact,.kv,nav.sidebar{background:#fff; border-color:#e5e7eb}
+      .btn{background:#fff; color:#111827}
     }
   </style>
 </head>
 <body>
+  <button class="hamburger" aria-controls="sidebar" aria-expanded="false">Menu</button>
   <div class="app">
-    <aside class="sidebar" aria-label="Primary">
-      <div class="sb-header">
-        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
-        <div class="brand">Pleural Seminar Wales 2025</div>
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">WP</div>
+        <h1>Pleural Seminar Wales</h1>
       </div>
-      <nav class="sb" aria-label="Main navigation">
+      <div class="navlinks">
         <a href="index.html">Home</a>
         <a href="agenda.html">Agenda</a>
-        <a href="venue.html">Venue</a>
         <a href="posters.html">Posters</a>
-        <a href="feedback.html">Feedback</a>
-        <a href="faculty.html">Faculty</a>
-        <a href="about.html" class="active">About</a>
-      </nav>
-    </aside>
-
-    <div class="content">
-      <div class="topbar">
-        <button class="hamburger" id="openMenu" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false" type="button" onclick="window.__openDrawer && window.__openDrawer()">☰</button>
-        <span class="title">About</span>
+        <a href="cases.html">Cases</a>
+        <a href="venue.html">Venue</a>
+        <a class="active" href="about.html" aria-current="page">About</a>
       </div>
+    </nav>
 
-      <section class="hero" role="banner">
-        <div class="hero-inner">
-          <h1>About This Seminar</h1>
-          <p>Objectives, organising team, and acknowledgements</p>
-        </div>
+    <!-- Main -->
+    <main>
+      <header class="pagehead">
+        <h2>About Pleural Seminar Wales 2025</h2>
+        <p class="lead">Objectives, Wales Pleural Group, contact details, acknowledgements, and past events.</p>
+      </header>
+
+      <!-- Objectives -->
+      <section id="objectives" aria-labelledby="objectives-title">
+        <h3 id="objectives-title">Objectives</h3>
+        <p>Pleural Seminar Wales is held annually each November and organised by the <strong>Wales Pleural Group</strong>, a collaborative network supported by the Welsh Thoracic Society and the wider NHS Wales respiratory community.</p>
+        <ul>
+          <li>Strengthen the national network of clinicians involved in pleural medicine.</li>
+          <li>Share learning from Welsh and UK initiatives such as <strong>Project Cymru</strong> and the <strong>Mesothelioma Network Cymru</strong>.</li>
+          <li>Promote consistent, high-quality pleural care across all Welsh Health Boards.</li>
+          <li>Support service development through practical education, case-based discussion, and cross-site collaboration.</li>
+          <li>Encourage multidisciplinary engagement — bringing together respiratory physicians, specialist nurses, radiologists, oncologists, and allied health professionals.</li>
+        </ul>
       </section>
 
-      <!-- Replace this with your existing About page content -->
-      <main class="container" id="main">
-        <div class="grid">
-          <div class="col-12">
-            <div class="card">
-              <h2>Objectives</h2>
-              <ul>
-                <li>To Advance pleural disease education across Wales.</li>
-                <li>To Share best practice and research updates.</li>
-                <li>Encourage collaboration between centres.</li>
-              </ul>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="card">
-              <h3>Organising Team</h3>
-              <p>Paste your team list here…</p>
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="card">
-              <h3>Thanks & Sponsors</h3>
-              <p>Paste acknowledgements here…</p>
-            </div>
-          </div>
+      <!-- Wales Pleural Group -->
+      <section id="wales-pleural-group" aria-labelledby="wpg-title">
+        <h3 id="wpg-title">Wales Pleural Group</h3>
+        <dl class="kv">
+          <dt>Chair</dt>
+          <dd>Alina Ionescu — <a href="mailto:Alina.Ionescu2@wales.nhs.uk">Alina.Ionescu2@wales.nhs.uk</a></dd>
+
+          <dt>Faculty Members</dt>
+          <dd>Arte Gonzalez • Andrew Griffiths • Hannah Brothers • Narendra Chinnappa • Ali Thahseen</dd>
+
+          <dt>Honorary Member</dt>
+          <dd>Prof. Naj Rahman — Oxford Pleural Unit</dd>
+
+          <dt>Administrative Support</dt>
+          <dd>Lucy Hampton — <a href="mailto:Lucy.Hampton@wales.nhs.uk">Lucy.Hampton@wales.nhs.uk</a></dd>
+        </dl>
+      </section>
+
+      <!-- Contact -->
+      <section id="contact" aria-labelledby="contact-title">
+        <h3 id="contact-title">Contact Us</h3>
+        <div class="contact" role="region" aria-label="Contact card">
+          <p><strong>Education Centre Operational Manager</strong><br/>
+          Royal Gwent Hospital<br/>
+          📞 Tel: 01633 238125<br/>
+          ✉️ Email: <a href="mailto:Lucy.Hampton@wales.nhs.uk">Lucy.Hampton@wales.nhs.uk</a><br/>
+          🐦 Twitter: <a href="https://twitter.com/ABUHB_MedicalEd" target="_blank" rel="noopener">@ABUHB_MedicalEd</a></p>
         </div>
-      </main>
-    </div>
+        <p style="margin-top: .75rem;"><strong>Wales Pleural Group Twitter:</strong><br/>🐦 <a href="https://x.com/pleuralwales" target="_blank" rel="noopener">@PleuralWales</a></p>
+      </section>
+
+      <!-- Acknowledgements -->
+      <section id="acknowledgements" aria-labelledby="ack-title">
+        <h3 id="ack-title">Acknowledgements</h3>
+        <p>Our sincere thanks to <strong>Elizabeth Green</strong> and <strong>Gokul Muthaluraj</strong> for their support in organising the 2025 seminar, and to <strong>Prof. Naj Rahman</strong> for his continued contribution as an external speaker and valued supporter of Pleural Seminar Wales.</p>
+      </section>
+
+      <!-- Past Events -->
+      <section id="past-events" aria-labelledby="past-events-title">
+        <h3 id="past-events-title">Past Events</h3>
+        <p>Explore programmes from previous seminars:</p>
+
+        <div class="cards">
+          <!-- 2024 (PDF) -->
+          <article class="card">
+            <header>
+              <h4 class="year">2024</h4>
+              <span class="type">Programme (PDF)</span>
+            </header>
+            <div class="card-body">
+              <p class="desc">Open the 2024 programme.</p>
+            </div>
+            <footer>
+              <a class="btn" href="assets/past/programme-2024.pdf" target="_blank" rel="noopener">View programme</a>
+            </footer>
+          </article>
+
+          <!-- 2022 (JPG) -->
+          <article class="card">
+            <header>
+              <h4 class="year">2022</h4>
+              <span class="type">Programme (Image)</span>
+            </header>
+            <button class="thumb" data-image="assets/past/programme-2022.jpg" aria-label="Open 2022 programme">
+              <img src="assets/past/programme-2022.jpg" alt="Programme — Wales Pleural Seminar 2022" loading="lazy">
+            </button>
+            <footer>
+              <a class="btn" href="assets/past/programme-2022.jpg" target="_blank" rel="noopener">Open image</a>
+            </footer>
+          </article>
+
+          <!-- 2021 (JPG) -->
+          <article class="card">
+            <header>
+              <h4 class="year">2021</h4>
+              <span class="type">Programme (Image)</span>
+            </header>
+            <button class="thumb" data-image="assets/past/programme-2021.jpg" aria-label="Open 2021 programme">
+              <img src="assets/past/programme-2021.jpg" alt="Programme — Wales Pleural Seminar 2021" loading="lazy">
+            </button>
+            <footer>
+              <a class="btn" href="assets/past/programme-2021.jpg" target="_blank" rel="noopener">Open image</a>
+            </footer>
+          </article>
+
+          <!-- 2020 (JPG) -->
+          <article class="card">
+            <header>
+              <h4 class="year">2020</h4>
+              <span class="type">Programme (Image)</span>
+            </header>
+            <button class="thumb" data-image="assets/past/programme-2020.jpg" aria-label="Open 2020 programme">
+              <img src="assets/past/programme-2020.jpg" alt="Programme — Wales Pleural Seminar 2020" loading="lazy">
+            </button>
+            <footer>
+              <a class="btn" href="assets/past/programme-2020.jpg" target="_blank" rel="noopener">Open image</a>
+            </footer>
+          </article>
+        </div>
+      </section>
+    </main>
   </div>
 
-  <!-- Mobile drawer -->
-  <div class="drawer" id="mobileDrawer" aria-hidden="true" hidden>
-    <aside class="sidebar" role="dialog" aria-label="Mobile menu">
-      <div class="sb-header">
-        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
-        <div class="brand">Pleural Seminar Wales 2025</div>
-      </div>
-      <nav class="sb" aria-label="Mobile navigation">
-        <a href="index.html">Home</a>
-        <a href="agenda.html">Agenda</a>
-        <a href="venue.html">Venue</a>
-        <a href="posters.html">Posters</a>
-        <a href="feedback.html">Feedback</a>
-        <a href="faculty.html">Faculty</a>
-        <a href="about.html" class="active">About</a>
-      </nav>
-    </aside>
-    <div class="backdrop" id="backdrop"></div>
+  <!-- Image Modal -->
+  <div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Image viewer">
+    <button class="close" aria-label="Close viewer">&times;</button>
+    <img id="modalImg" alt="">
   </div>
 
   <script>
-    (function(){
-      const openBtn = document.getElementById('openMenu');
-      const drawer = document.getElementById('mobileDrawer');
-      const backdrop = document.getElementById('backdrop');
-      if(!openBtn || !drawer || !backdrop){ return; }
-      let lastFocus = null;
-      function openDrawer(){ lastFocus=document.activeElement; drawer.hidden=false; drawer.classList.add('open'); document.body.style.overflow='hidden'; openBtn.setAttribute('aria-expanded','true'); drawer.setAttribute('aria-hidden','false'); backdrop.classList.add('show'); }
-      function closeDrawer(){ drawer.classList.remove('open'); backdrop.classList.remove('show'); document.body.style.overflow=''; openBtn.setAttribute('aria-expanded','false'); drawer.setAttribute('aria-hidden','true'); setTimeout(()=>{ drawer.hidden=true; },200); if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
-      window.__openDrawer = openDrawer;
-      openBtn.addEventListener('click', openDrawer);
-      openBtn.addEventListener('touchstart', openDrawer, {passive:true});
-      backdrop.addEventListener('click', closeDrawer);
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
-      drawer.querySelectorAll('a').forEach(a=>{ a.addEventListener('click', ()=>{ closeDrawer(); }); });
+    // Mobile sidebar toggle
+    const ham = document.querySelector('.hamburger');
+    const sidebar = document.getElementById('sidebar');
+    ham?.addEventListener('click', ()=>{
+      const isOpen = sidebar.classList.toggle('open');
+      ham.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    // Simple image modal logic
+    (function () {
+      const modal = document.getElementById('imgModal');
+      const modalImg = document.getElementById('modalImg');
+      const closeBtn = modal.querySelector('.close');
+
+      function openModal(src, alt) {
+        modalImg.src = src;
+        modalImg.alt = alt || '';
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeModal() {
+        modal.setAttribute('aria-hidden', 'true');
+        modalImg.src = '';
+        document.body.style.overflow = '';
+      }
+
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.thumb');
+        if (btn && btn.dataset.image) {
+          const img = btn.querySelector('img');
+          openModal(btn.dataset.image, img?.alt || '');
+        }
+        if (e.target === modal) closeModal();
+      });
+      closeBtn.addEventListener('click', closeModal);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal();
+      });
     })();
   </script>
 </body>
