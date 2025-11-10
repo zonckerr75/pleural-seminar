@@ -8,7 +8,6 @@
   <style>
     :root{
       --bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937;
-      --overlay: rgba(2,6,23,0.85);
     }
     html,body{height:100%}
     body{
@@ -16,6 +15,7 @@
       font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
       display:flex;min-height:100vh
     }
+    /* Optional sidebar placeholder */
     aside.nav{
       width:260px;background:var(--panel);border-right:1px solid var(--border);
       position:sticky;top:0;height:100vh;padding:20px;display:none
@@ -26,6 +26,7 @@
     header.page h1{font-size:22px;margin:0}
     header.page p{color:var(--muted);margin:0}
 
+    /* Grid */
     .grid{
       display:grid;gap:12px;
       grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -34,6 +35,7 @@
     @media (min-width: 1024px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
     @media (min-width: 1280px){ .grid{ grid-template-columns: repeat(4, minmax(0,1fr)); } }
 
+    /* Card */
     .card{
       background:var(--panel);border:1px solid var(--border);border-radius:14px;
       overflow:hidden;display:flex;flex-direction:column;min-height:200px
@@ -44,64 +46,18 @@
     }
     .thumb img{
       width:100%;height:100%;object-fit:contain;display:block;
-      image-rendering:auto;
     }
-    .thumb .fallback{
-      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-      font-weight:700;letter-spacing:0.08em;color:var(--muted)
+    .badge{
+      position:absolute;top:8px;left:8px;background:rgba(34,197,94,.15);color:#86efac;
+      font-weight:600;font-size:12px;padding:3px 7px;border-radius:999px;border:1px solid rgba(134,239,172,.3)
     }
     .info{padding:10px}
     .title{font-weight:600;margin:0 0 4px 0;font-size:15px;line-height:1.3}
     .meta{color:var(--muted);font-size:13px;margin:0}
     .open{ text-decoration:none;color:var(--fg);display:block }
     .open:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:12px}
-    .badge{
-      position:absolute;top:8px;left:8px;background:rgba(34,197,94,.15);color:#86efac;
-      font-weight:600;font-size:12px;padding:3px 7px;border-radius:999px;border:1px solid rgba(134,239,172,.3)
-    }
 
-    .modal{
-      position:fixed;inset:0;background:var(--overlay);
-      display:none;align-items:stretch;justify-content:center;z-index:1000;
-    }
-    .modal.active{ display:flex; }
-    .viewer{
-      margin:auto;background:var(--panel);border:1px solid var(--border);
-      width:min(1200px, 96vw);height:min(86vh, 900px);border-radius:16px;display:flex;flex-direction:column;overflow:hidden
-    }
-    .viewer header{
-      display:flex;align-items:center;justify-content:space-between;gap:8px;
-      padding:10px 12px;border-bottom:1px solid var(--border)
-    }
-    .viewer header .left{
-      display:flex;align-items:center;gap:10px;min-width:0
-    }
-    .viewer h3{margin:0;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .viewframe{
-      position:relative;flex:1;background:#0b1224
-    }
-    .viewframe .pdfembed, .viewframe canvas{
-      position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b1224
-    }
-    .loading{
-      position:absolute;inset:0;display:none;align-items:center;justify-content:center;
-      color:var(--muted);font-size:14px
-    }
-    .loading.active{ display:flex }
-    .controls{ display:flex;align-items:center;gap:8px }
-    .btn{
-      background:#0f1a33;border:1px solid var(--border);color:var(--fg);
-      padding:6px 10px;border-radius:10px;cursor:pointer;font-size:14px
-    }
-    .btn:hover{ background:#122043 }
-    .btn.secondary{ background:transparent }
-    .indexdot{ font-feature-settings:"tnum" 1; font-variant-numeric: tabular-nums; color:var(--muted); font-size:12px }
-    @media (max-width: 640px){
-      .viewer{ height:88vh;width:96vw }
-      .viewer header{ padding:8px }
-      .btn{ padding:6px 8px }
-      .title{ font-size:14px }
-    }
+    .notice{color:var(--muted);margin-top:8px;font-size:14px}
   </style>
 </head>
 <body>
@@ -120,359 +76,121 @@
   <main>
     <header class="page">
       <h1>Posters</h1>
-      <p>Tap a thumbnail to open the gallery. Use Next / Back or swipe to move between posters.</p>
-      <p style="display:none" id="csvStatus"></p>
+      <p>Tap a thumbnail to open the PDF in a new tab.</p>
+      <p class="notice">Uses <code>assets/posters/posters.csv</code> to list posters. Thumbnails are expected as <code>p01.jpg</code> etc. PDFs as <code>P01.pdf</code>.</p>
     </header>
 
     <section class="grid" id="posterGrid" aria-live="polite"></section>
   </main>
 
-  <!-- Modal gallery -->
-  <div class="modal" id="posterModal" aria-hidden="true" role="dialog" aria-label="Poster viewer">
-    <div class="viewer">
-      <header>
-        <div class="left">
-          <button class="btn secondary" id="btnClose" aria-label="Close viewer">Close</button>
-          <h3 id="modalTitle">Poster</h3>
-        </div>
-        <div class="controls">
-          <span class="indexdot" id="indexDot">1 / 1</span>
-          <button class="btn" id="btnPrev" aria-label="Previous poster">◀ Back</button>
-          <button class="btn" id="btnNext" aria-label="Next poster">Next ▶</button>
-          <a class="btn secondary" id="btnOpen" target="_blank" rel="noopener">Open in new tab</a>
-        </div>
-      </header>
-      <div class="viewframe" id="viewframe">
-        <div class="loading" id="loading">Loading…</div>
-        <embed id="pdfEmbed" class="pdfembed" type="application/pdf" />
-        <canvas id="pdfCanvas" style="display:none;"></canvas>
-      </div>
-    </div>
-  </div>
-
-  <!-- PDF.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
-  <script>
-    if (window.pdfjsLib) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
-    }
-  </script>
-
   <script>
   (function(){
     const grid = document.getElementById('posterGrid');
-    const csvStatus = document.getElementById('csvStatus');
-    const modal = document.getElementById('posterModal');
-    const viewframe = document.getElementById('viewframe');
-    const pdfEmbed = document.getElementById('pdfEmbed');
-    const pdfCanvas = document.getElementById('pdfCanvas');
-    const modalTitle = document.getElementById('modalTitle');
-    const btnOpen = document.getElementById('btnOpen');
-    const btnPrev = document.getElementById('btnPrev');
-    const btnNext = document.getElementById('btnNext');
-    const btnClose= document.getElementById('btnClose');
-    const indexDot = document.getElementById('indexDot');
-    const loading = document.getElementById('loading');
 
+    // Config: CSV + paths
     const PREFIX = 'assets/posters/';
-    const STEM = 'P'; const MAX = 99; const PAD = n => n.toString().padStart(2,'0');
-    const MAX_CONSEC_MISSES = 15;
+    const CSV_URL = PREFIX + 'posters.csv';
 
-    const CSV_URL = PREFIX + 'posters.csv'; const TITLE_MAP = {};
+    // Image size hints for sharper picks
     const SIZES_ATTR = '(min-width:1280px) 22vw, (min-width:1024px) 30vw, (min-width:640px) 44vw, 92vw';
 
-    const ua = navigator.userAgent || "";
-    const isIOS = /iPad|iPhone|iPod/.test(ua);
-    const isAndroid = /Android/.test(ua);
-    const isSmallScreen = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
-    const preferCanvas = (isIOS || isAndroid || isSmallScreen) && !!window.pdfjsLib;
-
     function parseCSV(text){
-      const out = {};
-      const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
-      for (const line of lines){
-        if (/^id\s*,/i.test(line)) continue;
-        const parts = line.split(',').map(s => s.trim());
+      const rows = [];
+      const lines = text.split(/[\r\n]+/).filter(Boolean);
+      const header = lines[0].toLowerCase();
+      let start = 0;
+      if (header.startsWith('id,')) start = 1;
+      for (let i=start;i<lines.length;i++){
+        const parts = lines[i].split(',').map(s=>s.trim());
         if (parts.length >= 3){
-          const id = parts[0], title = parts[1], authors = parts.slice(2).join(', ');
-          out[id] = { title, authors };
+          const id = parts[0];
+          const title = parts[1];
+          const authors = parts.slice(2).join(', ');
+          rows.push({ id, title, authors });
         }
       }
-      return out;
+      return rows;
     }
 
-    async function loadCSVMap(){
+    function buildCard(row, idx){
+      const id = row.id;
+      const pdfUrl = PREFIX + id + '.pdf';
+
+      // Thumbnail candidates in common casings
+      const base = id.toLowerCase(); // prefer p01.jpg etc.
+      const candidates = [
+        PREFIX + base + '.jpg',
+        PREFIX + id + '.jpg',
+        PREFIX + id.toUpperCase() + '.jpg',
+        PREFIX + base + '.png',
+        PREFIX + id + '.png',
+        PREFIX + base + '.webp',
+        PREFIX + id + '.webp',
+      ];
+
+      const a = document.createElement('a');
+      a.href = pdfUrl; a.target = '_blank'; a.rel = 'noopener'; a.className = 'open';
+
+      const card = document.createElement('article'); card.className = 'card';
+
+      const thumb = document.createElement('div'); thumb.className = 'thumb';
+      const img = document.createElement('img'); img.loading = 'lazy'; img.decoding = 'async';
+      img.alt = (row.title ? row.title + ' — ' : '') + id + ' thumbnail';
+      img.sizes = SIZES_ATTR;
+
+      // Set first candidate, and chain fallbacks on error
+      img.dataset.fallbacks = candidates.slice(1).join('|');
+      img.src = candidates[0];
+      img.onerror = function(){
+        const list = (this.dataset.fallbacks || '').split('|').filter(Boolean);
+        if (!list.length) { this.onerror = null; this.style.display='none'; return; }
+        this.src = list.shift();
+        this.dataset.fallbacks = list.join('|');
+      };
+
+      const badge = document.createElement('span'); badge.className = 'badge'; badge.textContent = id;
+
+      thumb.appendChild(img); thumb.appendChild(badge);
+
+      const info = document.createElement('div'); info.className = 'info';
+      const title = document.createElement('h3'); title.className = 'title'; title.textContent = row.title || id;
+      const meta = document.createElement('p'); meta.className = 'meta'; meta.textContent = row.authors || 'Tap to open';
+
+      info.appendChild(title); info.appendChild(meta);
+      card.appendChild(thumb); card.appendChild(info); a.appendChild(card);
+
+      return a;
+    }
+
+    async function init(){
       try{
-        const res = await fetch(CSV_URL, { cache: 'no-store' });
-        if (!res.ok) throw new Error('CSV not found');
+        const res = await fetch(CSV_URL, { cache:'no-store' });
+        if (!res.ok) throw new Error('posters.csv not found');
         const text = await res.text();
-        const map = parseCSV(text);
-        if (Object.keys(map).length){
-          csvStatus.textContent = 'Loaded titles from posters.csv';
-          csvStatus.style.display = 'none';
-          return map;
+        const rows = parseCSV(text);
+
+        if (!rows.length){
+          const p = document.createElement('p');
+          p.style.color = 'var(--muted)';
+          p.textContent = 'No entries in posters.csv';
+          grid.appendChild(p);
+          return;
         }
-        throw new Error('CSV empty');
-      }catch(e){ return TITLE_MAP; }
-    }
 
-    async function exists(url){
-      try{ const r = await fetch(url, { method:'HEAD', cache:'no-store' }); return r.ok; }
-      catch{
-        try{ const r = await fetch(url, { method:'GET', headers:{ 'Range':'bytes=0-0' }, cache:'no-store' }); return r.ok; }
-        catch{ return false; }
-      }
-    }
+        // Sort by numeric ID if possible
+        rows.sort((a,b)=> a.id.localeCompare(b.id, undefined, { numeric:true }));
 
-    function buildSrcset(baseJpg){
-      const at2x = baseJpg.replace(/\.jpg$/i, '@2x.jpg');
-      const at3x = baseJpg.replace(/\.jpg$/i, '@3x.jpg');
-      return { at2x, at3x };
-    }
-
-    const posters = [];
-    let currentIndex = 0;
-
-    function openModal(index){
-      if (!posters.length) return;
-      currentIndex = (index + posters.length) % posters.length;
-      const p = posters[currentIndex];
-      modalTitle.textContent = (p.title ? p.title + ' — ' : '') + p.id;
-      btnOpen.href = p.pdfUrl;
-      indexDot.textContent = (currentIndex+1) + ' / ' + posters.length;
-
-      if (preferCanvas){
-        pdfEmbed.style.display = 'none'; pdfEmbed.removeAttribute('src');
-        pdfCanvas.style.display = 'block';
-        renderPdfToCanvas(p.pdfUrl, pdfCanvas);
-      } else {
-        pdfCanvas.style.display = 'none';
-        pdfEmbed.style.display = 'block';
-        pdfEmbed.src = p.pdfUrl + '#view=FitH';
-      }
-
-      modal.classList.add('active');
-      modal.setAttribute('aria-hidden','false');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeModal(){
-      modal.classList.remove('active');
-      modal.setAttribute('aria-hidden','true');
-      document.body.style.overflow = '';
-      pdfEmbed.removeAttribute('src');
-      const ctx = pdfCanvas.getContext('2d');
-      ctx && ctx.clearRect(0,0,pdfCanvas.width,pdfCanvas.height);
-    }
-    function nextModal(){ openModal(currentIndex+1); }
-    function prevModal(){ openModal(currentIndex-1); }
-
-    btnNext.addEventListener('click', nextModal);
-    btnPrev.addEventListener('click', prevModal);
-    btnClose.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e)=>{ if (e.target === modal) closeModal(); });
-    window.addEventListener('keydown', (e)=>{
-      if (!modal.classList.contains('active')) return;
-      if (e.key === 'Escape') closeModal();
-      if (e.key === 'ArrowRight') nextModal();
-      if (e.key === 'ArrowLeft') prevModal();
-    });
-
-    // Swipe
-    let touchStartX = 0, touchStartY = 0, touchActive = false;
-    const viewframe = document.getElementById('viewframe');
-    viewframe.addEventListener('touchstart', (e)=>{
-      if (!modal.classList.contains('active')) return;
-      const t = e.changedTouches[0];
-      touchStartX = t.clientX; touchStartY = t.clientY; touchActive = true;
-    }, { passive: true });
-    viewframe.addEventListener('touchend', (e)=>{
-      if (!touchActive) return;
-      touchActive = false;
-      const t = e.changedTouches[0];
-      const dx = t.clientX - touchStartX;
-      const dy = t.clientY - touchStartY;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5){
-        if (dx < 0) nextModal(); else prevModal();
-      }
-    }, { passive: true });
-
-    async function getPdfDoc(url){
-      // First try direct URL with mobile-friendly flags
-      try{
-        const task = pdfjsLib.getDocument({
-          url,
-          disableRange: true,
-          disableStream: true,
-          isEvalSupported: true,
-          useSystemFonts: true,
-        });
-        return await task.promise;
-      }catch(e){
-        // Fallback: fetch as ArrayBuffer to avoid CORS/range issues
-        try{
-          const res = await fetch(url, { cache:'no-store' });
-          if (!res.ok) throw new Error('Fetch failed ' + res.status);
-          const buf = await res.arrayBuffer();
-          const task = pdfjsLib.getDocument({ data: buf, isEvalSupported: true, useSystemFonts: true });
-          return await task.promise;
-        }catch(err){
-          throw err;
-        }
-      }
-    }
-
-    async function renderPdfToCanvas(url, canvas){
-      loading.classList.add('active');
-      try{
-        const pdf = await getPdfDoc(url);
-        const page = await pdf.getPage(1);
-
-        // Fit canvas into container with devicePixelRatio for crispness
-        const rect = canvas.parentElement.getBoundingClientRect();
-        const dpr = Math.max(1, window.devicePixelRatio || 1);
-        const viewport = page.getViewport({ scale: 1 });
-        const scale = Math.min(rect.width / viewport.width, rect.height / viewport.height);
-        const scaled = page.getViewport({ scale: scale * dpr });
-
-        canvas.width = Math.floor(scaled.width);
-        canvas.height = Math.floor(scaled.height);
-        canvas.style.width = Math.floor(scaled.width / dpr) + 'px';
-        canvas.style.height = Math.floor(scaled.height / dpr) + 'px';
-
-        const ctx = canvas.getContext('2d', { alpha:false });
-        await page.render({ canvasContext: ctx, viewport: scaled }).promise;
+        rows.forEach((row, idx)=> grid.appendChild(buildCard(row, idx)));
       } catch (e){
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle = '#0b1224';
-        ctx.fillRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle = '#94a3b8';
-        ctx.font = '16px system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif';
-        ctx.fillText('Preview unavailable — use “Open in new tab”.', 20, 40);
-        console.warn('PDF canvas render failed for', url, e);
-      } finally {
-        loading.classList.remove('active');
-      }
-    }
-
-    // Build grid
-    (async function build(){
-      const map = await loadCSVMap();
-      let misses = 0;
-      const cards = [];
-
-      for (let n=1; n<=MAX; n++){
-        const id = STEM + PAD(n);
-        const pdfUrl = PREFIX + `${id}.pdf`;
-        if (await exists(pdfUrl)){
-          misses = 0;
-          const meta = map[id] || null;
-          const baseCandidates = [
-            PREFIX + `${id.toLowerCase()}.jpg`,
-            PREFIX + `${id}.jpg`,
-            PREFIX + `${id.toUpperCase()}.jpg`,
-            PREFIX + `${id.toLowerCase()}.png`,
-            PREFIX + `${id}.png`,
-            PREFIX + `${id.toLowerCase()}.webp`,
-            PREFIX + `${id}.webp`,
-          ];
-          let thumb = null;
-          for (const c of baseCandidates){ if (await exists(c)){ thumb = c; break; } }
-          const retina = thumb ? buildSrcset(thumb) : { at2x:'', at3x:'' };
-          cards.push({ id, pdfUrl, meta, thumb, retina });
-        } else {
-          misses++; if (misses >= MAX_CONSEC_MISSES) break;
-        }
-      }
-
-      cards.sort((a,b)=> a.id.localeCompare(b.id, undefined, { numeric:true }));
-      if (!cards.length){
         const p = document.createElement('p');
         p.style.color = 'var(--muted)';
-        p.textContent = 'No posters found. Ensure PDFs are named P01.pdf, P02.pdf, … in assets/posters/. Thumbnails: p01.jpg (plus optional p01@2x.jpg / p01@3x.jpg) in the same folder. Titles from posters.csv (id,title,authors).';
+        p.textContent = 'Could not load posters.csv — please ensure it exists at assets/posters/posters.csv';
         grid.appendChild(p);
-        return;
+        console.warn(e);
       }
+    }
 
-      // Fill poster array
-      posters.length = 0;
-      for (const c of cards){
-        posters.push({
-          id: c.id,
-          title: c.meta?.title || '',
-          authors: c.meta?.authors || '',
-          pdfUrl: c.pdfUrl
-        });
-      }
-
-      // Build cards
-      cards.forEach((c, idx)=>{
-        const a = document.createElement('a');
-        a.href = '#'; a.className = 'open'; a.addEventListener('click', (e)=>{
-          e.preventDefault();
-          openModal(idx);
-        });
-
-        const card = document.createElement('article');
-        card.className = 'card';
-
-        const thumb = document.createElement('div');
-        thumb.className = 'thumb';
-
-        const img = document.createElement('img');
-        img.loading = 'lazy'; img.decoding = 'async';
-        img.alt = (c.meta?.title ? c.meta.title + ' — ' : '') + c.id + ' thumbnail';
-        img.sizes = SIZES_ATTR;
-
-        const badge = document.createElement('span');
-        badge.className = 'badge'; badge.textContent = c.id;
-
-        const fb = document.createElement('div'); fb.className = 'fallback'; fb.textContent = 'Preview';
-
-        thumb.appendChild(img); thumb.appendChild(badge); thumb.appendChild(fb);
-
-        const info = document.createElement('div'); info.className = 'info';
-        const title = document.createElement('h3'); title.className = 'title';
-        title.textContent = c.meta?.title || c.id;
-        const metaP = document.createElement('p'); metaP.className = 'meta';
-        metaP.textContent = c.meta?.authors ? c.meta.authors : 'Tap to open';
-
-        info.appendChild(title); info.appendChild(metaP);
-        card.appendChild(thumb); card.appendChild(info); a.appendChild(card);
-        grid.appendChild(a);
-
-        // lazy load thumbnail
-        thumb._loadThumb = async function(){
-          if (c.thumb){
-            const has2x = await exists(c.retina.at2x);
-            const has3x = await exists(c.retina.at3x);
-            if (has3x && has2x){
-              img.srcset = `${c.thumb} 1x, ${c.retina.at2x} 2x, ${c.retina.at3x} 3x`; img.src = c.thumb;
-            } else if (has2x){
-              img.srcset = `${c.thumb} 1x, ${c.retina.at2x} 2x`; img.src = c.thumb;
-            } else { img.src = c.thumb; }
-            fb.style.display = 'none';
-          }
-        };
-        io.observe(thumb);
-      });
-    })();
-
-    // Lazy observer
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        if(entry.isIntersecting){
-          const el = entry.target;
-          io.unobserve(el);
-          const loader = el._loadThumb;
-          if (loader && !el._loaded){
-            el._loaded = true; loader();
-          }
-        }
-      });
-    }, { rootMargin: '200px' });
-
+    init();
   })();
   </script>
 </body>
