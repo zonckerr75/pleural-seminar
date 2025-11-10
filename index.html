@@ -47,7 +47,10 @@
     /* Backdrop + drawer (mobile) */
     .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s ease}
     .backdrop.show{opacity:1;pointer-events:auto}
-    .drawer{position:fixed;inset:0;display:flex;z-index:1000}
+    .drawer{position:fixed;inset:0;display:none;z-index:1000}
+    .drawer.open{display:flex}
+    .drawer[hidden]{display:none !important}
+    @media (min-width: 901px){ .drawer{display:none !important} }
     .drawer .sidebar{transform:translateX(-100%);transition:transform .2s ease}
     .drawer.open .sidebar{transform:translateX(0)}
 
