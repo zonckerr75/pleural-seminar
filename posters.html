@@ -43,7 +43,7 @@
       aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;
       border-bottom:1px solid var(--border);position:relative
     }
-    .thumb object{width:100%;height:100%;display:block}
+    .thumb object,.thumb canvas{width:100%;height:100%;display:block}
     .thumb .fallback{
       position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
       font-weight:700;letter-spacing:0.08em;color:var(--muted)
@@ -85,36 +85,50 @@
     <section class="grid" id="posterGrid" aria-live="polite"></section>
   </main>
 
+  <!-- PDF.js for MOBILE-ONLY thumbnail rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js"></script>
+  <script>
+    // Configure worker
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js";
+    }
+  </script>
+
   <script>
   (function(){
     const grid = document.getElementById('posterGrid');
     const csvStatus = document.getElementById('csvStatus');
 
     // === CONFIG ===
-    // Where PDFs live, relative to THIS HTML file
     const PREFIX = 'assets/posters/'; // NOTE: no leading slash
-    // Filename pattern: P01.pdf … P99.pdf
     const STEM = 'P';
     const MAX = 99;
     const PAD = n => n.toString().padStart(2,'0');
     const MAX_CONSEC_MISSES = 15;
 
-    // Optional CSV mapping (id,title,authors) at assets/posters/posters.csv
+    // Optional CSV mapping (id,title,authors)
     const CSV_URL = PREFIX + 'posters.csv';
 
-    // Inline fallback mapping you (or we) can auto-fill once your list is uploaded.
-    // Example: 'P01': { title: 'Ultrasound‑guided Pleural Procedures', authors: 'A Jones, B Smith' }
+    // Inline fallback mapping
     const TITLE_MAP = {
-      // Paste mappings here if you prefer not to use CSV.
-      // 'P01': { title: '...', authors: '...' },
+      // 'P01': { title: 'Example', authors: 'A Smith; B Jones' },
     };
+
+    // --- Environment detection ---
+    const ua = navigator.userAgent || "";
+    const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+    const isAndroid = /Android/.test(ua);
+    const isSmallScreen = window.matchMedia && window.matchMedia("(max-width: 767px)").matches;
+    // Many mobile browsers don't render <object type="application/pdf"> reliably.
+    const preferCanvas = (isIOS || isAndroid || isSmallScreen) && !!window.pdfjsLib;
 
     // --- Utilities ---
     function parseCSV(text){
-      // Minimal CSV parser for id,title,authors (no quoted commas handling needed typically)
       const out = {};
       const lines = text.split(/[\r\n]+/).map(l => l.trim()).filter(Boolean);
       for (const line of lines){
+        if (/^id\s*,/i.test(line)) continue; // skip header
         const parts = line.split(',').map(s => s.trim());
         if (parts.length >= 3){
           const id = parts[0];
@@ -134,18 +148,16 @@
         const map = parseCSV(text);
         if (Object.keys(map).length){
           csvStatus.textContent = 'Loaded titles from posters.csv';
-          csvStatus.style.display = 'none'; // hide status by default
+          csvStatus.style.display = 'none';
           return map;
         }
         throw new Error('CSV empty');
       }catch(e){
-        // Fall back to inline map
         return TITLE_MAP;
       }
     }
 
-    // Build a card that uses <object> to render page 1 as a tiny preview
-    function makeCard(id, url, meta){
+    function makeCardShell(id, url, meta){
       const a = document.createElement('a');
       a.href = url; a.target = '_blank'; a.rel = 'noopener';
       a.className = 'open';
@@ -156,14 +168,6 @@
       const thumb = document.createElement('div');
       thumb.className = 'thumb';
 
-      // Lazy: delay setting data on the <object> until in view
-      const obj = document.createElement('object');
-      obj.type = 'application/pdf';
-      obj.setAttribute('aria-label', 'Poster preview');
-      obj.style.width = '100%';
-      obj.style.height = '100%';
-      obj.dataset.src = url + '#page=1&view=FitH';
-
       const badge = document.createElement('span');
       badge.className = 'badge';
       badge.textContent = id;
@@ -172,9 +176,6 @@
       fb.className = 'fallback';
       fb.textContent = 'PDF';
 
-      obj.addEventListener('error', () => { fb.textContent = 'Preview unavailable'; });
-
-      thumb.appendChild(obj);
       thumb.appendChild(badge);
       thumb.appendChild(fb);
 
@@ -187,20 +188,70 @@
 
       info.appendChild(title); info.appendChild(metaP);
       card.appendChild(thumb); card.appendChild(info); a.appendChild(card);
-      return {anchor:a, objectEl:obj};
+      return {anchor:a, thumb, fb};
     }
 
-    // Lazy load previews when near viewport
+    // Desktop: <object> preview
+    function addObjectPreview(thumb, url){
+      const obj = document.createElement('object');
+      obj.type = 'application/pdf';
+      obj.setAttribute('aria-label', 'Poster preview');
+      obj.style.width = '100%';
+      obj.style.height = '100%';
+      obj.dataset.src = url + '#page=1&view=FitH';
+      thumb.prepend(obj); // below the badge/fallback stacking order
+      obj.addEventListener('error', () => {
+        const fb = thumb.querySelector('.fallback');
+        if (fb) fb.textContent = 'Preview unavailable';
+      });
+      return obj;
+    }
+
+    // Mobile: PDF.js canvas render
+    async function renderCanvasInto(thumb, url){
+      try{
+        const loadingTask = pdfjsLib.getDocument({ url });
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1);
+        // choose scale for mobile-friendly resolution
+        const viewport = page.getViewport({ scale: 0.5 });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = Math.floor(viewport.width);
+        canvas.height = Math.floor(viewport.height);
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        // Insert below badge
+        thumb.prepend(canvas);
+        const fb = thumb.querySelector('.fallback');
+        if (fb) fb.style.display = 'none';
+      }catch(e){
+        const fb = thumb.querySelector('.fallback');
+        if (fb) fb.textContent = 'Preview unavailable';
+        console.warn('Mobile canvas render failed for', url, e);
+      }
+    }
+
+    // Lazy loader
     const io = new IntersectionObserver((entries)=>{
       entries.forEach(entry=>{
         if(entry.isIntersecting){
-          const obj = entry.target;
-          io.unobserve(obj);
-          if(!obj.getAttribute('data-loaded')){
-            const src = obj.dataset.src;
-            obj.setAttribute('data-loaded','1');
-            obj.setAttribute('data',''); // force reload path
-            requestAnimationFrame(()=> obj.setAttribute('data', src));
+          const el = entry.target;
+          io.unobserve(el);
+          const url = el.dataset.url;
+          if (!url) return;
+          if (preferCanvas){
+            if (!el.dataset.loaded){
+              el.dataset.loaded = '1';
+              renderCanvasInto(el, url);
+            }
+          } else {
+            if (!el.dataset.loaded){
+              el.dataset.loaded = '1';
+              const obj = addObjectPreview(el, url);
+              const src = obj.dataset.src;
+              // force attribute write on next frame to trigger load
+              requestAnimationFrame(()=> obj.setAttribute('data', src));
+            }
           }
         }
       });
@@ -238,7 +289,7 @@
         }
       }
 
-      // Sort by numeric id just in case
+      // Sort by numeric id
       cards.sort((a,b)=> a.id.localeCompare(b.id, undefined, { numeric:true }));
 
       if(!cards.length){
@@ -250,9 +301,10 @@
       }
 
       for(const c of cards){
-        const {anchor, objectEl} = makeCard(c.id, c.url, c.meta);
+        const {anchor, thumb} = makeCardShell(c.id, c.url, c.meta);
+        thumb.dataset.url = c.url;
         grid.appendChild(anchor);
-        io.observe(objectEl);
+        io.observe(thumb);
       }
     })();
   })();
