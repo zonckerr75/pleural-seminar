@@ -14,7 +14,6 @@
       --accent:#22c55e;
       --border:#1f2937;
     }
-
     * { box-sizing:border-box; }
 
     body {
@@ -26,33 +25,24 @@
 
     /* ===== Sidebar Navigation ===== */
     header.nav {
-      position:fixed;
-      top:0; left:0; bottom:0;
-      width:250px;
-      background:var(--panel);
+      position:fixed; top:0; left:0; bottom:0;
+      width:250px; background:var(--panel);
       border-right:1px solid var(--border);
-      display:flex;
-      flex-direction:column;
+      display:flex; flex-direction:column;
       z-index:1000;
     }
     header .logo {
-      text-align:center;
-      padding:1.5rem 1rem;
+      text-align:center; padding:1.5rem 1rem;
       border-bottom:1px solid var(--border);
     }
     header .logo img { max-width:130px; height:auto; }
 
-    nav ul {
-      list-style:none;
-      margin:0; padding:1rem 0;
-    }
+    nav ul { list-style:none; margin:0; padding:1rem 0; }
     nav li a {
-      display:block;
-      color:var(--muted);
-      text-decoration:none;
-      padding:0.75rem 1.5rem;
-      transition:all 0.2s ease;
+      display:block; color:var(--muted);
+      text-decoration:none; padding:0.75rem 1.5rem;
       border-left:3px solid transparent;
+      transition:all 0.2s ease;
     }
     nav li a:hover {
       color:var(--fg);
@@ -63,6 +53,20 @@
       color:var(--fg);
       border-left:3px solid var(--accent);
       background:#111a2e;
+    }
+
+    /* ===== Mobile toggle ===== */
+    .menu-toggle {
+      position:fixed;
+      top:15px; left:15px;
+      background:var(--panel);
+      color:var(--fg);
+      border:none;
+      padding:0.5rem 0.75rem;
+      font-size:1.2rem;
+      border-radius:6px;
+      z-index:1100;
+      display:none;
     }
 
     /* ===== Main Content ===== */
@@ -104,25 +108,10 @@
       background:var(--accent);
       border-radius:50%;
     }
-    .time {
-      color:var(--accent);
-      font-weight:600;
-      margin-bottom:0.4rem;
-    }
-    .title {
-      font-weight:600;
-      font-size:1.05rem;
-    }
-    .speaker {
-      color:var(--muted);
-      font-size:0.95rem;
-      margin-top:0.3rem;
-    }
-    .break {
-      background:#1a2438;
-      color:var(--muted);
-      font-style:italic;
-    }
+    .time { color:var(--accent); font-weight:600; margin-bottom:0.4rem; }
+    .title { font-weight:600; font-size:1.05rem; }
+    .speaker { color:var(--muted); font-size:0.95rem; margin-top:0.3rem; }
+    .break { background:#1a2438; color:var(--muted); font-style:italic; }
 
     /* ===== CPD note ===== */
     .cpd {
@@ -161,6 +150,8 @@
       border-radius:8px;
       background:#fff;
       border:1px solid #fff;
+      filter:none !important;
+      -webkit-filter:none !important;
       box-shadow:0 0 6px rgba(255,255,255,0.1);
       transition:all 0.3s ease;
     }
@@ -169,7 +160,7 @@
       box-shadow:0 0 14px rgba(255,255,255,0.8);
     }
 
-    /* ===== Mobile ===== */
+    /* ===== Responsive tweaks ===== */
     @media (max-width:900px) {
       header.nav { width:210px; }
       main { margin-left:210px; }
@@ -182,29 +173,21 @@
         transition:left 0.3s ease;
       }
       header.nav.open { left:0; }
+      .menu-toggle { display:block; }
       main { margin-left:0; padding-top:80px; }
-      .menu-toggle {
-        position:fixed;
-        top:15px; left:15px;
-        background:var(--panel);
-        color:var(--fg);
-        border:none;
-        padding:0.5rem 0.75rem;
-        font-size:1.2rem;
-        border-radius:6px;
-        z-index:1100;
-      }
     }
   </style>
 </head>
 <body>
-  <!-- ===== Mobile toggle ===== -->
+  <!-- Mobile menu toggle -->
   <button class="menu-toggle" onclick="document.querySelector('header.nav').classList.toggle('open')">☰</button>
 
-  <!-- ===== Sidebar ===== -->
+  <!-- Sidebar -->
   <header class="nav">
     <div class="logo">
-      <img src="assets/branding/logo-txt.png" alt="Pleural Seminar Wales 2025">
+      <a href="index.html">
+        <img src="assets/branding/logo-txt.png" alt="Pleural Seminar Wales 2025">
+      </a>
     </div>
     <nav>
       <ul>
@@ -219,7 +202,7 @@
     </nav>
   </header>
 
-  <!-- ===== Main Content ===== -->
+  <!-- Main -->
   <main>
     <h1>Pleural Seminar Wales 2025 — Programme</h1>
     <p class="intro">Below is the programme for Pleural Seminar Wales 2025. Times may vary slightly on the day.</p>
@@ -241,3 +224,39 @@
     <h2>Afternoon Session</h2>
     <div class="timeline">
       <div class="session"><div class="time">13:50 – 14:00</div><div class="title">Pleural standards – collaboration group for Wales</div><div class="speaker">Dr Alina Ionescu</div></div>
+      <div class="session"><div class="time">14:00 – 14:15</div><div class="title">Thoracic Ultrasound training – an interactive teaching tool for trainees and students</div><div class="speaker">Rebecca Pearce & Alina Ionescu — ABUHB</div></div>
+      <div class="session"><div class="time">14:15 – 14:30</div><div class="title">Retrospective analysis of 10 years of Ambulatory Pleural Procedure Service (APPS) at SBUHB</div><div class="speaker">Dr Narendra Chinnappa — Swansea Bay UHB</div></div>
+      <div class="session"><div class="time">14:30 – 14:45</div><div class="title">Empyema – how do we manage it?</div><div class="speaker">Nora Ramley — Trainee, ABUHB</div></div>
+      <div class="session">
+        <div class="time">14:45 – 16:30</div>
+        <div class="title">Case Competition — Coffee available during the session</div>
+        <div class="speaker">
+          Case 1: Sara Davies — ANP, Swansea Bay UHB<br>
+          Case 2: Sarah Case — SpR, Wales<br>
+          Case 3: Sion Freeman (IMT) & Eilish Yarman (SpR), Wales<br>
+          Case 4: Dana Bendajki — Trainee, ABUHB
+        </div>
+      </div>
+      <div class="session"><div class="time">16:30 – 16:35</div><div class="title">Decision on best presentation and prize winner</div></div>
+      <div class="session"><div class="time">16:35 – 16:45</div><div class="title">Prize presentation, feedback and conclusions</div></div>
+      <div class="session"><div class="time">16:45</div><div class="title">End of meeting</div></div>
+    </div>
+
+    <div class="cpd">
+      <strong>CPD Accreditation:</strong><br>
+      16th Pleural Seminar for Wales has been approved by the Federation of the Royal Colleges of Physicians of the United Kingdom for 6 Category 1 (external) CPD credits. Code 153330.
+    </div>
+
+    <div class="sponsor-section">
+      <p>Thanks to our sponsors for supporting the seminar</p>
+      <div class="sponsors">
+        <img src="assets/sponsors/irwinmitchell.png" alt="Irwin Mitchell LLP" title="Irwin Mitchell LLP">
+        <img src="assets/sponsors/pleurx.png" alt="PleurX" title="PleurX">
+        <img src="assets/sponsors/wolfuk.png" alt="Wolf UK" title="Wolf UK">
+        <img src="assets/sponsors/astrazeneca.png" alt="AstraZeneca UK" title="AstraZeneca UK">
+        <img src="assets/sponsors/pulmonx.png" alt="PulmonX" title="PulmonX">
+      </div>
+    </div>
+  </main>
+</body>
+</html>
