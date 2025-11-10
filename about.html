@@ -11,8 +11,12 @@
       --accent:#22c55e; --border:#1f2937; --link:#8dd8a8
     }
     html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--fg);
-      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif
+    }
     a{color:var(--link);}
     /* Layout */
     .app{display:grid; grid-template-columns: 260px 1fr; min-height:100vh}
@@ -57,20 +61,19 @@
     .img-modal img{max-width:min(100%, 1000px); max-height:85vh; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.5)}
     .img-modal .close{position:absolute; top:1rem; right:1rem; background:#000; color:#fff; border:0; width:40px; height:40px; border-radius:999px; font-size:1.5rem; cursor:pointer}
     /* Mobile */
-    .hamburger{display:none}
+    .hamburger{
+      display:none;
+      position:fixed; top:.75rem; left:.75rem; z-index:2100;
+      background:var(--bg); border:1px solid var(--border); color:var(--fg);
+      padding:.5rem .65rem; border-radius:8px
+    }
     @media (max-width: 900px){
       .app{grid-template-columns: 1fr}
       nav.sidebar{position:fixed; left:0; top:0; bottom:0; transform:translateX(-100%); transition:transform .25s ease}
       nav.sidebar.open{transform:none}
-      .hamburger{display:block; position:fixed; top:.75rem; left:.75rem; z-index:2100; background:var(--panel); border:1px solid var(--border); color:var(--fg); padding:.5rem .65rem; border-radius:8px}
+      .hamburger{display:block}
       main{padding:4rem 1rem 2rem}
       .kv{grid-template-columns: 1fr}
-    }
-    /* Light theme fallback */
-    @media (prefers-color-scheme: light){
-      body{background:#f7f8fb; color:#111827}
-      .card,.contact,.kv,nav.sidebar{background:#fff; border-color:#e5e7eb}
-      .btn{background:#fff; color:#111827}
     }
   </style>
 </head>
