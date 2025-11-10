@@ -16,51 +16,44 @@
     a{color:var(--link)}
     /* Layout */
     .app{display:grid;grid-template-columns:var(--navw) 1fr;min-height:100dvh}
-    nav.sidebar{background:var(--panel);border-right:1px solid var(--border);
-      padding:18px;position:sticky;top:0;height:100dvh}
+    nav.sidebar{background:var(--panel);border-right:1px solid var(--border);padding:18px;position:sticky;top:0;height:100dvh}
     .brand{display:flex;align-items:center;gap:10px;margin:4px 0 16px}
     .brand img{width:36px;height:36px;object-fit:contain}
     .brand h1{font-size:1.05rem;margin:0}
+    .nav-section{margin-top:10px}
+    .nav-section h3{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 8px 8px}
     .nav-list{list-style:none;margin:0;padding:0}
-    .nav-list a{display:block;padding:10px 12px;border-radius:12px;
-      color:var(--fg);text-decoration:none}
+    .nav-list a{display:block;padding:10px 12px;border-radius:12px;color:var(--fg);text-decoration:none}
     .nav-list a:hover{background:rgba(255,255,255,.05)}
     .nav-list a.active{background:var(--accent);color:#0b1320;font-weight:700}
     /* Topbar (mobile) */
-    .topbar{display:none;position:sticky;top:0;z-index:1000;background:var(--panel);
-      border-bottom:1px solid var(--border);padding:10px 12px;align-items:center;gap:12px}
-    .hamburger{background:transparent;border:1px solid var(--border);
-      border-radius:10px;color:var(--fg);padding:8px}
+    .topbar{display:none;position:sticky;top:0;z-index:1000;background:var(--panel);border-bottom:1px solid var(--border);padding:10px 12px;align-items:center;gap:12px}
+    .hamburger{background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--fg);padding:8px}
     .title{font-weight:700}
     /* Main content */
     main{padding:28px;max-width:1100px}
     .content-section h1{font-size:1.8rem;margin:.2rem 0 1rem}
     .divider{height:1px;border:0;background:var(--border);margin:18px 0}
-    .btn{display:inline-block;padding:10px 14px;border-radius:999px;
-      background:var(--accent);color:#0b1320;text-decoration:none;font-weight:600}
+    .btn{display:inline-block;padding:10px 14px;border-radius:999px;background:var(--accent);color:#0b1320;text-decoration:none;font-weight:600}
     .btn:hover{filter:brightness(.95)}
     .map-embed{border-radius:16px;overflow:hidden;border:1px solid var(--border);margin:12px 0 4px}
     .map-embed iframe{width:100%;height:320px;border:0}
-    .wifi-card{display:grid;gap:16px;grid-template-columns:1fr auto;align-items:center;
-      padding:16px;border:1px solid var(--border);border-radius:16px;background:var(--panel)}
+    .wifi-card{display:grid;gap:16px;grid-template-columns:1fr auto;align-items:center;padding:16px;border:1px solid var(--border);border-radius:16px;background:var(--panel)}
     .wifi-card .qr img{width:140px;height:140px;display:block}
     .muted.small{color:var(--muted);font-size:.9rem;margin-top:6px}
     .gallery{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:10px}
-    .gallery figure{margin:0;border:1px solid var(--border);border-radius:16px;
-      overflow:hidden;cursor:pointer;background:var(--panel)}
+    .gallery figure{margin:0;border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;background:var(--panel)}
     .gallery img{width:100%;height:auto;display:block;transition:transform .3s}
     .gallery figure:hover img{transform:scale(1.03)}
     .gallery figcaption{padding:8px 12px;color:var(--muted);font-size:.9rem;text-align:center}
     /* Lightbox */
-    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);
-      display:none;justify-content:center;align-items:center;z-index:9999}
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;justify-content:center;align-items:center;z-index:9999}
     .lightbox img{max-width:90%;max-height:90%;border-radius:8px}
     .lightbox.active{display:flex}
     /* Responsive */
-    @media (max-width:960px){
+    @media (max-width: 960px){
       .app{grid-template-columns:1fr}
-      nav.sidebar{position:fixed;inset:0 auto 0 0;transform:translateX(-100%);
-        transition:transform .25s ease;z-index:1001;width:var(--navw)}
+      nav.sidebar{position:fixed;inset:0 auto 0 0;transform:translateX(-100%);transition:transform .25s ease;z-index:1001;width:var(--navw)}
       nav.sidebar.open{transform:none}
       .topbar{display:flex}
       main{padding:20px}
@@ -73,9 +66,8 @@
   <!-- Mobile topbar -->
   <div class="topbar" role="banner">
     <button class="hamburger" id="openNav" aria-label="Open menu">
-      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-        <path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/>
-      </svg>
+      <!-- menu icon -->
+      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </button>
     <div class="title">Venue — Pleural Seminar Wales 2025</div>
   </div>
@@ -88,22 +80,34 @@
         <h1>Pleural Seminar Wales 2025</h1>
       </div>
 
-      <ul class="nav-list">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="agenda.html">Agenda</a></li>
-        <li><a class="active" aria-current="page" href="venue.html">Venue</a></li>
-        <li><a href="posters.html">Posters</a></li>
-        <li><a href="feedback.html">Feedback</a></li>
-        <li><a href="faculty.html">Faculty</a></li>
-        <li><a href="about.html">About</a></li>
-      </ul>
+      <div class="nav-section">
+        <ul class="nav-list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="agenda.html">Agenda</a></li>
+          <li><a href="faculty.html">Faculty</a></li>
+          <li><a href="posters.html">Posters</a></li>
+          <li><a class="active" aria-current="page" href="venue.html">Venue</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="results.html">Results</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Quick links</h3>
+        <ul class="nav-list">
+          <li><a href="https://www.google.com/maps/search/?api=1&query=The+Parkway+Hotel+%26+Spa%2C+NP44+3UW" target="_blank" rel="noopener">Open in Google Maps</a></li>
+          <li><a href="venue.html#wifi">Wi-Fi details</a></li>
+          <li><a href="agenda.html">Session timings</a></li>
+        </ul>
+      </div>
     </nav>
 
     <!-- Main -->
     <main role="main">
       <section class="content-section">
         <h1>Venue</h1>
-        <p>The 2025 Pleural Seminar will be held at <strong>The Parkway Hotel &amp; Spa</strong> in Cwmbran, Torfaen. 
+        <p>The 2025 Pleural Seminar will be held at <strong>The Parkway Hotel &amp; Spa</strong> in Cwmbran, Torfaen.
            All sessions take place in the <strong>Wentwood Suite</strong>.</p>
 
         <hr class="divider">
@@ -127,8 +131,8 @@
 
         <h2>Arrival &amp; Timings</h2>
         <ul>
-          <li><strong>Registration:</strong> opens at 08:40 am (foyer outside Wentwood Suite)</li>
-          <li><strong>Refreshments:</strong> tea &amp; coffee during breaks; <strong>lunch provided</strong></li>
+          <li><strong>Registration:</strong> opens at <strong>08:40</strong> (foyer outside Wentwood Suite).</li>
+          <li><strong>Refreshments:</strong> tea &amp; coffee during breaks; <strong>lunch provided</strong>.</li>
         </ul>
 
         <hr class="divider">
@@ -155,14 +159,14 @@
 
         <h2>Directions</h2>
         <p><strong>From M4 J26 (Eastbound)</strong><br>
-          Take the A4051 towards Cwmbran, continue through the traffic lights to the roundabout.  
-          Take the <strong>1st exit</strong> onto Cwmbran Drive. At the next roundabout, take the <strong>3rd exit</strong> into Llantarnam Park.  
+          Take the A4051 towards Cwmbran, continue through the traffic lights to the roundabout.
+          Take the <strong>1st exit</strong> onto Cwmbran Drive. At the next roundabout, take the <strong>3rd exit</strong> into Llantarnam Park.
           Turn first right, then first left into the hotel entrance.</p>
 
         <p><strong>From M4 J25A (Westbound)</strong><br>
-          Take the A4051 towards Cwmbran and follow signs for Llantarnam Park.  
-          At the roundabout, take the <strong>3rd exit</strong> onto Cwmbran Drive.  
-          Continue to the next roundabout and take the <strong>3rd exit</strong> into Llantarnam Park.  
+          Take the A4051 towards Cwmbran and follow signs for Llantarnam Park.
+          At the roundabout, take the <strong>3rd exit</strong> onto Cwmbran Drive.
+          Continue to the next roundabout and take the <strong>3rd exit</strong> into Llantarnam Park.
           Turn right, then first left into the hotel entrance.</p>
 
         <hr class="divider">
@@ -184,35 +188,34 @@
 
   <script>
     // Mobile drawer
-    const sidebar=document.getElementById('sidebar');
+    const sidebar = document.getElementById('sidebar');
     document.getElementById('openNav').addEventListener('click',()=>sidebar.classList.add('open'));
-    document.addEventListener('click',e=>{
-      if(window.innerWidth>960)return;
-      if(sidebar.classList.contains('open')&&!sidebar.contains(e.target)&&!e.target.closest('#openNav')){
+    // Close when clicking outside on mobile
+    document.addEventListener('click',(e)=>{
+      if(window.innerWidth>960) return;
+      if(sidebar.classList.contains('open') && !sidebar.contains(e.target) && !e.target.closest('#openNav')){
         sidebar.classList.remove('open');
       }
     });
 
     // Wi-Fi QR + copy
     (function(){
-      const ssid='Guestwifi',pass='Parkway1',auth='WPA';
+      const ssid='Guestwifi', pass='Parkway1', auth='WPA'; // change auth if needed
       const payload=`WIFI:T:${auth};S:${ssid};P:${pass};;`;
-      const qr=document.getElementById('wifiQrImg');
-      if(qr)qr.src='https://api.qrserver.com/v1/create-qr-code/?size=280x280&data='+encodeURIComponent(payload);
+      const qr = document.getElementById('wifiQrImg');
+      if(qr) qr.src='https://api.qrserver.com/v1/create-qr-code/?size=280x280&data='+encodeURIComponent(payload);
       const btn=document.getElementById('wifiCopyBtn');
       if(btn){
         btn.addEventListener('click',async()=>{
           const text=`Wi-Fi: ${ssid}\nPassword: ${pass}`;
-          try{
-            await navigator.clipboard.writeText(text);
-            btn.textContent='Copied!';
-            setTimeout(()=>btn.textContent='Copy Wi-Fi details',1400);
-          }catch{window.prompt('Copy Wi-Fi details:',text);}
+          try{ await navigator.clipboard.writeText(text);
+            btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy Wi-Fi details',1400);
+          }catch{ window.prompt('Copy Wi-Fi details:', text); }
         });
       }
     })();
 
-    // Lightbox
+    // Lightbox for gallery
     (function(){
       const lightbox=document.createElement('div');
       lightbox.className='lightbox';
@@ -220,10 +223,10 @@
       document.body.appendChild(lightbox);
       const imgEl=lightbox.querySelector('img');
       document.querySelectorAll('.gallery img').forEach(img=>{
-        img.addEventListener('click',()=>{imgEl.src=img.src;lightbox.classList.add('active');});
+        img.addEventListener('click',()=>{ imgEl.src=img.src; lightbox.classList.add('active'); });
       });
       lightbox.addEventListener('click',()=>lightbox.classList.remove('active'));
-      document.addEventListener('keydown',e=>{if(e.key==='Escape')lightbox.classList.remove('active');});
+      document.addEventListener('keydown',e=>{ if(e.key==='Escape') lightbox.classList.remove('active'); });
     })();
   </script>
 </body>
