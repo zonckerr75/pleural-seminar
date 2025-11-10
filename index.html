@@ -90,7 +90,7 @@
     <div class="content">
       <!-- Mobile top bar -->
       <div class="topbar">
-        <button class="hamburger" id="openMenu" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false" type="button">☰</button>
+        <button class="hamburger" id="openMenu" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false" type="button" onclick="window.__openDrawer && window.__openDrawer()">☰</button>
         <span class="title">Pleural Seminar Wales 2025</span>
       </div>
 
@@ -163,16 +163,13 @@
       if(!openBtn || !drawer || !backdrop){ return; }
       let lastFocus = null;
 
-      function openDrawer(e){
-        if(e){ e.preventDefault(); }
+      function openDrawer(){
         lastFocus = document.activeElement;
-        drawer.hidden = false;
-        requestAnimationFrame(()=>{
-          drawer.classList.add('open');
-          document.body.style.overflow = 'hidden';
-          openBtn.setAttribute('aria-expanded','true');
-          drawer.setAttribute('aria-hidden','false');
-        });
+        drawer.hidden = false; // ensure display can toggle
+        drawer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        openBtn.setAttribute('aria-expanded','true');
+        drawer.setAttribute('aria-hidden','false');
         backdrop.classList.add('show');
       }
       function closeDrawer(){
@@ -181,28 +178,22 @@
         document.body.style.overflow = '';
         openBtn.setAttribute('aria-expanded','false');
         drawer.setAttribute('aria-hidden','true');
+        // hide after animation
         setTimeout(()=>{ drawer.hidden = true; }, 200);
-        if(lastFocus) lastFocus.focus();
-      }
-        drawer.classList.remove('open');
-        backdrop.classList.remove('show');
-        document.body.style.overflow = '';
-        openBtn.setAttribute('aria-expanded','false');
-        drawer.setAttribute('aria-hidden','true');
-        setTimeout(()=>{ drawer.hidden = true; }, 200);
-        if(lastFocus) lastFocus.focus();
+        if(lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
       }
 
-      ['click','touchstart','pointerdown'].forEach(ev=>{
-        openBtn.addEventListener(ev, openDrawer, { passive:false });
-      });
+      // expose for inline fallback
+      window.__openDrawer = openDrawer;
+
+      // open/close handlers
+      openBtn.addEventListener('click', openDrawer);
+      openBtn.addEventListener('touchstart', openDrawer, {passive:true});
       backdrop.addEventListener('click', closeDrawer);
-      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(e); });
-      // Close drawer on link tap (mobile)
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
+      // Close drawer on link click (allow navigation)
       drawer.querySelectorAll('a').forEach(a=>{
         a.addEventListener('click', ()=>{ closeDrawer(); });
-        a.addEventListener('touchstart', ()=>{ /* allow default nav */ }, { passive:true });
-      });
       });
     })();
   </script>
