@@ -7,7 +7,8 @@
   <meta name="color-scheme" content="dark light">
   <style>
     :root{
-      --bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937
+      --bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937;
+      --overlay: rgba(2,6,23,0.85);
     }
     html,body{height:100%}
     body{
@@ -15,6 +16,7 @@
       font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
       display:flex;min-height:100vh
     }
+    /* Optional sidebar placeholder */
     aside.nav{
       width:260px;background:var(--panel);border-right:1px solid var(--border);
       position:sticky;top:0;height:100vh;padding:20px;display:none
@@ -25,24 +27,28 @@
     header.page h1{font-size:22px;margin:0}
     header.page p{color:var(--muted);margin:0}
 
+    /* Grid */
     .grid{
       display:grid;gap:12px;
       grid-template-columns: repeat(1, minmax(0, 1fr));
     }
     @media (min-width: 640px){ .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
     @media (min-width: 1024px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+    @media (min-width: 1280px){ .grid{ grid-template-columns: repeat(4, minmax(0,1fr)); } }
 
+    /* Card */
     .card{
       background:var(--panel);border:1px solid var(--border);border-radius:14px;
-      overflow:hidden;display:flex;flex-direction:column;min-height:240px
+      overflow:hidden;display:flex;flex-direction:column;min-height:200px
     }
     .thumb{
-      aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;
+      /* flatter style: 4:3 (landscape-ish tile look) */
+      aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
       border-bottom:1px solid var(--border);position:relative;background:#0c1527
     }
     .thumb img{
       width:100%;height:100%;object-fit:contain;display:block;
-      image-rendering:auto; /* keep browser defaults for best quality */
+      image-rendering:auto;
     }
     .thumb .fallback{
       position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -56,6 +62,50 @@
     .badge{
       position:absolute;top:8px;left:8px;background:rgba(34,197,94,.15);color:#86efac;
       font-weight:600;font-size:12px;padding:3px 7px;border-radius:999px;border:1px solid rgba(134,239,172,.3)
+    }
+
+    /* Modal gallery */
+    .modal{
+      position:fixed;inset:0;background:var(--overlay);
+      display:none;align-items:stretch;justify-content:center;z-index:1000;
+    }
+    .modal.active{ display:flex; }
+    .viewer{
+      margin:auto;background:var(--panel);border:1px solid var(--border);
+      width:min(1200px, 96vw);height:min(86vh, 900px);border-radius:16px;display:flex;flex-direction:column;overflow:hidden
+    }
+    .viewer header{
+      display:flex;align-items:center;justify-content:space-between;gap:8px;
+      padding:10px 12px;border-bottom:1px solid var(--border)
+    }
+    .viewer header .left{
+      display:flex;align-items:center;gap:10px;min-width:0
+    }
+    .viewer h3{margin:0;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .viewframe{
+      position:relative;flex:1;background:#0b1224
+    }
+    .viewframe .pdfembed{
+      position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b1224
+    }
+    .controls{
+      display:flex;align-items:center;gap:8px
+    }
+    .btn{
+      background:#0f1a33;border:1px solid var(--border);color:var(--fg);
+      padding:6px 10px;border-radius:10px;cursor:pointer;font-size:14px
+    }
+    .btn:hover{ background:#122043 }
+    .btn.secondary{ background:transparent }
+    .spacer{ flex:1 }
+    .indexdot{
+      font-feature-settings:"tnum" 1; font-variant-numeric: tabular-nums; color:var(--muted); font-size:12px
+    }
+    @media (max-width: 640px){
+      .viewer{ height:88vh;width:96vw }
+      .viewer header{ padding:8px }
+      .btn{ padding:6px 8px }
+      .title{ font-size:14px }
     }
   </style>
 </head>
@@ -75,17 +125,47 @@
   <main>
     <header class="page">
       <h1>Posters</h1>
-      <p>Tap a thumbnail to open the full PDF in a new tab.</p>
+      <p>Tap a thumbnail to open the gallery. Use Next / Back to scroll through posters.</p>
       <p style="display:none" id="csvStatus"></p>
     </header>
 
     <section class="grid" id="posterGrid" aria-live="polite"></section>
   </main>
 
+  <!-- Modal gallery -->
+  <div class="modal" id="posterModal" aria-hidden="true" role="dialog" aria-label="Poster viewer">
+    <div class="viewer">
+      <header>
+        <div class="left">
+          <button class="btn secondary" id="btnClose" aria-label="Close viewer">Close</button>
+          <h3 id="modalTitle">Poster</h3>
+        </div>
+        <div class="controls">
+          <span class="indexdot" id="indexDot">1 / 1</span>
+          <button class="btn" id="btnPrev" aria-label="Previous poster">◀ Back</button>
+          <button class="btn" id="btnNext" aria-label="Next poster">Next ▶</button>
+          <a class="btn secondary" id="btnOpen" target="_blank" rel="noopener">Open in new tab</a>
+        </div>
+      </header>
+      <div class="viewframe">
+        <!-- We'll try <embed>. If the browser can't preview, the PDF will download; user can use Open in new tab. -->
+        <embed id="pdfEmbed" class="pdfembed" type="application/pdf" />
+      </div>
+    </div>
+  </div>
+
   <script>
   (function(){
     const grid = document.getElementById('posterGrid');
     const csvStatus = document.getElementById('csvStatus');
+    const modal = document.getElementById('posterModal');
+    const pdfEmbed = document.getElementById('pdfEmbed');
+    const modalTitle = document.getElementById('modalTitle');
+    const btnOpen = document.getElementById('btnOpen');
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const btnClose= document.getElementById('btnClose');
+    const indexDot = document.getElementById('indexDot');
 
     // === CONFIG ===
     const PREFIX = 'assets/posters/'; // relative path
@@ -98,9 +178,8 @@
     const CSV_URL = PREFIX + 'posters.csv';
     const TITLE_MAP = {};
 
-    // Responsive size hints for sharper <img>
-    // Approx card width: desktop ~28vw, tablet ~44vw, mobile ~92vw (minus padding)
-    const SIZES_ATTR = '(min-width:1024px) 28vw, (min-width:640px) 44vw, 92vw';
+    // Responsive size hints for sharp <img>
+    const SIZES_ATTR = '(min-width:1280px) 22vw, (min-width:1024px) 30vw, (min-width:640px) 44vw, 92vw';
 
     function parseCSV(text){
       const out = {};
@@ -148,16 +227,18 @@
     }
 
     function buildSrcset(baseJpg){
-      // If you have @2x thumbnails (e.g., p01@2x.jpg), use them for Retina/HiDPI.
+      // Optional retina files
       const at2x = baseJpg.replace(/\.jpg$/i, '@2x.jpg');
       const at3x = baseJpg.replace(/\.jpg$/i, '@3x.jpg');
       return { at2x, at3x };
     }
 
-    function makeCard(id, pdfUrl, meta, thumbJpg, retina){
+    function makeCard(idx, id, pdfUrl, meta, thumbJpg, retina){
       const a = document.createElement('a');
-      a.href = pdfUrl; a.target = '_blank'; a.rel = 'noopener';
-      a.className = 'open';
+      a.href = '#'; a.className = 'open'; a.addEventListener('click', (e)=>{
+        e.preventDefault();
+        openModal(idx);
+      });
 
       const card = document.createElement('article');
       card.className = 'card';
@@ -193,26 +274,29 @@
       info.appendChild(title); info.appendChild(metaP);
       card.appendChild(thumb); card.appendChild(info); a.appendChild(card);
 
-      // Lazy loader with retina srcset handling
+      // Lazy loader
       let tried = false;
-      async function load(){
+      async function loadThumb(){
         if (tried) return; tried = true;
-        // Prefer retina if it exists
-        const has2x = await exists(retina.at2x);
-        const has3x = await exists(retina.at3x);
-        if (has3x && has2x){
-          img.srcset = `${thumbJpg} 1x, ${retina.at2x} 2x, ${retina.at3x} 3x`;
-          img.src = thumbJpg;
-        } else if (has2x){
-          img.srcset = `${thumbJpg} 1x, ${retina.at2x} 2x`;
-          img.src = thumbJpg;
+        if (thumbJpg){
+          const has2x = await exists(retina.at2x);
+          const has3x = await exists(retina.at3x);
+          if (has3x && has2x){
+            img.srcset = `${thumbJpg} 1x, ${retina.at2x} 2x, ${retina.at3x} 3x`;
+            img.src = thumbJpg;
+          } else if (has2x){
+            img.srcset = `${thumbJpg} 1x, ${retina.at2x} 2x`;
+            img.src = thumbJpg;
+          } else {
+            img.src = thumbJpg;
+          }
+          fb.style.display = 'none';
         } else {
-          img.src = thumbJpg;
+          // no thumbnail; keep fallback
         }
-        fb.style.display = 'none';
       }
 
-      return { anchor:a, thumb, loadThumb:load };
+      return { anchor:a, thumb, loadThumb };
     }
 
     const io = new IntersectionObserver((entries)=>{
@@ -229,6 +313,47 @@
       });
     }, { rootMargin: '200px' });
 
+    const posters = []; // array of {id, title, authors, pdfUrl}
+
+    function openModal(index){
+      if (!posters.length) return;
+      currentIndex = (index + posters.length) % posters.length;
+      const p = posters[currentIndex];
+      modalTitle.textContent = (p.title ? p.title + ' — ' : '') + p.id;
+      btnOpen.href = p.pdfUrl;
+      // try to load in <embed>
+      pdfEmbed.src = p.pdfUrl + '#view=FitH';
+      indexDot.textContent = (currentIndex+1) + ' / ' + posters.length;
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden','false');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(){
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden','true');
+      document.body.style.overflow = '';
+      // unload to free memory on mobiles
+      pdfEmbed.removeAttribute('src');
+    }
+    function nextModal(){ openModal(currentIndex+1); }
+    function prevModal(){ openModal(currentIndex-1); }
+
+    btnNext.addEventListener('click', nextModal);
+    btnPrev.addEventListener('click', prevModal);
+    btnClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{
+      // click outside viewer closes
+      if (e.target === modal) closeModal();
+    });
+    window.addEventListener('keydown', (e)=>{
+      if (!modal.classList.contains('active')) return;
+      if (e.key === 'Escape') closeModal();
+      if (e.key === 'ArrowRight') nextModal();
+      if (e.key === 'ArrowLeft') prevModal();
+    });
+
+    let currentIndex = 0;
+
     (async function build(){
       const map = await loadCSVMap();
       let misses = 0;
@@ -241,12 +366,11 @@
           misses = 0;
           const meta = map[id] || null;
 
-          // Prefer lower-case jpg names per your current setup (p01.jpg),
-          // but accept multiple casings and extensions for safety.
           const baseCandidates = [
             PREFIX + `${id.toLowerCase()}.jpg`,
             PREFIX + `${id}.jpg`,
             PREFIX + `${id.toUpperCase()}.jpg`,
+            // fallbacks if someone provided png/webp
             PREFIX + `${id.toLowerCase()}.png`,
             PREFIX + `${id}.png`,
             PREFIX + `${id.toLowerCase()}.webp`,
@@ -257,8 +381,7 @@
           for (const c of baseCandidates){
             if (await exists(c)){ thumb = c; break; }
           }
-          // If no thumbnail, we still render the card with "Preview" placeholder.
-          const retina = thumb ? buildSrcset(thumb) : { at2x: '', at3x: '' };
+          const retina = thumb ? buildSrcset(thumb) : { at2x:'', at3x:'' };
           cards.push({ id, pdfUrl, meta, thumb, retina });
         } else {
           misses++;
@@ -276,12 +399,23 @@
         return;
       }
 
+      // Fill poster array for modal navigation
       for (const c of cards){
-        const { anchor, thumb, loadThumb } = makeCard(c.id, c.pdfUrl, c.meta, c.thumb || '', c.retina);
+        posters.push({
+          id: c.id,
+          title: c.meta?.title || '',
+          authors: c.meta?.authors || '',
+          pdfUrl: c.pdfUrl
+        });
+      }
+
+      // Build cards
+      cards.forEach((c, idx)=>{
+        const { anchor, thumb, loadThumb } = makeCard(idx, c.id, c.pdfUrl, c.meta, c.thumb || '', c.retina);
         grid.appendChild(anchor);
         thumb._loadThumb = loadThumb;
         io.observe(thumb);
-      }
+      });
     })();
   })();
   </script>
