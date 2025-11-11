@@ -478,5 +478,104 @@
       }catch(_){ /* ignore */ }
     })();
   </script>
+
+<script>
+(function () {
+  // 1) Read URL params safely
+  const params = new URLSearchParams(location.search);
+  const token = (params.get('token') || params.get('code') || '').trim();
+  const rawN = params.get('n') || '';
+  const rawE = params.get('e') || '';
+  // decode + and %xx
+  const decode = s => decodeURIComponent(s.replace(/\+/g, ' '));
+  const nameVal = decode(rawN);
+  const emailVal = rawE; // emails shouldn't replace '+' with space
+
+  // 2) Helper to find inputs by id/name/label text
+  function byIdOrName(id, name){
+    return document.getElementById(id) || document.querySelector(`[name="${name}"]`);
+  }
+  function findInputByLabelText(text){
+    text = text.toLowerCase();
+    const labels = Array.from(document.querySelectorAll('label'));
+    for (const lab of labels) {
+      const t = (lab.textContent || '').trim().toLowerCase();
+      if (t.includes(text)) {
+        const forId = lab.getAttribute('for');
+        if (forId) {
+          const el = document.getElementById(forId);
+          if (el) return el;
+        }
+        // label wraps the input
+        const inp = lab.querySelector('input,textarea,select');
+        if (inp) return inp;
+      }
+    }
+    return null;
+  }
+
+  function setValueIfEmpty(el, val){
+    if (!el) return;
+    if (!el.value) el.value = val;
+    el.dispatchEvent(new Event('input', {bubbles:true}));
+    el.dispatchEvent(new Event('change', {bubbles:true}));
+  }
+
+  // 3) Run after DOM ready
+  function run(){
+    const form = document.getElementById('feedback-form') || document.querySelector('form');
+
+    // Try common ids/names you might be using; fall back to label search
+    const nameInput  = byIdOrName('q19', 'q19') || byIdOrName('name', 'name') || findInputByLabelText('name');
+    const emailInput = byIdOrName('q20', 'q20') || byIdOrName('email', 'email') || findInputByLabelText('email');
+
+    if (nameVal)  setValueIfEmpty(nameInput,  nameVal);
+    if (emailVal) setValueIfEmpty(emailInput, emailVal);
+
+    // Ensure token is submitted with the form
+    if (form && token) {
+      let tok = document.getElementById('__token');
+      if (!tok) {
+        tok = document.createElement('input');
+        tok.type = 'hidden';
+        tok.name = 'token';
+        tok.id = '__token';
+        form.appendChild(tok);
+      }
+      tok.value = token;
+    }
+
+    // Optional: keep raw n/e for debugging or server-side checks
+    if (form) {
+      const ensureHidden = (k, v) => {
+        let el = document.getElementById(`__${k}`);
+        if (!el) {
+          el = document.createElement('input');
+          el.type = 'hidden';
+          el.name = k;
+          el.id = `__${k}`;
+          form.appendChild(el);
+        }
+        el.value = v;
+      };
+      ensureHidden('n', nameVal);
+      ensureHidden('e', emailVal);
+    }
+
+    // Don’t break if updateProgress() isn’t defined
+    if (typeof updateProgress === 'function') {
+      try { updateProgress(); } catch {}
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+})();
+</script>
+
+
 </body>
 </html>
