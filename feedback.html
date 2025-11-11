@@ -68,7 +68,7 @@
       </div>
       <nav class="sb" aria-label="Main navigation">
         <a href="index.html">Home</a>
-        <a href="index.html#programme">Agenda</a>
+        <a href="agenda.html">Agenda</a>
         <a href="venue.html">Venue</a>
         <a href="posters.html">Posters</a>
         <a href="feedback.html" class="active">Feedback</a>
@@ -288,7 +288,7 @@
       </div>
       <nav class="sb" aria-label="Mobile navigation">
         <a href="index.html">Home</a>
-        <a href="index.html#programme">Agenda</a>
+        <a href="agenda.html">Agenda</a>
         <a href="venue.html">Venue</a>
         <a href="posters.html">Posters</a>
         <a href="feedback.html" class="active">Feedback</a>
@@ -377,6 +377,57 @@
       $('#emailCert').addEventListener('click', async ()=>{ const name=$('#q19').value.trim(); const email=$('#q20').value.trim(); if(!name||!email) return alert('Please complete Q19 (name) and Q20 (email).'); try{ await emailCertificate(name,email); alert('Certificate emailed. Please check your inbox (and spam).'); }catch(e){ alert('Email failed: '+(e?.message||e)); } });
       checkEmailAvailability();
     });
+
+
+<!-- Put this <script> block just before your Firebase save scripts -->
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token') || params.get('code') || '';
+    const n = params.get('n') || '';
+    const e = params.get('e') || '';
+
+    const form = document.getElementById('feedback-form');
+    const nameInput = document.getElementById('q19');   // certificate_name
+    const emailInput = document.getElementById('q20');  // email
+
+    if (n && !nameInput.value) nameInput.value = decodeURIComponent(n.replace(/\+/g,' '));
+    if (e && !emailInput.value) emailInput.value = e;
+
+    // ensure token is submitted with the form
+    let tok = document.getElementById('__token');
+    if (!tok) {
+      tok = document.createElement('input');
+      tok.type = 'hidden';
+      tok.name = 'token';
+      tok.id = '__token';
+      form.appendChild(tok);
+    }
+    tok.value = token;
+
+    // optional: also include raw name/email as hidden fields for convenience
+    ['n','e'].forEach((k) => {
+      const id = '__' + k;
+      if (!document.getElementById(id)) {
+        const hid = document.createElement('input');
+        hid.type = 'hidden';
+        hid.name = k;
+        hid.id = id;
+        form.appendChild(hid);
+      }
+      document.getElementById(id).value = params.get(k) || '';
+    });
+
+    // refresh your progress UI after prefilling
+    if (typeof updateProgress === 'function') updateProgress();
+  });
+</script>
+
+
+
+
+
+
   </script>
 
   <!-- Firebase save (kept intact) -->
