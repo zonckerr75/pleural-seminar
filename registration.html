@@ -16,140 +16,115 @@
     a.secondary{background:#1f2937;color:var(--fg);margin-left:8px}
     .row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
     .msg{margin-top:16px;padding:12px;border-radius:12px;background:#0b1426;border:1px solid var(--border)}
-    .ok{border-color:#164e2e}
-    .warn{border-color:#7c2d12}
-    .hidden{display:none}
+    .ok{border-color:#164e2e}.warn{border-color:#7c2d12}.hidden{display:none}
   </style>
-
-  <!-- Firebase SDKs (v10+) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // -------------- CONFIG YOU MAY CHANGE --------------
+    // --- YOUR FIREBASE CONFIG ---
     const firebaseConfig = {
-      apiKey: "YOUR_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
+      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+   	 authDomain: "pleural-seminar-2025.firebaseapp.com",
+    	projectId: "pleural-seminar-2025",
+    	storageBucket: "pleural-seminar-2025.appspot.com",
+    	messagingSenderId: "914784082205",
+    	appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
+
     };
+
     const EVENT_ID   = "pleural-2025";
-    const EVENT_DATE = "2025-11-14"; // 14 Nov 2025
-    // ---------------------------------------------------
+    const EVENT_DATE = "2025-11-14"; // seminar day
 
-    // Helpers
-    function el(id){ return document.getElementById(id); }
-    const params = new URLSearchParams(location.search);
-    const token = (params.get("token") || params.get("code") || "").trim();
-    const rawN  = params.get("n") || "";
-    const rawE  = params.get("e") || "";
-    const decodeName = s => decodeURIComponent(s.replace(/\+/g, " "));
-    const nameFromUrl  = rawN ? decodeName(rawN) : "";
-    const emailFromUrl = rawE || "";
-
-    function isEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s||""); }
-    function fmtTS(dt){ try { return new Date(dt.seconds*1000).toLocaleString('en-GB',{hour12:false}); } catch { return "—"; } }
-    function feedbackHref(n,e){
-      const sp = new URLSearchParams({ token, n, e });
-      return `feedback.html?${sp.toString()}`;
-    }
+    // Utils
+    const el = id => document.getElementById(id);
+    const P  = new URLSearchParams(location.search);
+    const token = (P.get("token") || P.get("code") || "").trim();
+    const decodeName = s => decodeURIComponent((s||"").replace(/\+/g," "));
+    const nameFromUrl  = decodeName(P.get("n")||"");
+    const emailFromUrl = (P.get("e")||"").trim();
+    const isEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s||"");
+    const fmtTS = ts => { try { return new Date(ts.seconds*1000).toLocaleString("en-GB",{hour12:false}); } catch { return "—"; } };
+    const feedbackHref = (n,e) => `feedback.html?`+new URLSearchParams({token,n,e}).toString();
 
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
 
-    async function loadPrefill(){
+    async function init(){
       if(!token){
         el("content").classList.add("hidden");
         el("error").classList.remove("hidden");
         return;
       }
 
-      // Show welcome name early
       el("welcomeName").textContent = nameFromUrl || "Attendee";
-      if (nameFromUrl) el("name").value = nameFromUrl;
+      if (nameFromUrl)  el("name").value  = nameFromUrl;
       if (emailFromUrl) el("email").value = emailFromUrl;
 
-      // If email missing, try Firestore attendees/{token}
-      if (!el("email").value) {
-        const attRef = doc(db, "attendees", token);
-        const attSnap = await getDoc(attRef);
-        if (attSnap.exists()) {
-          const d = attSnap.data() || {};
-          if (!el("name").value && d.name)  el("name").value = d.name;
-          if (d.email)                      el("email").value = d.email;
-          if (d.name || nameFromUrl)        el("welcomeName").textContent = d.name || nameFromUrl;
-        }
+      // Prefill from attendees/{token} if needed
+      const attRef = doc(db,"attendees",token);
+      const attSnap = await getDoc(attRef);
+      if (attSnap.exists()){
+        const d = attSnap.data() || {};
+        if (!el("name").value && d.name)   el("name").value = d.name;
+        if (!el("email").value && d.email) el("email").value = d.email;
+        if (d.name) el("welcomeName").textContent = d.name;
       }
 
-      // If already checked-in, show the previous timestamp
-      const regRef = doc(db, "attendance", EVENT_DATE, token);
+      // Duplicate scan check
+      const regRef = doc(db,"attendance",EVENT_DATE,token);
       const regSnap = await getDoc(regRef);
-      if (regSnap.exists()) {
+      if (regSnap.exists()){
         const d = regSnap.data() || {};
         el("already").classList.remove("hidden");
         el("prevTime").textContent = fmtTS(d.checkedInAt);
-        // Build feedback link
         el("feedbackBtn").href = feedbackHref(d.name || el("name").value || "", d.email || el("email").value || "");
       } else {
-        // Build initial feedback link (updated again after confirm)
         el("feedbackBtn").href = feedbackHref(el("name").value||"", el("email").value||"");
       }
+
+      // Keep feedback link updated
+      const sync = () => el("feedbackBtn").href = feedbackHref(el("name").value.trim(), el("email").value.trim());
+      el("name").addEventListener("input", sync);
+      el("email").addEventListener("input", sync);
+
+      // Confirm
+      el("confirm").addEventListener("click", async ()=>{
+        const name  = el("name").value.trim();
+        const email = el("email").value.trim();
+
+        if (!name){
+          el("msg").className="msg warn"; el("msg").textContent="Please confirm your name."; return;
+        }
+        if (!isEmail(email)){
+          el("msg").className="msg warn"; el("msg").textContent="Please enter a valid email."; return;
+        }
+
+        await setDoc(attRef, { name, email, updatedAt: serverTimestamp() }, { merge:true });
+
+        const regRef = doc(db,"attendance",EVENT_DATE,token);
+        const existing = await getDoc(regRef);
+        if (existing.exists()){
+          const d = existing.data() || {};
+          el("already").classList.remove("hidden");
+          el("prevTime").textContent = fmtTS(d.checkedInAt);
+          el("msg").className="msg ok"; el("msg").textContent=`Already checked in at ${fmtTS(d.checkedInAt)}.`;
+        } else {
+          await setDoc(regRef, { eventId: EVENT_ID, name, email, checkedInAt: serverTimestamp() });
+          el("already").classList.add("hidden");
+          el("msg").className="msg ok"; el("msg").textContent="You’re checked in. Enjoy the seminar!";
+        }
+
+        // Refresh feedback link with confirmed details
+        el("feedbackBtn").href = feedbackHref(name,email);
+      });
     }
 
-    function syncFeedbackLink(){
-      el("feedbackBtn").href = feedbackHref(el("name").value.trim(), el("email").value.trim());
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
     }
-
-    async function confirmAttendance(){
-      const name  = el("name").value.trim();
-      const email = el("email").value.trim();
-
-      if (!name) {
-        el("msg").className = "msg warn";
-        el("msg").textContent = "Please confirm your name.";
-        return;
-      }
-      if (!isEmail(email)) {
-        el("msg").className = "msg warn";
-        el("msg").textContent = "Please enter a valid email address.";
-        return;
-      }
-
-      // Upsert attendees/{token}
-      await setDoc(doc(db, "attendees", token), {
-        name, email, updatedAt: serverTimestamp()
-      }, { merge: true });
-
-      // Create attendance/{EVENT_DATE}/{token} if missing; else show previous time
-      const regRef = doc(db, "attendance", EVENT_DATE, token);
-      const cur = await getDoc(regRef);
-      if (cur.exists()) {
-        const d = cur.data() || {};
-        el("already").classList.remove("hidden");
-        el("prevTime").textContent = fmtTS(d.checkedInAt);
-        el("msg").className = "msg ok";
-        el("msg").textContent = `Already checked in at ${fmtTS(d.checkedInAt)}.`;
-      } else {
-        await setDoc(regRef, {
-          eventId: EVENT_ID,
-          name, email,
-          checkedInAt: serverTimestamp()
-        });
-        el("already").classList.add("hidden");
-        el("msg").className = "msg ok";
-        el("msg").textContent = "You’re checked in. Enjoy the seminar!";
-      }
-
-      // Update feedback link with confirmed values
-      syncFeedbackLink();
-    }
-
-    // Wire up
-    window.addEventListener("DOMContentLoaded", async () => {
-      await loadPrefill();
-      el("name").addEventListener("input", syncFeedbackLink);
-      el("email").addEventListener("input", syncFeedbackLink);
-      el("confirm").addEventListener("click", confirmAttendance);
-    });
   </script>
 </head>
 <body>
