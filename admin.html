@@ -19,7 +19,7 @@
     .stat .v{font-size:28px;font-weight:700;margin-top:2px}
     .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
     input[type="text"]{flex:1;min-width:220px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0b1426;color:#e5e7eb}
-    select{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0b1426;color:#e5e7eb}
+    input[type="date"],select{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0b1426;color:#e5e7eb}
     button,.btn{padding:10px 14px;border:0;border-radius:10px;background:var(--accent);color:#052e1b;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
     .btn.secondary{background:#1f2937;color:#e5e7eb}
     table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px}
@@ -28,6 +28,8 @@
     tr:hover td{background:#0b1426}
     .right{justify-self:end}
     .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0b1426;border:1px solid var(--border);font-size:12px}
+    .orgbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .chip{font-size:12px;border:1px solid var(--border);background:#0b1426;border-radius:999px;padding:4px 8px}
     footer{color:var(--muted);text-align:center;margin:24px 0}
     @media (max-width: 720px){ .grid{grid-template-columns:1fr} }
   </style>
@@ -64,10 +66,14 @@
           <option value="withEmail">With email</option>
           <option value="noEmail">No email</option>
         </select>
+        <input id="date" type="date" />
         <button id="refresh">Refresh</button>
-        <a id="csv" class="btn secondary" href="#" download="attendance-2025-11-14.csv">Download CSV</a>
+        <a id="csv" class="btn secondary" href="#" download="attendance-2025-11-14.csv">Export (filtered)</a>
+        <a id="csvAll" class="btn secondary" href="#" download="attendance-2025-11-14-all.csv">Export all (full date)</a>
         <a class="btn secondary" href="https://pleuralseminar.wales/faculty.html">Back to Faculty</a>
       </div>
+
+      <div id="orgCounts" class="orgbar" aria-live="polite"></div>
 
       <table>
         <thead>
@@ -90,11 +96,11 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-    import { 
-      getFirestore, collection, doc, getDoc, getDocs, onSnapshot, query, orderBy 
+    import {
+      getFirestore, collection, doc, getDoc, getDocs, onSnapshot, query, orderBy
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // Firebase config
+    // Firebase config (same as your current file)
     const firebaseConfig = {
       apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
       authDomain: "pleural-seminar-2025.firebaseapp.com",
@@ -104,46 +110,43 @@
       appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
     };
 
-    const EVENT_DATE = "2025-11-14";
-    document.getElementById("eventDate").textContent = EVENT_DATE;
+    // --- Helpers ---
+    const $ = (id)=>document.getElementById(id);
+    const qs = new URLSearchParams(location.search);
+    const defaultDate = (qs.get("date") || "2025-11-14");
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    // Debounce for search input
+    function debounce(fn, wait=200){
+      let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), wait); };
+    }
 
-    // Load attendees map (for organisations)
-    async function loadAttendeesMap(){
-      const map = new Map();
-      try{
-        const snap = await getDocs(collection(db, "attendees"));
-        snap.forEach(d => {
-          const v = d.data() || {};
-          map.set(d.id, { name: v.name || "", email: v.email || "", organisation: v.organisation || "" });
-        });
-      } catch(e){ console.warn("attendees map load failed:", e); }
-      return map;
+    function normaliseOrg(s){
+      const x = (s||"").trim().replace(/\s+/g," ");
+      return x ? x.replace(/\b\w/g, c=>c.toUpperCase()) : "Unknown";
     }
 
     function toCsvRow(arr){
       return arr.map(v => {
         const s = (v==null?"":String(v)).replaceAll('"','""');
-        return /[",
-]/.test(s) ? `"${s}"` : s;
+        return /[",\n]/.test(s) ? `"${s}"` : s;
       }).join(",");
     }
 
-    function downloadCsv(rows){
+    function buildCsv(rows){
       const header = ["Name","Email","Organisation","Checked In At","Token"];
       const body = rows.map(r => toCsvRow([r.name, r.email, r.organisation, r.when, r.token]));
-      const csv = [toCsvRow(header)].concat(body).join("
-");
-      const blob = new Blob([csv], {type:"text/csv"});
+      return [toCsvRow(header)].concat(body).join("\n");
+    }
+
+    function linkBlobToAnchor(csvText, anchorId){
+      const blob = new Blob([csvText], {type:"text/csv"});
       const url = URL.createObjectURL(blob);
-      const a = document.getElementById("csv");
+      const a = $(anchorId);
       a.href = url;
     }
 
-    function render(list){
-      const tbody = document.getElementById("rows");
+    function renderTable(list){
+      const tbody = $("rows");
       tbody.innerHTML = "";
       if (!list.length){
         const tr = document.createElement("tr");
@@ -166,9 +169,20 @@
       }
     }
 
+    function renderOrgCounts(list){
+      const box = $("orgCounts");
+      const freq = new Map();
+      for (const r of list){
+        const k = normaliseOrg(r.organisation);
+        freq.set(k, (freq.get(k)||0)+1);
+      }
+      const items = [...freq.entries()].sort((a,b)=>b[1]-a[1]);
+      box.innerHTML = items.map(([k,v])=>`<span class="chip">${k} — ${v}</span>`).join("") || "";
+    }
+
     function filterRows(rows){
-      const q = document.getElementById("search").value.trim().toLowerCase();
-      const mode = document.getElementById("filter").value;
+      const q = $("search").value.trim().toLowerCase();
+      const mode = $("filter").value;
       let out = rows;
       if (q){
         out = out.filter(r =>
@@ -183,19 +197,55 @@
       return out;
     }
 
-    async function main(){
-      const attMap = await loadAttendeesMap();
+    // --- App ---
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
 
-      const rows = [];
-      const col = collection(db, "attendance", EVENT_DATE, "checkins");
-      // live updates
-      onSnapshot(query(col, orderBy("checkedInAt","desc")), snap => {
-        rows.length = 0;
-        const emails = new Set();
+    // We keep the attendees map cached across date changes
+    let attendeesMap = null;
+
+    async function loadAttendeesMap(){
+      if (attendeesMap) return attendeesMap;
+      const map = new Map();
+      try{
+        const snap = await getDocs(collection(db, "attendees"));
         snap.forEach(d => {
           const v = d.data() || {};
-          const token = d.id;
-          // join with attendees map for organisation if missing
+          map.set(d.id, { name: v.name || "", email: v.email || "", organisation: v.organisation || "" });
+        });
+      } catch(e){ console.warn("attendees map load failed:", e); }
+      attendeesMap = map;
+      return map;
+    }
+
+    // Live listener management per date
+    let unsubscribe = null;
+    let currentDate = defaultDate;
+
+    function setDateUI(d){
+      $("eventDate").textContent = d;
+      $("date").value = d;
+      $("csv").download = `attendance-${d}.csv`;
+      $("csvAll").download = `attendance-${d}-all.csv`;
+    }
+
+    async function bindDateListener(d){
+      // Unsubscribe previous date stream
+      if (typeof unsubscribe === "function"){ unsubscribe(); unsubscribe = null; }
+
+      currentDate = d;
+      setDateUI(d);
+
+      const attMap = await loadAttendeesMap();
+      const col = collection(db, "attendance", d, "checkins");
+      const rows = [];
+      const emails = new Set();
+
+      unsubscribe = onSnapshot(query(col, orderBy("checkedInAt","desc")), snap => {
+        rows.length = 0; emails.clear();
+        snap.forEach(docSnap => {
+          const v = docSnap.data() || {};
+          const token = docSnap.id;
           const a = attMap.get(token) || {};
           const name = v.name || a.name || "";
           const email = v.email || a.email || "";
@@ -206,27 +256,59 @@
         });
 
         // stats
-        document.getElementById("statCheckedIn").textContent = String(rows.length);
-        document.getElementById("statEmails").textContent = String(emails.size);
+        $("statCheckedIn").textContent = String(rows.length);
+        $("statEmails").textContent = String(emails.size);
 
-        // render + csv
+        // filtered render + CSV (filtered)
         const filtered = filterRows(rows);
-        render(filtered);
-        downloadCsv(filtered);
+        renderTable(filtered);
+        renderOrgCounts(filtered);
+        linkBlobToAnchor(buildCsv(filtered), "csv");
+
+        // prepare "Export all" CSV
+        linkBlobToAnchor(buildCsv(rows), "csvAll");
       });
 
-      // optional: total from attendees collection
+      // total from attendees collection (unchanged behaviour)
       try{
         const all = await getDocs(collection(db,"attendees"));
-        document.getElementById("statTotal").textContent = String(all.size);
-      } catch{ document.getElementById("statTotal").textContent = "—"; }
-
-      document.getElementById("refresh").addEventListener("click", main);
-      document.getElementById("search").addEventListener("input", () => {});
-      document.getElementById("filter").addEventListener("change", () => {});
+        $("statTotal").textContent = String(all.size);
+      } catch{
+        $("statTotal").textContent = "—";
+      }
     }
 
-    main();
+    // Init
+    (async function init(){
+      setDateUI(defaultDate);
+      await bindDateListener(defaultDate);
+
+      // Wire controls
+      $("refresh").addEventListener("click", ()=> bindDateListener(currentDate));
+
+      const rerender = debounce(()=> {
+        // Force the onSnapshot callback to recompute filtered view by toggling tiny no-op:
+        // Instead, we’ll just rebuild from current anchors (we already rebuild inside snapshot).
+        // Here, trigger CSV rebuild by calling bindDateListener without re-subscribing:
+        // Simpler: change a dummy hash to prompt the onSnapshot callback on next doc change.
+        // Practically, we re-run filter/render using cached arrays would need ref; to keep code small,
+        // just click "Refresh" if you need immediate recompute between snapshot ticks.
+        // To keep it deterministic, rebind snapshot (cheap for small collections).
+        bindDateListener(currentDate);
+      }, 200);
+
+      $("search").addEventListener("input", rerender);
+      $("filter").addEventListener("change", rerender);
+
+      $("date").addEventListener("change", (e)=>{
+        const d = e.target.value || defaultDate;
+        bindDateListener(d);
+        // keep the date in URL for bookmarking
+        const url = new URL(location.href);
+        url.searchParams.set("date", d);
+        history.replaceState(null, "", url.toString());
+      });
+    })();
   </script>
 </body>
 </html>
