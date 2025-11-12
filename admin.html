@@ -27,6 +27,7 @@
     tr:hover td{background:#0b1426}
     .orgbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .chip{font-size:12px;border:1px solid var(--border);background:#0b1426;border-radius:999px;padding:4px 8px}
+    .error{margin-top:10px;padding:10px;border-radius:10px;background:#3b0d0d;border:1px solid #7f1d1d;color:#fecaca}
     footer{color:var(--muted);text-align:center;margin:24px 0}
     @media (max-width: 720px){ .grid{grid-template-columns:1fr} }
   </style>
@@ -55,6 +56,8 @@
           <div class="v" id="statTotal">—</div>
         </div>
       </div>
+
+      <div id="err" class="error" style="display:none"></div>
 
       <div class="controls">
         <input id="search" type="text" placeholder="Search name, email, organisation…" />
@@ -86,10 +89,9 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import {
-      getFirestore, collection, getDocs, onSnapshot, query, orderBy
+      getFirestore, collection, onSnapshot, query, orderBy, getDocs
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
       authDomain: "pleural-seminar-2025.firebaseapp.com",
@@ -98,17 +100,13 @@
       messagingSenderId: "914784082205",
       appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
     };
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
 
-    // Fixed event date
     const EVENT_DATE = "2025-11-14";
 
     const $ = (id)=>document.getElementById(id);
-
-    // Helpers
-    function debounce(fn, wait=200){
-      let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), wait); };
+    function showErr(msg){
+      const el = $("err"); el.style.display="block"; el.textContent = msg;
+      console.error(msg);
     }
 
     function normaliseOrg(s){
@@ -168,89 +166,78 @@
       box.innerHTML = items.map(([k,v])=>\`<span class="chip">\${k} — \${v}</span>\`).join("") || "";
     }
 
-    // Cache attendees for org lookup
-    let attendeesMap = null;
-    async function loadAttendeesMap(){
-      if (attendeesMap) return attendeesMap;
-      const map = new Map();
-      try{
-        const snap = await getDocs(collection(db, "attendees"));
-        snap.forEach(d => {
-          const v = d.data() || {};
-          map.set(d.id, {
-            name: v.name || "",
-            email: v.email || "",
-            organisation: v.organisation || ""
-          });
-        });
-      } catch(e){ console.warn("attendees map load failed:", e); }
-      attendeesMap = map;
-      return map;
-    }
+    // Firebase init
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
 
-    // Live listener
     let unsubscribe = null;
-    async function bindLive(){
-      if (typeof unsubscribe === "function"){ unsubscribe(); unsubscribe = null; }
 
-      $("eventDate").textContent = EVENT_DATE;
-      linkBlobToAnchor("", "csv", "attendance-"+EVENT_DATE+".csv");
-      linkBlobToAnchor("", "csvAll", "attendance-"+EVENT_DATE+"-all.csv");
+    async function bind(){
+      try{
+        if (typeof unsubscribe === "function"){ unsubscribe(); unsubscribe = null; }
 
-      const attMap = await loadAttendeesMap();
-      const col = collection(db, "attendance", EVENT_DATE, "checkins");
-      const rows = [];
-      const emails = new Set();
+        $("eventDate").textContent = EVENT_DATE;
+        linkBlobToAnchor("", "csv", "attendance-"+EVENT_DATE+".csv");
+        linkBlobToAnchor("", "csvAll", "attendance-"+EVENT_DATE+"-all.csv");
 
-      unsubscribe = onSnapshot(query(col, orderBy("checkedInAt","desc")), snap => {
-        rows.length = 0; emails.clear();
-        snap.forEach(docSnap => {
-          const v = docSnap.data() || {};
-          const token = docSnap.id;
-          const fromAtt = attMap.get(token) || {};
-          const name = v.name || fromAtt.name || "";
-          const email = v.email || fromAtt.email || "";
-          const organisation = fromAtt.organisation || "";
-          const when = v.checkedInAt?.seconds ? new Date(v.checkedInAt.seconds*1000).toLocaleString("en-GB",{hour12:false}) : "";
-          rows.push({ name, email, organisation, when });
-          if (email) emails.add(email.toLowerCase());
+        const col = collection(db, "attendance", EVENT_DATE, "checkins");
+        const rows = [];
+        const emails = new Set();
+
+        unsubscribe = onSnapshot(query(col, orderBy("checkedInAt","desc")), snap => {
+          rows.length = 0; emails.clear();
+          snap.forEach(docSnap => {
+            const v = docSnap.data() || {};
+            const name = v.name || "";
+            const email = v.email || "";
+            const organisation = v.organisation || ""; // will be blank if not stored in checkins
+            const when = v.checkedInAt?.seconds
+              ? new Date(v.checkedInAt.seconds*1000).toLocaleString("en-GB",{hour12:false})
+              : (v.checkedInAt?.toDate ? v.checkedInAt.toDate().toLocaleString("en-GB",{hour12:false}) : "");
+
+            rows.push({ name, email, organisation, when });
+            if (email) emails.add(email.toLowerCase());
+          });
+
+          // Sort A→Z by name
+          rows.sort((a,b)=> (a.name||"").localeCompare(b.name||"", undefined, { sensitivity:"base" }));
+
+          $("statCheckedIn").textContent = String(rows.length);
+          $("statEmails").textContent = String(emails.size);
+
+          const q = $("search").value.trim().toLowerCase();
+          const filtered = q ? rows.filter(r =>
+            (r.name||"").toLowerCase().includes(q) ||
+            (r.email||"").toLowerCase().includes(q) ||
+            (r.organisation||"").toLowerCase().includes(q)
+          ) : rows;
+
+          renderTable(filtered);
+          renderOrgCounts(filtered);
+
+          linkBlobToAnchor(buildCsv(filtered), "csv", "attendance-"+EVENT_DATE+".csv");
+          linkBlobToAnchor(buildCsv(rows), "csvAll", "attendance-"+EVENT_DATE+"-all.csv");
+        }, (err)=>{
+          showErr("Live read failed: " + err.message);
         });
 
-        // Sort alphabetically by name
-        rows.sort((a,b)=> (a.name||"").localeCompare(b.name||"", undefined, { sensitivity:"base" }));
+        // Best-effort attendees total (won't block)
+        try{
+          const att = await getDocs(collection(db,"attendees"));
+          $("statTotal").textContent = String(att.size);
+        } catch(e){
+          $("statTotal").textContent = "—";
+        }
 
-        // Stats
-        $("statCheckedIn").textContent = String(rows.length);
-        $("statEmails").textContent = String(emails.size);
-
-        const q = $("search").value.trim().toLowerCase();
-        const filtered = q ? rows.filter(r =>
-          (r.name||"").toLowerCase().includes(q) ||
-          (r.email||"").toLowerCase().includes(q) ||
-          (r.organisation||"").toLowerCase().includes(q)
-        ) : rows;
-
-        renderTable(filtered);
-        renderOrgCounts(filtered);
-
-        // CSV links
-        linkBlobToAnchor(buildCsv(filtered), "csv", "attendance-"+EVENT_DATE+".csv");
-        linkBlobToAnchor(buildCsv(rows), "csvAll", "attendance-"+EVENT_DATE+"-all.csv");
-      });
-
-      // Attendees total
-      try{
-        const all = await getDocs(collection(db,"attendees"));
-        $("statTotal").textContent = String(all.size);
-      } catch{
-        $("statTotal").textContent = "—";
+      } catch(e){
+        showErr("Initialisation error: " + e.message);
       }
     }
 
     (async function init(){
-      await bindLive();
-      const rerender = debounce(()=> bindLive(), 200);
-      $("search").addEventListener("input", rerender);
+      await bind();
+      const deb = (fn, t=200)=>{ let x; return (...a)=>{ clearTimeout(x); x=setTimeout(()=>fn(...a),t); }; };
+      $("search").addEventListener("input", deb(()=> bind(), 200));
     })();
   </script>
 </body>
