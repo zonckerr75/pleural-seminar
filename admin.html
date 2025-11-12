@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Pleural Seminar — Admin Dashboard</title>
+  <title>Pleural Seminar — Admin Dashboard (Alpha Sorted)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
@@ -26,7 +26,6 @@
     th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
     th{color:#cbd5e1;font-weight:600;position:sticky;top:98px;background:var(--panel);z-index:5}
     tr:hover td{background:#0b1426}
-    .right{justify-self:end}
     .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0b1426;border:1px solid var(--border);font-size:12px}
     .orgbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
     .chip{font-size:12px;border:1px solid var(--border);background:#0b1426;border-radius:999px;padding:4px 8px}
@@ -61,11 +60,6 @@
 
       <div class="controls">
         <input id="search" type="text" placeholder="Search name, email, organisation…" />
-        <select id="filter">
-          <option value="all">All</option>
-          <option value="withEmail">With email</option>
-          <option value="noEmail">No email</option>
-        </select>
         <input id="date" type="date" />
         <button id="refresh">Refresh</button>
         <a id="csv" class="btn secondary" href="#" download="attendance-2025-11-14.csv">Export (filtered)</a>
@@ -78,15 +72,14 @@
       <table>
         <thead>
           <tr>
-            <th style="width:22%">Name</th>
-            <th style="width:24%">Email</th>
-            <th style="width:24%">Organisation</th>
+            <th style="width:30%">Name</th>
+            <th style="width:30%">Email</th>
+            <th style="width:25%">Organisation</th>
             <th style="width:15%">Checked in at</th>
-            <th style="width:15%">Token</th>
           </tr>
         </thead>
         <tbody id="rows">
-          <tr><td colspan="5" class="muted">Loading…</td></tr>
+          <tr><td colspan="4" class="muted">Loading…</td></tr>
         </tbody>
       </table>
     </section>
@@ -97,10 +90,9 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import {
-      getFirestore, collection, doc, getDoc, getDocs, onSnapshot, query, orderBy
+      getFirestore, collection, getDocs, onSnapshot, query, orderBy
     } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // Firebase config (same as your current file)
     const firebaseConfig = {
       apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
       authDomain: "pleural-seminar-2025.firebaseapp.com",
@@ -110,203 +102,177 @@
       appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
     };
 
-    // --- Helpers ---
     const $ = (id)=>document.getElementById(id);
     const qs = new URLSearchParams(location.search);
     const defaultDate = (qs.get("date") || "2025-11-14");
 
-    // Debounce for search input
     function debounce(fn, wait=200){
       let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn(...args), wait); };
     }
 
     function normaliseOrg(s){
       const x = (s||"").trim().replace(/\s+/g," ");
-      return x ? x.replace(/\b\w/g, c=>c.toUpperCase()) : "Unknown";
+      return x ? x.replace(/\\b\\w/g, c=>c.toUpperCase()) : "Unknown";
     }
 
     function toCsvRow(arr){
       return arr.map(v => {
-        const s = (v==null?"":String(v)).replaceAll('"','""');
-        return /[",\n]/.test(s) ? `"${s}"` : s;
-      }).join(",");
+        const s = (v==null?\"\":String(v)).replaceAll('\"','\"\"');
+        return /[\",\\n]/.test(s) ? '\"'+s+'\"' : s;
+      }).join(\",\");
     }
 
     function buildCsv(rows){
-      const header = ["Name","Email","Organisation","Checked In At","Token"];
-      const body = rows.map(r => toCsvRow([r.name, r.email, r.organisation, r.when, r.token]));
-      return [toCsvRow(header)].concat(body).join("\n");
+      const header = [\"Name\",\"Email\",\"Organisation\",\"Checked In At\"];
+      const body = rows.map(r => toCsvRow([r.name, r.email, r.organisation, r.when]));
+      return [toCsvRow(header)].concat(body).join(\"\\n\");
     }
 
     function linkBlobToAnchor(csvText, anchorId){
-      const blob = new Blob([csvText], {type:"text/csv"});
+      const blob = new Blob([csvText], {type:\"text/csv\"});
       const url = URL.createObjectURL(blob);
       const a = $(anchorId);
       a.href = url;
     }
 
     function renderTable(list){
-      const tbody = $("rows");
-      tbody.innerHTML = "";
+      const tbody = $(\"rows\");
+      tbody.innerHTML = \"\";
       if (!list.length){
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 5; td.className = "muted"; td.textContent = "No check-ins yet.";
+        const tr = document.createElement(\"tr\");
+        const td = document.createElement(\"td\");
+        td.colSpan = 4; td.className = \"muted\"; td.textContent = \"No check-ins yet.\";
         tr.appendChild(td);
         tbody.appendChild(tr);
         return;
       }
       for (const r of list){
-        const tr = document.createElement("tr");
+        const tr = document.createElement(\"tr\");
         tr.innerHTML = `
-          <td>${r.name||"—"}</td>
-          <td>${r.email||"—"}</td>
-          <td>${r.organisation||"—"}</td>
-          <td>${r.when||"—"}</td>
-          <td><span class="pill">${r.token}</span></td>
+          <td>${r.name||\"—\"}</td>
+          <td>${r.email||\"—\"}</td>
+          <td>${r.organisation||\"—\"}</td>
+          <td>${r.when||\"—\"}</td>
         `;
         tbody.appendChild(tr);
       }
     }
 
     function renderOrgCounts(list){
-      const box = $("orgCounts");
+      const box = $(\"orgCounts\");
       const freq = new Map();
       for (const r of list){
         const k = normaliseOrg(r.organisation);
         freq.set(k, (freq.get(k)||0)+1);
       }
       const items = [...freq.entries()].sort((a,b)=>b[1]-a[1]);
-      box.innerHTML = items.map(([k,v])=>`<span class="chip">${k} — ${v}</span>`).join("") || "";
+      box.innerHTML = items.map(([k,v])=>`<span class=\"chip\">${k} — ${v}</span>`).join(\"\") || \"\";
     }
 
     function filterRows(rows){
-      const q = $("search").value.trim().toLowerCase();
-      const mode = $("filter").value;
+      const q = $(\"search\").value.trim().toLowerCase();
       let out = rows;
       if (q){
         out = out.filter(r =>
-          (r.name||"").toLowerCase().includes(q) ||
-          (r.email||"").toLowerCase().includes(q) ||
-          (r.organisation||"").toLowerCase().includes(q) ||
-          (r.token||"").toLowerCase().includes(q)
+          (r.name||\"\").toLowerCase().includes(q) ||
+          (r.email||\"\").toLowerCase().includes(q) ||
+          (r.organisation||\"\").toLowerCase().includes(q)
         );
       }
-      if (mode === "withEmail"){ out = out.filter(r => (r.email||"") !== ""); }
-      if (mode === "noEmail"){ out = out.filter(r => !r.email); }
       return out;
     }
 
-    // --- App ---
+    // Firebase app
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
 
-    // We keep the attendees map cached across date changes
+    // Cache attendees (for org/email enrichment if you later want it again)
     let attendeesMap = null;
-
     async function loadAttendeesMap(){
       if (attendeesMap) return attendeesMap;
       const map = new Map();
       try{
-        const snap = await getDocs(collection(db, "attendees"));
+        const snap = await getDocs(collection(db, \"attendees\"));
         snap.forEach(d => {
           const v = d.data() || {};
-          map.set(d.id, { name: v.name || "", email: v.email || "", organisation: v.organisation || "" });
+          map.set(d.id, { name: v.name || \"\", email: v.email || \"\", organisation: v.organisation || \"\" });
         });
-      } catch(e){ console.warn("attendees map load failed:", e); }
+      } catch(e){ console.warn(\"attendees map load failed:\", e); }
       attendeesMap = map;
       return map;
     }
 
-    // Live listener management per date
     let unsubscribe = null;
     let currentDate = defaultDate;
 
     function setDateUI(d){
-      $("eventDate").textContent = d;
-      $("date").value = d;
-      $("csv").download = `attendance-${d}.csv`;
-      $("csvAll").download = `attendance-${d}-all.csv`;
+      $(\"eventDate\").textContent = d;
+      $(\"date\").value = d;
+      $(\"csv\").download = `attendance-${d}.csv`;
+      $(\"csvAll\").download = `attendance-${d}-all.csv`;
     }
 
     async function bindDateListener(d){
-      // Unsubscribe previous date stream
-      if (typeof unsubscribe === "function"){ unsubscribe(); unsubscribe = null; }
-
+      if (typeof unsubscribe === \"function\"){ unsubscribe(); unsubscribe = null; }
       currentDate = d;
       setDateUI(d);
 
-      const attMap = await loadAttendeesMap();
-      const col = collection(db, "attendance", d, "checkins");
+      await loadAttendeesMap(); // not strictly needed now, but harmless
+
+      const col = collection(db, \"attendance\", d, \"checkins\");
       const rows = [];
       const emails = new Set();
 
-      unsubscribe = onSnapshot(query(col, orderBy("checkedInAt","desc")), snap => {
+      // Use checkedInAt order for stream freshness, then sort by name locally
+      unsubscribe = onSnapshot(query(col, orderBy(\"checkedInAt\",\"desc\")), snap => {
         rows.length = 0; emails.clear();
         snap.forEach(docSnap => {
           const v = docSnap.data() || {};
-          const token = docSnap.id;
-          const a = attMap.get(token) || {};
-          const name = v.name || a.name || "";
-          const email = v.email || a.email || "";
-          const organisation = a.organisation || "";
-          const when = v.checkedInAt?.seconds ? new Date(v.checkedInAt.seconds*1000).toLocaleString("en-GB",{hour12:false}) : "";
-          rows.push({ token, name, email, organisation, when });
+          const name = v.name || \"\";
+          const email = v.email || \"\";
+          const organisation = v.organisation || \"\"; // if you stored it; else stays blank
+          const when = v.checkedInAt?.seconds ? new Date(v.checkedInAt.seconds*1000).toLocaleString(\"en-GB\",{hour12:false}) : \"\";
+          rows.push({ name, email, organisation, when });
           if (email) emails.add(email.toLowerCase());
         });
 
-        // stats
-        $("statCheckedIn").textContent = String(rows.length);
-        $("statEmails").textContent = String(emails.size);
+        // Sort alphabetically by name (case-insensitive, locale-aware)
+        rows.sort((a,b)=> (a.name||\"\").localeCompare(b.name||\"\", undefined, { sensitivity: \"base\" }));
 
-        // filtered render + CSV (filtered)
+        // stats
+        $(\"statCheckedIn\").textContent = String(rows.length);
+        $(\"statEmails\").textContent = String(emails.size);
+
         const filtered = filterRows(rows);
         renderTable(filtered);
         renderOrgCounts(filtered);
-        linkBlobToAnchor(buildCsv(filtered), "csv");
-
-        // prepare "Export all" CSV
-        linkBlobToAnchor(buildCsv(rows), "csvAll");
+        linkBlobToAnchor(buildCsv(filtered), \"csv\");
+        linkBlobToAnchor(buildCsv(rows), \"csvAll\");
       });
 
-      // total from attendees collection (unchanged behaviour)
       try{
-        const all = await getDocs(collection(db,"attendees"));
-        $("statTotal").textContent = String(all.size);
+        const all = await getDocs(collection(db,\"attendees\"));
+        $(\"statTotal\").textContent = String(all.size);
       } catch{
-        $("statTotal").textContent = "—";
+        $(\"statTotal\").textContent = \"—\";
       }
     }
 
-    // Init
     (async function init(){
       setDateUI(defaultDate);
       await bindDateListener(defaultDate);
 
-      // Wire controls
-      $("refresh").addEventListener("click", ()=> bindDateListener(currentDate));
+      $(\"refresh\").addEventListener(\"click\", ()=> bindDateListener(currentDate));
 
-      const rerender = debounce(()=> {
-        // Force the onSnapshot callback to recompute filtered view by toggling tiny no-op:
-        // Instead, we’ll just rebuild from current anchors (we already rebuild inside snapshot).
-        // Here, trigger CSV rebuild by calling bindDateListener without re-subscribing:
-        // Simpler: change a dummy hash to prompt the onSnapshot callback on next doc change.
-        // Practically, we re-run filter/render using cached arrays would need ref; to keep code small,
-        // just click "Refresh" if you need immediate recompute between snapshot ticks.
-        // To keep it deterministic, rebind snapshot (cheap for small collections).
-        bindDateListener(currentDate);
-      }, 200);
+      const rerender = debounce(()=> bindDateListener(currentDate), 200);
+      $(\"search\").addEventListener(\"input\", rerender);
 
-      $("search").addEventListener("input", rerender);
-      $("filter").addEventListener("change", rerender);
-
-      $("date").addEventListener("change", (e)=>{
+      $(\"date\").addEventListener(\"change\", (e)=>{
         const d = e.target.value || defaultDate;
         bindDateListener(d);
-        // keep the date in URL for bookmarking
         const url = new URL(location.href);
-        url.searchParams.set("date", d);
-        history.replaceState(null, "", url.toString());
+        url.searchParams.set(\"date\", d);
+        history.replaceState(null, \"\", url.toString());
       });
     })();
   </script>
