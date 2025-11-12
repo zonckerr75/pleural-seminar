@@ -11,16 +11,14 @@
     h1{margin:0 0 8px}
     p.muted{color:var(--muted);margin-top:0}
     label{display:block;margin:16px 0 6px}
-    input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#0b1426;color:var(--fg)}
+    input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#0b1426;color:#e5e7eb}
     button, a.button{display:inline-block;text-decoration:none;padding:12px 16px;border:0;border-radius:12px;background:var(--accent);color:#03120a;font-weight:600;cursor:pointer}
-    a.secondary{background:#1f2937;color:var(--fg);margin-left:8px}
+    a.secondary{background:#1f2937;color:#e5e7eb;margin-left:8px}
     .row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;align-items:center;justify-content:flex-start}
     .msg{margin-top:16px;padding:12px;border-radius:12px;background:#0b1426;border:1px solid var(--border)}
     .ok{border-color:#164e2e}.warn{border-color:#7c2d12}.hidden{display:none}
-    .diag{font-size:12px;color:#9CA3AF;margin-top:8px}
     .logo-link{display:block;text-align:center;margin-top:18px;text-decoration:none;color:#22c55e}
     .logo-link img{height:50px;display:block;margin:0 auto 8px}
-    code{color:#93c5fd}
   </style>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
@@ -72,17 +70,11 @@
     function isValidEmail(inputEl){
       inputEl.value = normalizeEmail(inputEl.value);
       if (typeof inputEl.checkValidity === "function") return inputEl.checkValidity();
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputEl.value);
+      return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(inputEl.value);
     }
 
     async function init(){
       const qp = readParams();
-
-      // Show raw params in debug
-      el("qraw").textContent   = qp.raw || "(none)";
-      el("qtoken").textContent = qp.token || "(missing)";
-      el("qname").textContent  = decodeName(qp.n) || "(none)";
-      el("qemail").textContent = qp.e || "(none)";
 
       if (!qp.token){
         el("content").classList.add("hidden");
@@ -165,10 +157,6 @@
           // Update feedback link with confirmed details
           sync();
 
-          // Update debug line to reflect final values
-          el("qname").textContent  = name || "(none)";
-          el("qemail").textContent = email || "(none)";
-
         } catch (err){
           console.error(err);
           el("msg").className = "msg warn";
@@ -211,14 +199,11 @@
     <div id="already" class="msg" style="display:none">
       Duplicate scan — already checked in at: <strong id="prevTime">—</strong>
     </div>
-
-    
   </div>
 
   <div class="wrap hidden" id="error">
     <h2>Badge token missing</h2>
     <p class="muted">This page must be opened from your QR badge link.</p>
-    <div class="diag">Querystring: <code id="qraw"></code></div>
   </div>
 </body>
 </html>
