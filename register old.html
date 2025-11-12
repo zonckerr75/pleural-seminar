@@ -7,7 +7,7 @@
   <style>
     :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
     body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-    .wrap{max-width:720px;margin:40px auto;padding:24px;background:var(--panel);border:1px solid var(--border);border-radius:16px}
+    .wrap{max-width:640px;margin:40px auto;padding:24px;background:var(--panel);border:1px solid var(--border);border-radius:16px}
     h1{margin:0 0 8px}
     p.muted{color:var(--muted);margin-top:0}
     label{display:block;margin:16px 0 6px}
@@ -17,14 +17,12 @@
     .row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
     .msg{margin-top:16px;padding:12px;border-radius:12px;background:#0b1426;border:1px solid var(--border)}
     .ok{border-color:#164e2e}.warn{border-color:#7c2d12}.hidden{display:none}
-    .diag{font-size:12px;color:#9CA3AF;margin-top:8px}
-    code{color:#93c5fd}
   </style>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // --- Firebase config ---
+    // --- Firebase config for pleural-seminar-2025 (shared across pages) ---
     const firebaseConfig = {
       apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
       authDomain: "pleural-seminar-2025.firebaseapp.com",
@@ -36,64 +34,41 @@
 
     // --- Event settings ---
     const EVENT_ID   = "pleural-2025";
-    const EVENT_DATE = "2025-11-14"; // 14 Nov 2025 (attendance/{date}/checkins/{token})
+    const EVENT_DATE = "2025-11-14"; // 14 Nov 2025
+    const USE_SUBCOL = true; // Option A: attendance/{date}/checkins/{token}
 
     // --- Helpers ---
     const el = id => document.getElementById(id);
-    const isEmail = s => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(s||"");
+    const P  = new URLSearchParams(location.search);
+    const token = (P.get("token") || P.get("code") || "").trim();
+    const decodeName = s => decodeURIComponent((s||"").replace(/\+/g," "));
+    const nameFromUrl  = decodeName(P.get("n")||"");
+    const emailFromUrl = (P.get("e")||"").trim();
+    const isEmail = s => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s||"");
     const fmtTS = ts => { try { return new Date(ts.seconds*1000).toLocaleString("en-GB",{hour12:false}); } catch { return "—"; } };
-    const decodeName = s => decodeURIComponent((s||"").replace(/\\+/g," "));
-    const feedbackHref = (n,e) => "feedback.html?" + new URLSearchParams({token: state.token, n, e}).toString();
-
-    // Robust param reader (case-insensitive, multiple aliases, supports bare query like ?ABCDE)
-    function readParams() {
-      const raw = location.search.startsWith("?") ? location.search.slice(1) : location.search;
-      const out = { raw, map:{} };
-      raw.split("&").filter(Boolean).forEach(pair => {
-        const [k,v=""] = pair.split("=");
-        if (!k) return;
-        const key = decodeURIComponent(k).toLowerCase();
-        const val = decodeURIComponent(v||"");
-        out.map[key] = val;
-      });
-      // known aliases for token
-      const token = (out.map["token"] || out.map["code"] || out.map["t"] || out.map["id"] || "").trim();
-      // fallback: bare query with no equals
-      const bare = (!token && raw && !raw.includes("=")) ? decodeURIComponent(raw).trim() : "";
-      const name = (out.map["n"] || out.map["name"] || "").trim();
-      const email= (out.map["e"] || out.map["email"] || "").trim();
-      return { token: token || bare, n: name, e: email, raw };
-    }
+    const feedbackHref = (n,e) => "feedback.html?" + new URLSearchParams({token,n,e}).toString();
 
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
-    const state = { token:"", name:"", email:"" };
 
-    function regRef(date, token){ return doc(db, "attendance", date, "checkins", token); }
+    function getRegRef(db, date, token){
+      // attendance/{date}/checkins/{token}
+      return doc(db, "attendance", date, "checkins", token);
+    }
 
     async function init(){
-      const qp = readParams();
-      state.token = qp.token;
-      state.name  = decodeName(qp.n);
-      state.email = qp.e;
-
-      el("qraw").textContent   = qp.raw || "(none)";
-      el("qtoken").textContent = state.token || "(missing)";
-      el("qname").textContent  = state.name  || "(none)";
-      el("qemail").textContent = state.email || "(none)";
-
-      if(!state.token){
+      if(!token){
         el("content").classList.add("hidden");
         el("error").classList.remove("hidden");
         return;
       }
 
-      el("welcomeName").textContent = state.name || "Attendee";
-      if (state.name)  el("name").value  = state.name;
-      if (state.email) el("email").value = state.email;
+      el("welcomeName").textContent = nameFromUrl || "Attendee";
+      if (nameFromUrl)  el("name").value  = nameFromUrl;
+      if (emailFromUrl) el("email").value = emailFromUrl;
 
       // Prefill from attendees/{token}
-      const attRef = doc(db,"attendees",state.token);
+      const attRef = doc(db,"attendees",token);
       try {
         const attSnap = await getDoc(attRef);
         if (attSnap.exists()){
@@ -105,11 +80,11 @@
       } catch(e){ console.warn("attendees prefill failed:", e); }
 
       // Duplicate scan check
-      const rRef = regRef(EVENT_DATE, state.token);
+      const regRef = getRegRef(db, EVENT_DATE, token);
       try {
-        const rSnap = await getDoc(rRef);
-        if (rSnap.exists()){
-          const d = rSnap.data() || {};
+        const regSnap = await getDoc(regRef);
+        if (regSnap.exists()){
+          const d = regSnap.data() || {};
           el("already").classList.remove("hidden");
           el("prevTime").textContent = fmtTS(d.checkedInAt);
           el("feedbackBtn").href = feedbackHref(d.name || el("name").value || "", d.email || el("email").value || "");
@@ -133,11 +108,12 @@
           if (!isEmail(email)){ el("msg").className="msg warn"; el("msg").textContent="Please enter a valid email address."; return; }
 
           // Upsert attendees/{token}
+          const attRef = doc(db, "attendees", token);
           await setDoc(attRef, { name, email, updatedAt: serverTimestamp() }, { merge:true });
 
           // Create (or report existing) attendance/{date}/checkins/{token}
-          const rRef = regRef(EVENT_DATE, state.token);
-          const existing = await getDoc(rRef);
+          const regRef = getRegRef(db, EVENT_DATE, token);
+          const existing = await getDoc(regRef);
 
           if (existing.exists()){
             const d = existing.data() || {};
@@ -147,7 +123,7 @@
             el("msg").className = "msg ok";
             el("msg").textContent = `Already checked in at ${when}.`;
           } else {
-            await setDoc(rRef, { eventId: EVENT_ID, name, email, checkedInAt: serverTimestamp() });
+            await setDoc(regRef, { eventId: EVENT_ID, name, email, checkedInAt: serverTimestamp() });
             el("already").style.display = "none";
             el("msg").className = "msg ok";
             el("msg").textContent = "You’re checked in. Please provide feedback at the end by scanning your QR code again. You can download your attendance certificate from there.Enjoy the seminar!";
@@ -192,17 +168,11 @@
     <div id="already" class="msg" style="display:none">
       Duplicate scan — already checked in at: <strong id="prevTime">—</strong>
     </div>
-
-    <div class="diag">
-      <div><strong>Debug:</strong> token=<code id="qtoken"></code> | name=<code id="qname"></code> | email=<code id="qemail"></code></div>
-      <div>Querystring: <code id="qraw"></code></div>
-    </div>
   </div>
 
   <div class="wrap hidden" id="error">
     <h2>Badge token missing</h2>
-    <p class="muted">This page must be opened from your QR badge link.</p>
-    <div class="diag">Querystring: <code id="qraw"></code></div>
+    <p class="muted">Open this page by scanning your seminar badge QR code.</p>
   </div>
 </body>
 </html>
