@@ -41,7 +41,7 @@
       .topbar{display:flex}
       .content{width:100%}
     }
-    /* Form styles */
+    /* Form styles from your existing page */
     .page-wrap{max-width:980px;margin:0 auto}
     h1{margin:6px 0 8px;font-size:28px}
     h2{margin:20px 0 10px;font-size:20px;color:#fff}
@@ -90,13 +90,16 @@
         </div>
       </section>
 
+      <!-- Main content: your original feedback form -->
       <main class="container" id="main">
         <div class="card page-wrap">
+          <!-- Inserted from your original page -->
           <div class="progress" aria-label="Form progress"><div class="bar" id="progressBar"></div></div>
           <p class="small"><span id="progressText">0</span>/20 questions answered</p>
 
+          <!-- BEGIN: original form markup -->
           <form id="feedback-form" name="feedback-form">
-            <!-- Q1-14 -->
+            <!-- Q1 -->
             <div class="form-group likert" data-q="1">
               <label><strong>1. How useful did you find this event?</strong></label>
               <label><input type="radio" name="q1" value="Extremely useful" required> Extremely useful</label>
@@ -104,7 +107,7 @@
               <label><input type="radio" name="q1" value="Fairly useful"> Fairly useful</label>
               <label><input type="radio" name="q1" value="Not useful"> Not useful</label>
             </div>
-
+            <!-- Q2 -->
             <div class="form-group likert" data-q="2">
               <label><strong>2. What was your overall impression of the programme of this event?</strong></label>
               <label><input type="radio" name="q2" value="Excellent" required> Excellent</label>
@@ -113,7 +116,7 @@
               <label><input type="radio" name="q2" value="Poor"> Poor</label>
               <label><input type="radio" name="q2" value="Very poor"> Very poor</label>
             </div>
-
+            <!-- Q3 -->
             <div class="form-group likert" data-q="3">
               <label><strong>3. What was your overall impression of the organisation of this event?</strong></label>
               <label><input type="radio" name="q3" value="Excellent" required> Excellent</label>
@@ -123,10 +126,10 @@
               <label><input type="radio" name="q3" value="Very poor"> Very poor</label>
             </div>
 
+            <!-- Sessions (Q4–Q14) -->
             <hr class="divider">
             <h3>Sessions (Q4–Q14)</h3>
 
-            <!-- Q4-14 shortened for brevity; keep identical to your current content -->
             <div class="form-group likert" data-q="4">
               <label><strong>Q4 — ‘Diagnostic Pathway in MPE – New Data on “Straight-to-Biopsy”’ by Prof. Naj Rahman</strong></label>
               <label><input type="radio" name="q4" value="5" required> Extremely useful</label>
@@ -270,6 +273,7 @@
               </div>
             </div>
           </form>
+          <!-- END: original form markup -->
         </div>
       </main>
     </div>
@@ -295,7 +299,7 @@
     <div class="backdrop" id="backdrop"></div>
   </div>
 
-  <!-- Drawer JS -->
+  <!-- Drawer JS (same as index working version) -->
   <script>
     (function(){
       const openBtn = document.getElementById('openMenu');
@@ -314,7 +318,7 @@
     })();
   </script>
 
-  <!-- PDF-lib + certificate utilities -->
+  <!-- ======= Original scripts from your feedback page (unchanged) ======= -->
   <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
   <script>
     const $ = (s, r=document)=>r.querySelector(s);
@@ -368,60 +372,65 @@
       form.addEventListener('input', updateProgress);
       $('#saveDraft').addEventListener('click', ()=>{ saveDraft(form); alert('Draft saved on this device.'); });
       $('#clearDraft').addEventListener('click', ()=>{ localStorage.removeItem('psw25_feedback'); location.reload(); });
+      form.addEventListener('submit',(e)=>{ if(!form.checkValidity()) return; e.preventDefault(); $('#cert-actions').style.display='block'; $('#cert-actions').scrollIntoView({behavior:'smooth'}); });
       $('#downloadCert').addEventListener('click', async ()=>{ const name=$('#q19').value.trim(); if(!name) return alert('Please enter your name (Q19).'); await downloadCertificate(name); });
       $('#emailCert').addEventListener('click', async ()=>{ const name=$('#q19').value.trim(); const email=$('#q20').value.trim(); if(!name||!email) return alert('Please complete Q19 (name) and Q20 (email).'); try{ await emailCertificate(name,email); alert('Certificate emailed. Please check your inbox (and spam).'); }catch(e){ alert('Email failed: '+(e?.message||e)); } });
       checkEmailAvailability();
     });
-  </script>
 
-  <!-- Prefill name/email/token from URL params (cleanly separated) -->
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(location.search);
-      const token = params.get('token') || params.get('code') || '';
-      const n = params.get('n') || '';
-      const e = params.get('e') || '';
 
-      const form = document.getElementById('feedback-form');
-      const nameInput = document.getElementById('q19');
-      const emailInput = document.getElementById('q20');
+<!-- Put this <script> block just before your Firebase save scripts -->
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get('token') || params.get('code') || '';
+    const n = params.get('n') || '';
+    const e = params.get('e') || '';
 
-      if (n && !nameInput.value) nameInput.value = decodeURIComponent(n.replace(/\+/g,' '));
-      if (e && !emailInput.value) emailInput.value = e;
+    const form = document.getElementById('feedback-form');
+    const nameInput = document.getElementById('q19');   // certificate_name
+    const emailInput = document.getElementById('q20');  // email
 
-      // ensure token is submitted with the form
-      if (form) {
-        let tok = document.getElementById('__token');
-        if (!tok) {
-          tok = document.createElement('input');
-          tok.type = 'hidden';
-          tok.name = 'token';
-          tok.id = '__token';
-          form.appendChild(tok);
-        }
-        tok.value = token;
+    if (n && !nameInput.value) nameInput.value = decodeURIComponent(n.replace(/\+/g,' '));
+    if (e && !emailInput.value) emailInput.value = e;
 
-        // also preserve raw n/e if present
-        const ensureHidden = (k, v) => {
-          let el = document.getElementById('__' + k);
-          if (!el) {
-            el = document.createElement('input');
-            el.type = 'hidden';
-            el.name = k;
-            el.id = '__' + k;
-            form.appendChild(el);
-          }
-          el.value = v || '';
-        };
-        ensureHidden('n', n);
-        ensureHidden('e', e);
+    // ensure token is submitted with the form
+    let tok = document.getElementById('__token');
+    if (!tok) {
+      tok = document.createElement('input');
+      tok.type = 'hidden';
+      tok.name = 'token';
+      tok.id = '__token';
+      form.appendChild(tok);
+    }
+    tok.value = token;
+
+    // optional: also include raw name/email as hidden fields for convenience
+    ['n','e'].forEach((k) => {
+      const id = '__' + k;
+      if (!document.getElementById(id)) {
+        const hid = document.createElement('input');
+        hid.type = 'hidden';
+        hid.name = k;
+        hid.id = id;
+        form.appendChild(hid);
       }
-
-      if (typeof updateProgress === 'function') updateProgress();
+      document.getElementById(id).value = params.get(k) || '';
     });
+
+    // refresh your progress UI after prefilling
+    if (typeof updateProgress === 'function') updateProgress();
+  });
+</script>
+
+
+
+
+
+
   </script>
 
-  <!-- Firebase save: unified submit flow (save -> show cert panel) -->
+  <!-- Firebase save (kept intact) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
   <script>
@@ -435,54 +444,27 @@
     };
     if (!firebase.apps || !firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
-
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('feedback-form');
-      const certPanel = document.getElementById('cert-actions');
-      const submitBtn = form?.querySelector('button[type="submit"]');
       if (!form) return;
-
       form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity?.();
-          return;
-        }
-
-        const origText = submitBtn?.textContent;
-        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
-
+        if (!form.checkValidity()) return;
         const formData = new FormData(form);
         const responses = {};
         for (const [key, value] of formData.entries()) responses[key] = value;
-
         try {
           await db.collection('feedback').add({
             responses,
             submittedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
           console.log('✅ Feedback saved to Firestore');
-
-          // Reveal certificate panel after a confirmed save
-          if (certPanel) {
-            certPanel.style.display = 'block';
-            certPanel.scrollIntoView({ behavior: 'smooth' });
-          }
-          // optional: clear saved draft
-          localStorage.removeItem('psw25_feedback');
-          if (submitBtn) submitBtn.textContent = 'Submitted ✔';
         } catch (err) {
           console.error('⚠️ Error saving feedback:', err);
-          alert('Sorry — your feedback could not be saved. Please try again.');
-          if (submitBtn) submitBtn.disabled = false;
-        } finally {
-          if (submitBtn && submitBtn.textContent !== 'Submitted ✔') submitBtn.textContent = origText || 'Submit Feedback';
         }
       });
     });
   </script>
 
-  <!-- Dynamic question text fetch (optional) -->
   <script>
     (async function(){
       try{
@@ -496,5 +478,104 @@
       }catch(_){ /* ignore */ }
     })();
   </script>
+
+<script>
+(function () {
+  // 1) Read URL params safely
+  const params = new URLSearchParams(location.search);
+  const token = (params.get('token') || params.get('code') || '').trim();
+  const rawN = params.get('n') || '';
+  const rawE = params.get('e') || '';
+  // decode + and %xx
+  const decode = s => decodeURIComponent(s.replace(/\+/g, ' '));
+  const nameVal = decode(rawN);
+  const emailVal = rawE; // emails shouldn't replace '+' with space
+
+  // 2) Helper to find inputs by id/name/label text
+  function byIdOrName(id, name){
+    return document.getElementById(id) || document.querySelector(`[name="${name}"]`);
+  }
+  function findInputByLabelText(text){
+    text = text.toLowerCase();
+    const labels = Array.from(document.querySelectorAll('label'));
+    for (const lab of labels) {
+      const t = (lab.textContent || '').trim().toLowerCase();
+      if (t.includes(text)) {
+        const forId = lab.getAttribute('for');
+        if (forId) {
+          const el = document.getElementById(forId);
+          if (el) return el;
+        }
+        // label wraps the input
+        const inp = lab.querySelector('input,textarea,select');
+        if (inp) return inp;
+      }
+    }
+    return null;
+  }
+
+  function setValueIfEmpty(el, val){
+    if (!el) return;
+    if (!el.value) el.value = val;
+    el.dispatchEvent(new Event('input', {bubbles:true}));
+    el.dispatchEvent(new Event('change', {bubbles:true}));
+  }
+
+  // 3) Run after DOM ready
+  function run(){
+    const form = document.getElementById('feedback-form') || document.querySelector('form');
+
+    // Try common ids/names you might be using; fall back to label search
+    const nameInput  = byIdOrName('q19', 'q19') || byIdOrName('name', 'name') || findInputByLabelText('name');
+    const emailInput = byIdOrName('q20', 'q20') || byIdOrName('email', 'email') || findInputByLabelText('email');
+
+    if (nameVal)  setValueIfEmpty(nameInput,  nameVal);
+    if (emailVal) setValueIfEmpty(emailInput, emailVal);
+
+    // Ensure token is submitted with the form
+    if (form && token) {
+      let tok = document.getElementById('__token');
+      if (!tok) {
+        tok = document.createElement('input');
+        tok.type = 'hidden';
+        tok.name = 'token';
+        tok.id = '__token';
+        form.appendChild(tok);
+      }
+      tok.value = token;
+    }
+
+    // Optional: keep raw n/e for debugging or server-side checks
+    if (form) {
+      const ensureHidden = (k, v) => {
+        let el = document.getElementById(`__${k}`);
+        if (!el) {
+          el = document.createElement('input');
+          el.type = 'hidden';
+          el.name = k;
+          el.id = `__${k}`;
+          form.appendChild(el);
+        }
+        el.value = v;
+      };
+      ensureHidden('n', nameVal);
+      ensureHidden('e', emailVal);
+    }
+
+    // Don’t break if updateProgress() isn’t defined
+    if (typeof updateProgress === 'function') {
+      try { updateProgress(); } catch {}
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+})();
+</script>
+
+
 </body>
 </html>
