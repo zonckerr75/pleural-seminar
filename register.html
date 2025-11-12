@@ -14,17 +14,19 @@
     input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#0b1426;color:var(--fg)}
     button, a.button{display:inline-block;text-decoration:none;padding:12px 16px;border:0;border-radius:12px;background:var(--accent);color:#03120a;font-weight:600;cursor:pointer}
     a.secondary{background:#1f2937;color:var(--fg);margin-left:8px}
-    .row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+    .row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;align-items:center;justify-content:flex-start}
     .msg{margin-top:16px;padding:12px;border-radius:12px;background:#0b1426;border:1px solid var(--border)}
     .ok{border-color:#164e2e}.warn{border-color:#7c2d12}.hidden{display:none}
     .diag{font-size:12px;color:#9CA3AF;margin-top:8px}
+    .logo-link{display:block;text-align:center;margin-top:18px;text-decoration:none;color:#22c55e}
+    .logo-link img{height:50px;display:block;margin:0 auto 8px}
     code{color:#93c5fd}
   </style>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-    // --- Firebase config ---
+    // Firebase config (shared across your site)
     const firebaseConfig = {
       apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
       authDomain: "pleural-seminar-2025.firebaseapp.com",
@@ -34,111 +36,118 @@
       appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
     };
 
-    // --- Event settings ---
     const EVENT_ID   = "pleural-2025";
-    const EVENT_DATE = "2025-11-14"; // 14 Nov 2025 (attendance/{date}/checkins/{token})
+    const EVENT_DATE = "2025-11-14"; // attendance/{date}/checkins/{token}
 
-    // --- Helpers ---
+    // DOM helpers
     const el = id => document.getElementById(id);
-    const isEmail = s => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(s||"");
+    const decodeName = s => decodeURIComponent((s||"").replace(/\+/g," "));
     const fmtTS = ts => { try { return new Date(ts.seconds*1000).toLocaleString("en-GB",{hour12:false}); } catch { return "—"; } };
-    const decodeName = s => decodeURIComponent((s||"").replace(/\\+/g," "));
-    const feedbackHref = (n,e) => "feedback.html?" + new URLSearchParams({token: state.token, n, e}).toString();
 
-    // Robust param reader (case-insensitive, multiple aliases, supports bare query like ?ABCDE)
+    // Robust query parsing
     function readParams() {
       const raw = location.search.startsWith("?") ? location.search.slice(1) : location.search;
-      const out = { raw, map:{} };
-      raw.split("&").filter(Boolean).forEach(pair => {
-        const [k,v=""] = pair.split("=");
+      const map = {};
+      raw.split("&").filter(Boolean).forEach(kv => {
+        const [k,v=""] = kv.split("=");
         if (!k) return;
-        const key = decodeURIComponent(k).toLowerCase();
-        const val = decodeURIComponent(v||"");
-        out.map[key] = val;
+        map[decodeURIComponent(k).toLowerCase()] = decodeURIComponent(v||"");
       });
-      // known aliases for token
-      const token = (out.map["token"] || out.map["code"] || out.map["t"] || out.map["id"] || "").trim();
-      // fallback: bare query with no equals
-      const bare = (!token && raw && !raw.includes("=")) ? decodeURIComponent(raw).trim() : "";
-      const name = (out.map["n"] || out.map["name"] || "").trim();
-      const email= (out.map["e"] || out.map["email"] || "").trim();
-      return { token: token || bare, n: name, e: email, raw };
+      const token = (map.token || map.code || map.t || map.id || "").trim() || (!raw.includes("=") ? decodeURIComponent(raw).trim() : "");
+      const n = (map.n || map.name || "").trim();
+      const e = (map.e || map.email || "").trim();
+      return { raw, token, n, e };
     }
 
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
-    const state = { token:"", name:"", email:"" };
 
     function regRef(date, token){ return doc(db, "attendance", date, "checkins", token); }
 
+    // Normalize email: trim, strip whitespace, Unicode-normalize
+    function normalizeEmail(s){
+      return (s || "").normalize("NFKC").trim().replace(/\s+/g, "");
+    }
+    // Use the browser's own email validator if possible
+    function isValidEmail(inputEl){
+      inputEl.value = normalizeEmail(inputEl.value);
+      if (typeof inputEl.checkValidity === "function") return inputEl.checkValidity();
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inputEl.value);
+    }
+
     async function init(){
       const qp = readParams();
-      state.token = qp.token;
-      state.name  = decodeName(qp.n);
-      state.email = qp.e;
 
+      // Show raw params in debug
       el("qraw").textContent   = qp.raw || "(none)";
-      el("qtoken").textContent = state.token || "(missing)";
-      el("qname").textContent  = state.name  || "(none)";
-      el("qemail").textContent = state.email || "(none)";
+      el("qtoken").textContent = qp.token || "(missing)";
+      el("qname").textContent  = decodeName(qp.n) || "(none)";
+      el("qemail").textContent = qp.e || "(none)";
 
-      if(!state.token){
+      if (!qp.token){
         el("content").classList.add("hidden");
         el("error").classList.remove("hidden");
         return;
       }
 
-      el("welcomeName").textContent = state.name || "Attendee";
-      if (state.name)  el("name").value  = state.name;
-      if (state.email) el("email").value = state.email;
+      // Prefill from URL first
+      if (qp.n) el("name").value = decodeName(qp.n);
+      if (qp.e) el("email").value = qp.e;
 
-      // Prefill from attendees/{token}
-      const attRef = doc(db,"attendees",state.token);
+      // Welcome text uses the best-known name
+      el("welcomeName").textContent = el("name").value || "Attendee";
+
+      // Prefill from Firestore if needed
+      const attRef = doc(db, "attendees", qp.token);
       try {
         const attSnap = await getDoc(attRef);
         if (attSnap.exists()){
           const d = attSnap.data() || {};
           if (!el("name").value && d.name)   el("name").value = d.name;
           if (!el("email").value && d.email) el("email").value = d.email;
-          if (d.name) el("welcomeName").textContent = d.name;
+          if (el("name").value) el("welcomeName").textContent = el("name").value;
         }
-      } catch(e){ console.warn("attendees prefill failed:", e); }
+      } catch (e){ console.warn("attendees prefill failed:", e); }
 
-      // Duplicate scan check
-      const rRef = regRef(EVENT_DATE, state.token);
+      // Duplicate-scan check
+      const rRef = regRef(EVENT_DATE, qp.token);
       try {
         const rSnap = await getDoc(rRef);
         if (rSnap.exists()){
           const d = rSnap.data() || {};
           el("already").classList.remove("hidden");
           el("prevTime").textContent = fmtTS(d.checkedInAt);
-          el("feedbackBtn").href = feedbackHref(d.name || el("name").value || "", d.email || el("email").value || "");
+          el("feedbackBtn").href = "feedback.html?" + new URLSearchParams({ token: qp.token, n: el("name").value || "", e: el("email").value || "" }).toString();
         } else {
-          el("feedbackBtn").href = feedbackHref(el("name").value||"", el("email").value||"");
+          el("feedbackBtn").href = "feedback.html?" + new URLSearchParams({ token: qp.token, n: el("name").value || "", e: el("email").value || "" }).toString();
         }
-      } catch(e){ console.warn("attendance read failed:", e); }
+      } catch (e){ console.warn("attendance read failed:", e); }
 
-      // Keep feedback link updated
-      const sync = () => el("feedbackBtn").href = feedbackHref(el("name").value.trim(), el("email").value.trim());
-      el("name").addEventListener("input", sync);
+      // Keep feedback link synced with current inputs
+      const sync = () => el("feedbackBtn").href = "feedback.html?" + new URLSearchParams({ token: qp.token, n: el("name").value.trim(), e: normalizeEmail(el("email").value) }).toString();
+      el("name").addEventListener("input", ()=>{ el("welcomeName").textContent = el("name").value || "Attendee"; sync(); });
       el("email").addEventListener("input", sync);
 
       // Confirm handler
       el("btnConfirm").addEventListener("click", async ()=>{
         try {
-          const name  = el("name").value.trim();
-          const email = el("email").value.trim();
+          const nameInput  = el("name");
+          const emailInput = el("email");
+          const name  = nameInput.value.trim();
+          const email = normalizeEmail(emailInput.value);
 
-          if (!name){ el("msg").className="msg warn"; el("msg").textContent="Please confirm your name."; return; }
-          if (!isEmail(email)){ el("msg").className="msg warn"; el("msg").textContent="Please enter a valid email address."; return; }
+          if (!name){
+            el("msg").className="msg warn"; el("msg").textContent="Please confirm your name."; return;
+          }
+          if (!isValidEmail(emailInput)){
+            el("msg").className="msg warn"; el("msg").textContent="Please enter a valid email address."; emailInput.reportValidity?.(); return;
+          }
 
           // Upsert attendees/{token}
           await setDoc(attRef, { name, email, updatedAt: serverTimestamp() }, { merge:true });
 
           // Create (or report existing) attendance/{date}/checkins/{token}
-          const rRef = regRef(EVENT_DATE, state.token);
           const existing = await getDoc(rRef);
-
           if (existing.exists()){
             const d = existing.data() || {};
             const when = fmtTS(d.checkedInAt);
@@ -150,13 +159,17 @@
             await setDoc(rRef, { eventId: EVENT_ID, name, email, checkedInAt: serverTimestamp() });
             el("already").style.display = "none";
             el("msg").className = "msg ok";
-            el("msg").textContent = "You’re checked in. Please provide feedback at the end by scanning your QR code again. You can download your attendance certificate from there.Enjoy the seminar!";
+            el("msg").textContent = "You’re checked in. Please provide feedback at the end by scanning your QR code again. You can download your attendance certificate from there. Enjoy the seminar!";
           }
 
           // Update feedback link with confirmed details
-          el("feedbackBtn").href = feedbackHref(name,email);
+          sync();
 
-        } catch(err){
+          // Update debug line to reflect final values
+          el("qname").textContent  = name || "(none)";
+          el("qemail").textContent = email || "(none)";
+
+        } catch (err){
           console.error(err);
           el("msg").className = "msg warn";
           el("msg").textContent = `Error: ${err.message || err}`;
@@ -186,6 +199,12 @@
       <button id="btnConfirm">Confirm Attendance</button>
       <a id="feedbackBtn" class="button secondary" href="#" role="button">Give Feedback</a>
     </div>
+
+    <!-- Logo + caption link to main site (same tab) -->
+    <a class="logo-link" href="https://pleuralseminar.wales">
+      <img src="/assets/branding/logo.png" alt="Pleural Seminar Wales">
+      <div>Click to proceed to the main event page</div>
+    </a>
 
     <div id="msg" class="msg hidden"></div>
 
