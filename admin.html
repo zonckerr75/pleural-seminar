@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Pleural Seminar — Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+    header{position:sticky;top:0;z-index:10;background:#0b1320bd;backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px 20px}
+    h1{margin:0 0 6px}
+    .muted{color:var(--muted)}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:16px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .stat{background:#0b1426;border:1px solid var(--border);border-radius:14px;padding:14px}
+    .stat .k{font-size:13px;color:var(--muted)}
+    .stat .v{font-size:28px;font-weight:700;margin-top:2px}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+    input[type="text"]{flex:1;min-width:220px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0b1426;color:#e5e7eb}
+    select{padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:#0b1426;color:#e5e7eb}
+    button,.btn{padding:10px 14px;border:0;border-radius:10px;background:var(--accent);color:#052e1b;font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+    .btn.secondary{background:#1f2937;color:#e5e7eb}
+    table{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px}
+    th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+    th{color:#cbd5e1;font-weight:600;position:sticky;top:98px;background:var(--panel);z-index:5}
+    tr:hover td{background:#0b1426}
+    .right{justify-self:end}
+    .pill{display:inline-block;padding:2px 8px;border-radius:999px;background:#0b1426;border:1px solid var(--border);font-size:12px}
+    footer{color:var(--muted);text-align:center;margin:24px 0}
+    @media (max-width: 720px){ .grid{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Admin — Live Attendance</h1>
+      <div class="muted">Pleural Seminar Wales · <span id="eventDate">2025-11-14</span></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="panel">
+      <div class="grid">
+        <div class="stat">
+          <div class="k">Checked in</div>
+          <div class="v" id="statCheckedIn">0</div>
+        </div>
+        <div class="stat">
+          <div class="k">Unique emails</div>
+          <div class="v" id="statEmails">0</div>
+        </div>
+        <div class="stat">
+          <div class="k">Attendees in file</div>
+          <div class="v" id="statTotal">—</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input id="search" type="text" placeholder="Search name, email, organisation…" />
+        <select id="filter">
+          <option value="all">All</option>
+          <option value="withEmail">With email</option>
+          <option value="noEmail">No email</option>
+        </select>
+        <button id="refresh">Refresh</button>
+        <a id="csv" class="btn secondary" href="#" download="attendance-2025-11-14.csv">Download CSV</a>
+        <a class="btn secondary" href="https://pleuralseminar.wales/faculty.html">Back to Faculty</a>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:22%">Name</th>
+            <th style="width:24%">Email</th>
+            <th style="width:24%">Organisation</th>
+            <th style="width:15%">Checked in at</th>
+            <th style="width:15%">Token</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="5" class="muted">Loading…</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>© Pleural Seminar Wales 2025</footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+    import { 
+      getFirestore, collection, doc, getDoc, getDocs, onSnapshot, query, orderBy 
+    } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+      authDomain: "pleural-seminar-2025.firebaseapp.com",
+      projectId: "pleural-seminar-2025",
+      storageBucket: "pleural-seminar-2025.appspot.com",
+      messagingSenderId: "914784082205",
+      appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
+    };
+
+    const EVENT_DATE = "2025-11-14";
+    document.getElementById("eventDate").textContent = EVENT_DATE;
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    // Load attendees map (for organisations)
+    async function loadAttendeesMap(){
+      const map = new Map();
+      try{
+        const snap = await getDocs(collection(db, "attendees"));
+        snap.forEach(d => {
+          const v = d.data() || {};
+          map.set(d.id, { name: v.name || "", email: v.email || "", organisation: v.organisation || "" });
+        });
+      } catch(e){ console.warn("attendees map load failed:", e); }
+      return map;
+    }
+
+    function toCsvRow(arr){
+      return arr.map(v => {
+        const s = (v==null?"":String(v)).replaceAll('"','""');
+        return /[",
+]/.test(s) ? `"${s}"` : s;
+      }).join(",");
+    }
+
+    function downloadCsv(rows){
+      const header = ["Name","Email","Organisation","Checked In At","Token"];
+      const body = rows.map(r => toCsvRow([r.name, r.email, r.organisation, r.when, r.token]));
+      const csv = [toCsvRow(header)].concat(body).join("
+");
+      const blob = new Blob([csv], {type:"text/csv"});
+      const url = URL.createObjectURL(blob);
+      const a = document.getElementById("csv");
+      a.href = url;
+    }
+
+    function render(list){
+      const tbody = document.getElementById("rows");
+      tbody.innerHTML = "";
+      if (!list.length){
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 5; td.className = "muted"; td.textContent = "No check-ins yet.";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        return;
+      }
+      for (const r of list){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r.name||"—"}</td>
+          <td>${r.email||"—"}</td>
+          <td>${r.organisation||"—"}</td>
+          <td>${r.when||"—"}</td>
+          <td><span class="pill">${r.token}</span></td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function filterRows(rows){
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      const mode = document.getElementById("filter").value;
+      let out = rows;
+      if (q){
+        out = out.filter(r =>
+          (r.name||"").toLowerCase().includes(q) ||
+          (r.email||"").toLowerCase().includes(q) ||
+          (r.organisation||"").toLowerCase().includes(q) ||
+          (r.token||"").toLowerCase().includes(q)
+        );
+      }
+      if (mode === "withEmail"){ out = out.filter(r => (r.email||"") !== ""); }
+      if (mode === "noEmail"){ out = out.filter(r => !r.email); }
+      return out;
+    }
+
+    async function main(){
+      const attMap = await loadAttendeesMap();
+
+      const rows = [];
+      const col = collection(db, "attendance", EVENT_DATE, "checkins");
+      // live updates
+      onSnapshot(query(col, orderBy("checkedInAt","desc")), snap => {
+        rows.length = 0;
+        const emails = new Set();
+        snap.forEach(d => {
+          const v = d.data() || {};
+          const token = d.id;
+          // join with attendees map for organisation if missing
+          const a = attMap.get(token) || {};
+          const name = v.name || a.name || "";
+          const email = v.email || a.email || "";
+          const organisation = a.organisation || "";
+          const when = v.checkedInAt?.seconds ? new Date(v.checkedInAt.seconds*1000).toLocaleString("en-GB",{hour12:false}) : "";
+          rows.push({ token, name, email, organisation, when });
+          if (email) emails.add(email.toLowerCase());
+        });
+
+        // stats
+        document.getElementById("statCheckedIn").textContent = String(rows.length);
+        document.getElementById("statEmails").textContent = String(emails.size);
+
+        // render + csv
+        const filtered = filterRows(rows);
+        render(filtered);
+        downloadCsv(filtered);
+      });
+
+      // optional: total from attendees collection
+      try{
+        const all = await getDocs(collection(db,"attendees"));
+        document.getElementById("statTotal").textContent = String(all.size);
+      } catch{ document.getElementById("statTotal").textContent = "—"; }
+
+      document.getElementById("refresh").addEventListener("click", main);
+      document.getElementById("search").addEventListener("input", () => {});
+      document.getElementById("filter").addEventListener("change", () => {});
+    }
+
+    main();
+  </script>
+</body>
+</html>
