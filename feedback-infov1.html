@@ -46,6 +46,9 @@
       background:rgba(34,197,94,.04);padding:14px 16px;margin:14px 0;
     }
     .highlight{color:var(--accent);font-weight:600}
+   
+    }
+
     /* Hidden by default on desktop */
     .topbar{display:none;}
     .backdrop{display:none;}
@@ -76,7 +79,7 @@
         font-size:24px;
         background:none;
         border:none;
-        color:var(--accent);
+        color:var(--accent);   /* your green */
         cursor:pointer;
       }
 
@@ -121,9 +124,13 @@
         box-shadow:0 10px 30px rgba(0,0,0,.5);
       }
     }
+
+
+
   </style>
 </head>
 <body>
+	
   <!-- Mobile top bar -->
   <div class="topbar">
     <button class="hamburger" id="openMenu"
@@ -141,6 +148,8 @@
 
   <div class="layout">
     <aside class="sidebar" id="mobileSidebar">
+
+
       <div class="sb-header">
         <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
         <div class="brand">Pleural Seminar Wales 2025</div>
@@ -177,38 +186,5 @@
       </div>
     </main>
   </div>
-
-  <script>
-    (function(){
-      const openBtn  = document.getElementById('openMenu');
-      const sidebar  = document.getElementById('mobileSidebar');
-      const backdrop = document.getElementById('backdrop');
-      if(!openBtn || !sidebar || !backdrop) return;
-
-      function openMenu(){
-        sidebar.classList.add('open');
-        backdrop.classList.add('show');
-        openBtn.setAttribute('aria-expanded','true');
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closeMenu(){
-        sidebar.classList.remove('open');
-        backdrop.classList.remove('show');
-        openBtn.setAttribute('aria-expanded','false');
-        document.body.style.overflow = '';
-      }
-
-      openBtn.addEventListener('click', function(){
-        if(sidebar.classList.contains('open')){
-          closeMenu();
-        } else {
-          openMenu();
-        }
-      });
-
-      backdrop.addEventListener('click', closeMenu);
-    })();
-  </script>
 </body>
 </html>
