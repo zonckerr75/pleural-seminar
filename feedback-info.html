@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Feedback & Certificates — Pleural Seminar Wales 2025</title>
+  <style>
+    :root{
+      --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8;
+      --accent:#22c55e; --border:#1f2937;
+    }
+    html,body{height:100%}
+    body{
+      margin:0;background:var(--bg);color:var(--fg);
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+    }
+    .layout{min-height:100vh;display:flex}
+    .sidebar{
+      width:260px;background:#020617;border-right:1px solid var(--border);
+      padding:20px 18px;display:flex;flex-direction:column;gap:16px;
+      position:sticky;top:0;align-self:flex-start;min-height:100vh;
+    }
+    .sb-header{display:flex;align-items:center;gap:10px}
+    .sb-header img{width:40px;height:40px;object-fit:contain}
+    .brand{font-weight:600;font-size:17px}
+    nav.sb{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+    nav.sb a{
+      color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:10px;
+      display:block;font-size:15px;
+    }
+    nav.sb a.active, nav.sb a:hover{
+      color:#ecfdf5;background:rgba(34,197,94,.14);border:1px solid rgba(34,197,94,.5);
+    }
+    main{
+      flex:1;padding:24px;display:flex;justify-content:center;
+    }
+    .card{
+      background:var(--panel);border-radius:18px;box-shadow:0 18px 45px rgba(0,0,0,.5);
+      padding:24px;max-width:720px;width:100%;margin:auto;
+    }
+    h1{margin:0 0 12px;font-size:26px}
+    p{margin:0 0 10px}
+    .muted{color:var(--muted)}
+    .note{
+      border-radius:12px;border:1px dashed var(--accent);
+      background:rgba(34,197,94,.04);padding:14px 16px;margin:14px 0;
+    }
+    .highlight{color:var(--accent);font-weight:600}
+    @media (max-width:800px){
+      .layout{flex-direction:column}
+      .sidebar{position:relative;min-height:auto;width:auto;flex-direction:row;align-items:center;gap:12px;padding:12px 16px}
+      nav.sb{flex-direction:row;overflow-x:auto}
+      main{padding:16px}
+      .card{padding:18px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sb-header">
+        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
+        <div class="brand">Pleural Seminar Wales 2025</div>
+      </div>
+      <nav class="sb" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="agenda.html">Agenda</a>
+        <a href="venue.html">Venue</a>
+        <a href="posters.html">Posters</a>
+        <a href="feedback-info.html" class="active">Feedback</a>
+        <a href="faculty.html">Faculty</a>
+        <a href="about.html">About</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="card">
+        <h1>Feedback & Attendance Certificates</h1>
+        <p class="muted">Thank you for joining the Welsh Pleural Seminar 2025.</p>
+
+        <div class="note">
+          <p>To provide feedback and download your attendance certificate, please <span class="highlight">scan the unique QR&nbsp;code on your badge</span>.</p>
+        </div>
+
+        <p>Scanning your badge QR code will open a secure feedback form linked to your registration. Once you have completed and submitted the feedback form, you will be able to:</p>
+        <ul>
+          <li>Download your attendance certificate immediately, and</li>
+          <li>Optionally request a copy to be emailed to you.</li>
+        </ul>
+
+        <p>If you are <strong>unable to submit feedback</strong> or <strong>cannot download your certificate</strong>, please contact our <strong>hot desk</strong> at the event. A member of the team will be happy to help.</p>
+
+        <p class="muted" style="margin-top:18px;">Thank you for taking the time to provide feedback &mdash; it helps us improve future seminars.</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
