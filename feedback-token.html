@@ -427,95 +427,63 @@
   <!-- Firebase save: unified submit flow (save -> show cert panel) -->
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
-  
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
-    authDomain: "pleural-seminar-2025.firebaseapp.com",
-    projectId: "pleural-seminar-2025",
-    storageBucket: "pleural-seminar-2025.appspot.com",
-    messagingSenderId: "914784082205",
-    appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
-  };
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+      authDomain: "pleural-seminar-2025.firebaseapp.com",
+      projectId: "pleural-seminar-2025",
+      storageBucket: "pleural-seminar-2025.appspot.com",
+      messagingSenderId: "914784082205",
+      appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
+    };
+    if (!firebase.apps || !firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    const db = firebase.firestore();
 
-  if (!firebase.apps || !firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  const db = firebase.firestore();
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('feedback-form');
+      const certPanel = document.getElementById('cert-actions');
+      const submitBtn = form?.querySelector('button[type="submit"]');
+      if (!form) return;
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('feedback-form');
-    const certPanel = document.getElementById('cert-actions');
-    const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
-    if (!form) return;
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      if (!form.checkValidity()) {
-        if (form.reportValidity) form.reportValidity();
-        return;
-      }
-
-      const formData = new FormData(form);
-      const responses = {};
-      for (const [key, value] of formData.entries()) {
-        responses[key] = value;
-      }
-
-      // Require a token from the QR badge link
-      const rawToken = (responses.token || '').toString().trim();
-      if (!rawToken) {
-        alert('This feedback form must be opened via your personal badge QR code. Please scan your badge QR and try again.');
-        return;
-      }
-      const token = rawToken;
-
-      const originalText = submitBtn && submitBtn.textContent;
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting…';
-      }
-
-      try {
-        await db.collection('feedback').doc(token).set({
-          responses,
-          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true });
-
-        // Success: show certificate actions only now
-        if (certPanel) {
-          certPanel.style.display = 'block';
-          certPanel.scrollIntoView({ behavior: 'smooth' });
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!form.checkValidity()) {
+          form.reportValidity?.();
+          return;
         }
 
-        // Clear draft so they don’t see old responses next time
-        try { localStorage.removeItem('psw25_feedback'); } catch (_) {}
+        const origText = submitBtn?.textContent;
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
 
-        if (submitBtn) {
-          submitBtn.textContent = 'Submitted ✔';
-        }
+        const formData = new FormData(form);
+        const responses = {};
+        for (const [key, value] of formData.entries()) responses[key] = value;
 
-        console.log('✅ Feedback saved for token', token);
-      } catch (err) {
-        console.error('⚠️ Error saving feedback:', err);
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText || 'Submit Feedback';
-        }
+        try {
+          await db.collection('feedback').add({
+            responses,
+            submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          console.log('✅ Feedback saved to Firestore');
 
-        // Nice message if rules reject because they’re not checked in
-        if (err && err.code === 'permission-denied') {
-          alert('Your feedback could not be saved. Please make sure you have checked in at the registration desk and are using your own badge QR code.');
-        } else {
-          alert('Sorry — your feedback could not be saved. Please try again or speak to the hot desk if the problem continues.');
+          // Reveal certificate panel after a confirmed save
+          if (certPanel) {
+            certPanel.style.display = 'block';
+            certPanel.scrollIntoView({ behavior: 'smooth' });
+          }
+          // optional: clear saved draft
+          localStorage.removeItem('psw25_feedback');
+          if (submitBtn) submitBtn.textContent = 'Submitted ✔';
+        } catch (err) {
+          console.error('⚠️ Error saving feedback:', err);
+          alert('Sorry — your feedback could not be saved. Please try again.');
+          if (submitBtn) submitBtn.disabled = false;
+        } finally {
+          if (submitBtn && submitBtn.textContent !== 'Submitted ✔') submitBtn.textContent = origText || 'Submit Feedback';
         }
-      }
+      });
     });
-  });
-</script>
-
-
+  </script>
 
   <!-- Dynamic question text fetch (optional) -->
   <script>
