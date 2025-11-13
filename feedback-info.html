@@ -48,11 +48,108 @@
     .highlight{color:var(--accent);font-weight:600}
    
     }
+
+    /* Hidden by default on desktop */
+    .topbar{display:none;}
+    .backdrop{display:none;}
+
+    @media (max-width:800px){
+      .layout{
+        flex-direction:column;
+        min-height:auto;
+      }
+
+      /* Mobile top bar with hamburger */
+      .topbar{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        padding:10px 16px;
+        background:var(--panel);
+        border-bottom:1px solid var(--border);
+        position:sticky;
+        top:0;
+        z-index:20;
+      }
+      .topbar .title{
+        font-weight:600;
+        font-size:15px;
+      }
+      .hamburger{
+        font-size:24px;
+        background:none;
+        border:none;
+        color:var(--accent);   /* your green */
+        cursor:pointer;
+      }
+
+      /* Slide-in sidebar on mobile */
+      .sidebar{
+        position:fixed;
+        top:50px;
+        bottom:0;
+        left:0;
+        width:260px;
+        min-height:0;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:30;
+      }
+      .sidebar.open{
+        transform:translateX(0);
+      }
+
+      /* Dark backdrop behind drawer */
+      .backdrop{
+        display:block;
+        position:fixed;
+        inset:0;
+        background:rgba(15,23,42,.65);
+        opacity:0;
+        pointer-events:none;
+        transition:opacity .2s;
+        z-index:25;
+      }
+      .backdrop.show{
+        opacity:1;
+        pointer-events:auto;
+      }
+
+      main{
+        padding:16px;
+      }
+      .card{
+        padding:18px;
+        border-radius:16px;
+        box-shadow:0 10px 30px rgba(0,0,0,.5);
+      }
+    }
+
+
+
   </style>
 </head>
 <body>
+	
+  <!-- Mobile top bar -->
+  <div class="topbar">
+    <button class="hamburger" id="openMenu"
+            aria-label="Open menu"
+            aria-controls="mobileSidebar"
+            aria-expanded="false"
+            type="button">
+      ☰
+    </button>
+    <span class="title">Pleural Seminar Wales 2025</span>
+  </div>
+
+  <!-- Backdrop for mobile menu -->
+  <div class="backdrop" id="backdrop"></div>
+
   <div class="layout">
-    <aside class="sidebar">
+    <aside class="sidebar" id="mobileSidebar">
+
+
       <div class="sb-header">
         <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
         <div class="brand">Pleural Seminar Wales 2025</div>
