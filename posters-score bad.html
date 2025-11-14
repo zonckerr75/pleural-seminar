@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pleural Seminar — Poster Scoring</title>
+  <style>
+	a.btn{display:inline-block;border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-weight:700;text-decoration:none;color:var(--fg)}
+	a.btn.ghost{background:transparent}
+	a.btn.small{padding:6px 10px;font-weight:600}
+
+    :root{ --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8; --accent:#22c55e; --danger:#ef4444; --border:#1f2937 }
+    html,body{height:100%}
+    body{ margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif; padding-top:80px }
+    header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;min-height:64px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand h1{font-size:20px;margin:0}
+    .brand .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block}
+    main{ max-width:980px; margin:18px auto 64px; padding:0 12px }
+    .card{ background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:18px; margin:12px 0; box-shadow:0 8px 24px rgba(0,0,0,.28) }
+    h1{margin:0 0 6px;font-size:22px}
+    h2{margin:0 0 10px;font-size:18px}
+    h3{margin:0 0 6px;font-size:18px}
+    .muted{ color:var(--muted) }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center }
+    label{ display:block; margin:6px 0 }
+    select, button, textarea{ background:#0b1222; color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:10px 12px; font:inherit }
+    select, button{ height:44px }
+    button.primary{ background:var(--accent); border-color:var(--accent); color:#072814; font-weight:700 }
+    button.ghost{ background:transparent }
+    button[disabled]{ opacity:.6; cursor:not-allowed }
+    .pill{ display:inline-block; padding:2px 10px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--muted) }
+    .grid{ display:grid; grid-template-columns:repeat(5, minmax(150px,1fr)); gap:10px }
+    .scorebox{ border:1px dashed var(--border); border-radius:12px; padding:10px }
+    .radio-line{ display:flex; gap:12px; flex-wrap:wrap }
+    .notice{ border-left:4px solid var(--accent); padding:10px 12px; background:#0b1222; border-radius:10px; margin:12px 0 }
+    .error{ border-left-color:var(--danger) }
+    textarea{ width:100%; min-height:70px; resize:vertical }
+
+body{ overflow-x:hidden; }
+.grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+.radio-line{ display:flex; gap:8px; flex-wrap:wrap; }
+.radio-line label{ flex:0 0 44px; display:flex; align-items:center; justify-content:center; }
+@media (max-width:840px){ .grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+@media (max-width:560px){ .grid{ grid-template-columns:1fr; } .radio-line label{ flex:0 0 40px; } }
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <h1>Pleural Seminar — Poster Scoring</h1>
+    </div>
+    <div class="row">
+      <a href="faculty.html" class="btn ghost small">← Back to dashboard</a>
+      <span class="pill" id="status">Select your name to begin.</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="card">
+    <h2>Judge</h2>
+    <p class="muted">Choose your name once. It will be applied to every poster you submit in this session.</p>
+    <div class="row">
+      <label>
+        <span class="muted">Judge name</span><br>
+        <select id="judgeSelect" required>
+          <option value="">— Select judge —</option>
+        </select>
+      </label>
+      <button id="lockJudgeBtn" class="primary">Lock judge</button>
+      <button id="changeJudgeBtn" class="ghost" disabled>Change</button>
+      <span id="judgeLockedPill" class="pill" style="display:none">Locked</span>
+    </div>
+    <div id="judgeError" class="notice error" style="display:none">Please select a judge before scoring.</div>
+  </section>
+
+  <section class="card">
+    <h2>Scoring guide</h2>
+    <p class="muted">Use the 1–5 scale for each criterion <strong>(5 = best, 1 = worst)</strong>.</p>
+  </section>
+
+  <section id="posters"></section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+  authDomain: "pleural-seminar-2025.firebaseapp.com",
+  projectId: "pleural-seminar-2025",
+  storageBucket: "pleural-seminar-2025.appspot.com",
+  messagingSenderId: "914784082205",
+  appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
+};
+if (!firebase.apps || !firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const JUDGES = [
+  "Alina Ionescu","Ruth Williams","Narendra Chinnappa",
+  "Arte Gonzalez","Andrew Griffiths","Elizabeth Green","Ali Thahseen"
+];
+
+const POSTERS = [
+ { id:"p1", title:"Fusobacterium", authors:"Ahmed Fadel, Yasser Ahmed", pdf:"posters/p1.pdf"},
+ { id:"p2", title:"A storm of Polyserositis", authors:"Ahmed Fadel, Yasser Ahmed", pdf:"posters/p2.pdf"},
+ { id:"p3", title:"One tap towards improved documentation", authors:"Chrissy Price", pdf:"posters/p3.pdf"},
+ { id:"p4", title:"Pneumothorax in CPAP/NIV", authors:"Mohsen Mosallam", pdf:"posters/p4.pdf"},
+ { id:"p5", title:"Hepatic Hydrothorax management", authors:"Sam Ryan", pdf:"posters/p5.pdf"},
+];
+
+const CRITERIA = [
+ { key:'layout', label:'First impression & layout'},
+ { key:'results', label:'Results'},
+ { key:'relevance', label:'Relevance to practice'},
+ { key:'conclusion',label:'Conclusion'},
+ { key:'overall', label:'Overall quality'}
+];
+
+const judgeSelect=document.getElementById('judgeSelect');
+JUDGES.forEach(j=>{
+  const o=document.createElement('option');
+  o.value=j; o.textContent=j;
+  judgeSelect.appendChild(o);
+});
+
+function scoreRadios(prefix){
+  const wrap=document.createElement('div');
+  wrap.className='radio-line';
+  for(let v=1;v<=5;v++){
+    const id=`${prefix}_${v}`;
+    wrap.insertAdjacentHTML('beforeend',`<label for="${id}"><input type="radio" id="${id}" name="${prefix}" value="${v}"> ${v}</label>`);
+  }
+  return wrap;
+}
+
+const postersEl=document.getElementById('posters');
+function posterCard(p){
+  const card=document.createElement('div');
+  card.className='card';
+  card.innerHTML=`
+    <h3>${p.title}</h3>
+    <div class="muted">${p.authors}</div>
+    <a href="${p.pdf}" target="_blank" class="btn small ghost" style="margin-top:10px">View Poster</a>
+    <div class="grid" style="margin-top:12px">
+      ${CRITERIA.map(c=>`
+        <div class="scorebox">
+          <div class="muted" style="font-size:13px;margin-bottom:6px">${c.label}</div>
+          <div id="rad_${p.id}_${c.key}"></div>
+        </div>`).join('')}
+    </div>
+    <textarea id="c_${p.id}" placeholder="Any comments…"></textarea>
+    <button class="primary" id="btn_${p.id}">Submit score</button>
+    <div class="muted" id="msg_${p.id}"></div>
+  `;
+  postersEl.appendChild(card);
+
+  CRITERIA.forEach(c=>{
+    card.querySelector(`#rad_${p.id}_${c.key}`).appendChild(scoreRadios(`${p.id}_${c.key}`));
+  });
+}
+
+POSTERS.forEach(posterCard);
+</script>
+</body>
+</html>
