@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pleural Seminar — Poster Scoring</title>
+  <style>
+	a.btn{display:inline-block;border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-weight:700;text-decoration:none;color:var(--fg)}
+	a.btn.ghost{background:transparent}
+	a.btn.small{padding:6px 10px;font-weight:600}
+
+
+    :root{ --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8; --accent:#22c55e; --danger:#ef4444; --border:#1f2937 }
+    html,body{height:100%}
+    body{ margin:0; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif; padding-top:80px }
+    header.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:#0b1320;border-bottom:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.4)}
+    .wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;min-height:64px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand h1{font-size:20px;margin:0}
+    .brand .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block}
+    main{ max-width:980px; margin:18px auto 64px; padding:0 12px }
+    .card{ background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:18px; margin:12px 0; box-shadow:0 8px 24px rgba(0,0,0,.28) }
+    h1{margin:0 0 6px;font-size:22px}
+    h2{margin:0 0 10px;font-size:18px}
+    h3{margin:0 0 6px;font-size:18px}
+    .muted{ color:var(--muted) }
+    .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center }
+    label{ display:block; margin:6px 0 }
+    select, button, textarea{ background:#0b1222; color:var(--fg); border:1px solid var(--border); border-radius:10px; padding:10px 12px; font:inherit }
+    select, button{ height:44px }
+    button.primary{ background:var(--accent); border-color:var(--accent); color:#072814; font-weight:700 }
+    button.ghost{ background:transparent }
+    button[disabled]{ opacity:.6; cursor:not-allowed }
+    .pill{ display:inline-block; padding:2px 10px; border:1px solid var(--border); border-radius:999px; font-size:12px; color:var(--muted) }
+    .grid{ display:grid; grid-template-columns:repeat(5, minmax(150px,1fr)); gap:10px }
+    .scorebox{ border:1px dashed var(--border); border-radius:12px; padding:10px }
+    .radio-line{ display:flex; gap:12px; flex-wrap:wrap }
+    .notice{ border-left:4px solid var(--accent); padding:10px 12px; background:#0b1222; border-radius:10px; margin:12px 0 }
+    .error{ border-left-color:var(--danger) }
+    textarea{ width:100%; min-height:70px; resize:vertical }
+  
+
+/* --- Mobile overflow & grid wrapping patch (Nov 2025) --- */
+body{ overflow-x:hidden; }
+.grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; }
+.radio-line{ display:flex; gap:8px; flex-wrap:wrap; }
+.radio-line label{ flex:0 0 44px; display:flex; align-items:center; justify-content:center; }
+@media (max-width:840px){ .grid{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
+@media (max-width:560px){ .grid{ grid-template-columns:1fr; } .radio-line label{ flex:0 0 40px; } }
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <h1>Pleural Seminar — Poster Scoring</h1>
+    </div>
+    <div class="row">
+  <a href="faculty.html" class="btn ghost small">← Back to dashboard</a>
+  <span class="pill" id="status">Select your name to begin.</span>
+</div>
+
+  </div>
+
+<div class="nav-actions" style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+  <a href="faculty.html" class="btn ghost" style="background:transparent;border:1px solid var(--border);border-radius:10px;padding:8px 12px;height:40px;display:inline-flex;align-items:center;text-decoration:none;color:var(--fg)">← Back to dashboard</a>
+</div>
+</header>
+
+<main>
+  <!-- Judge -->
+  <section class="card" aria-labelledby="judge-title">
+    <h2 id="judge-title">Judge</h2>
+    <p class="muted">Choose your name once. It will be applied to every poster you submit in this session.</p>
+    <div class="row">
+      <label>
+        <span class="muted">Judge name</span><br>
+        <select id="judgeSelect" required>
+          <option value="">— Select judge —</option>
+        </select>
+      </label>
+      <button id="lockJudgeBtn" class="primary">Lock judge</button>
+      <button id="changeJudgeBtn" class="ghost" disabled>Change</button>
+      <span id="judgeLockedPill" class="pill" style="display:none">Locked</span>
+    </div>
+    <div id="judgeError" class="notice error" style="display:none">Please select a judge before scoring.</div>
+  </section>
+
+  <!-- Scoring guide -->
+  <section class="card" aria-labelledby="guide-title">
+    <h2 id="guide-title">Scoring guide</h2>
+    <p class="muted">Use the 1–5 scale for each criterion <strong>(5 = best, 1 = worst)</strong>.</p>
+    <ul>
+      <li><strong>First impression and layout</strong> — Colour schemes, flow of information, is it visually jumbled / difficult to read?</li>
+      <li><strong>Results</strong> — Quality of graphs, are the results easy to interpret, well labelled figures.</li>
+      <li><strong>Relevance</strong> — Is it relevant to current practice, how easy would it be to apply this information to current practice?</li>
+      <li><strong>Conclusion</strong> — Are conclusions presented, and do they reflect the main aims? Are they supported by the data provided? Is there a memorable “take-home” message?</li>
+      <li><strong>Overall quality of the poster</strong></li>
+      <li><strong>Any other comments?</strong> (optional)</li>
+    </ul>
+  </section>
+
+  <!-- Poster cards will render here -->
+  <section id="posters"></section>
+
+  <section class="card">
+    <h3 style="margin:0">Need to pause?</h3>
+    <p class="muted">You can submit posters one by one. Come back later and continue — your judge name will stay locked in this browser.</p>
+    <button id="unlockAllBtn" class="ghost">Reset & clear saved judge</button>
+  </section>
+</main>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+<script>
+  // Firebase project (same as faculty/results pages)
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+    authDomain: "pleural-seminar-2025.firebaseapp.com",
+    projectId: "pleural-seminar-2025",
+    storageBucket: "pleural-seminar-2025.appspot.com",
+    messagingSenderId: "914784082205",
+    appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
+  };
+  if (!firebase.apps || !firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+  const db = firebase.firestore();
+
+  // Data
+  const JUDGES = [
+    "Alina Ionescu",
+    "Ruth Williams",
+    "Narendra Chinnappa",
+    "Arte Gonzalez",
+    "Andrew Griffiths",
+    "Elizabeth Green",
+    "Ali Thahseen" // backup
+  ];
+
+  const POSTERS = [
+    { id: "p1", title: "Fusobacterium", authors: "Ahmed Fadel, Yasser Ahmed" },
+    { id: "p2", title: "A storm of Polyserositis", authors: "Ahmed Fadel, Yasser Ahmed" },
+    { id: "p3", title: "One tap towards improved documentation", authors: "Chrissy Price" },
+    { id: "p4", title: "Pneumothorax in CPAP/NIV", authors: "Mohsen Mosallam" },
+    { id: "p5", title: "Hepatic Hydrothorax management", authors: "Sam Ryan" }
+  ];
+
+  const CRITERIA = [
+    { key: 'layout',    label: 'First impression & layout' },
+    { key: 'results',   label: 'Results' },
+    { key: 'relevance', label: 'Relevance to practice' },
+    { key: 'conclusion',label: 'Conclusion' },
+    { key: 'overall',   label: 'Overall quality' }
+  ];
+
+  // Judge controls
+  const judgeSelect = document.getElementById('judgeSelect');
+  const lockJudgeBtn = document.getElementById('lockJudgeBtn');
+  const changeJudgeBtn = document.getElementById('changeJudgeBtn');
+  const judgeLockedPill = document.getElementById('judgeLockedPill');
+  const judgeError = document.getElementById('judgeError');
+  const status = document.getElementById('status');
+
+  // Populate judge dropdown
+  JUDGES.forEach(j => { const opt = document.createElement('option'); opt.value=j; opt.textContent=j; judgeSelect.appendChild(opt); });
+
+  // Persist selection
+  const savedJudge = localStorage.getItem('ps_judge');
+  if (savedJudge) { judgeSelect.value = savedJudge; lockJudge(); }
+
+  lockJudgeBtn.addEventListener('click', () => {
+    if (!judgeSelect.value) { judgeError.style.display='block'; return; }
+    localStorage.setItem('ps_judge', judgeSelect.value);
+    lockJudge();
+  });
+
+  changeJudgeBtn.addEventListener('click', () => {
+    localStorage.removeItem('ps_judge');
+    judgeSelect.disabled = false; lockJudgeBtn.disabled = false; changeJudgeBtn.disabled = true; judgeLockedPill.style.display='none';
+    status.textContent = 'Judge unlocked. Select your name and lock before scoring.';
+  });
+
+  document.getElementById('unlockAllBtn').addEventListener('click', () => {
+    localStorage.removeItem('ps_judge');
+    judgeSelect.disabled = false; lockJudgeBtn.disabled = false; changeJudgeBtn.disabled = true; judgeLockedPill.style.display='none';
+    status.textContent = 'Reset done. Select your name to begin.';
+  });
+
+  function lockJudge(){
+    judgeSelect.disabled = true;
+    lockJudgeBtn.disabled = true;
+    changeJudgeBtn.disabled = false;
+    judgeLockedPill.style.display = 'inline-block';
+    judgeError.style.display = 'none';
+    status.textContent = `Scoring as: ${judgeSelect.value} — 1–5 scale (5 best, 1 worst)`;
+  }
+
+  // Poster rendering
+  const postersEl = document.getElementById('posters');
+
+  function scoreRadios(namePrefix){
+    const wrap = document.createElement('div');
+    wrap.className = 'radio-line';
+    for (let v=1; v<=5; v++){
+      const id = `${namePrefix}_${v}`;
+      wrap.insertAdjacentHTML('beforeend', `<label for="${id}"><input type="radio" id="${id}" name="${namePrefix}" value="${v}"> ${v}</label>`);
+    }
+    return wrap;
+  }
+
+  function posterCard(p){
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <h3 style="margin:0 0 6px 0">${p.title}</h3>
+      <div class="muted">${p.authors}</div>
+      <div class="grid" style="margin-top:12px">
+        ${CRITERIA.map(c => `
+          <div class="scorebox">
+            <div class="muted" style="font-size:13px;margin-bottom:6px">${c.label} (1–5; 5 best)</div>
+            <div id="rad_${p.id}_${c.key}"></div>
+          </div>
+        `).join('')}
+      </div>
+      <label style="margin-top:12px;display:block">
+        <span class="muted">Any other comments (optional)</span>
+        <textarea id="c_${p.id}" placeholder="Write brief comments here…"></textarea>
+      </label>
+      <div class="row" style="justify-content:space-between">
+        <button class="primary" id="btn_${p.id}">Submit score</button>
+        <div class="muted" id="msg_${p.id}"></div>
+      </div>
+    `;
+    postersEl.appendChild(card);
+
+    // attach radio groups
+    CRITERIA.forEach(c => {
+      const target = card.querySelector(`#rad_${p.id}_${c.key}`);
+      target.appendChild(scoreRadios(`${p.id}_${c.key}`));
+    });
+
+    // submit handler
+    card.querySelector(`#btn_${p.id}`).addEventListener('click', async () => {
+      const judge = localStorage.getItem('ps_judge');
+      if (!judge){
+        judgeError.style.display='block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      const data = { posterId: p.id, posterTitle: p.title, posterAuthors: p.authors, judge, ts: new Date().toISOString() };
+      const missing = [];
+      CRITERIA.forEach(c => {
+        const sel = card.querySelector(`input[name='${p.id}_${c.key}']:checked`);
+        if (!sel) missing.push(c.label);
+        data[c.key] = sel ? Number(sel.value) : null;
+      });
+      data.comments = card.querySelector(`#c_${p.id}`).value.trim();
+
+      if (missing.length){
+        card.querySelector(`#msg_${p.id}`).textContent = `Missing: ${missing.join(', ')}`;
+        return;
+      }
+
+      // total score (sum of 5 criteria, max 25)
+const total = CRITERIA.reduce((s, c) => s + data[c.key], 0);
+data.total = total;
+
+
+      // one doc per poster per judge
+      const docId = `${p.id}__${judge.replace(/\s+/g,'_')}`;
+      try{
+        await db.collection('scores').doc(docId).set(data, { merge: true });
+        card.querySelector(`#msg_${p.id}`).textContent = `Saved ✓ Total score ${data.total}`;
+
+     }catch(err){
+        console.error(err);
+  const m = `Error: ${err.code || ''} ${err.message || ''}`.trim();
+  card.querySelector(`#msg_${p.id}`).textContent = m || 'Error saving — check connection.';
+}
+    });
+  }
+
+  POSTERS.forEach(posterCard);
+</script>
+</body>
+</html>
