@@ -216,7 +216,7 @@
       const tbody=document.querySelector('#fbTable tbody');
       if(!tbody)return;
       try{
-        const qRef=query(collection(db,'feedback2025'),orderBy('submittedAt','desc'));
+        const qRef=query(collection(db,'feedback'),orderBy('submittedAt','desc'));
         const snap=await getDocs(qRef);
         document.querySelector('#countLabel').textContent=`${snap.size} responses`;
         tbody.innerHTML='';
