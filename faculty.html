@@ -213,73 +213,32 @@
     });
 
     async function loadFeedback(){
-      const tbody = document.querySelector('#fbTable tbody');
-      if (!tbody) return;
-
-      try {
-        // Read from the same 'feedback' collection used by feedback.html
-        const qRef = query(collection(db, 'feedback'), orderBy('submittedAt','desc'));
-        const snap = await getDocs(qRef);
-
-        document.querySelector('#countLabel').textContent = `${snap.size} responses`;
-        tbody.innerHTML = '';
-
-        snap.forEach(doc => {
-          const data = doc.data() || {};
-          const r = data.responses || {};
-
-          const submitted = (data.submittedAt && data.submittedAt.toDate)
-            ? data.submittedAt.toDate().toLocaleString()
-            : '';
-
-          const name  = (r.certificate_name || r.q19 || '').toString();
-          const email = (r.email || r.q20 || '').toString();
-
-          const q1 = r.q1 ?? '';
-          const q2 = r.q2 ?? '';
-          const q3 = r.q3 ?? '';
-
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${submitted}</td>
-            <td>${name}</td>
-            <td>${email}</td>
-            <td>${q1}</td>
-            <td>${q2}</td>
-            <td>${q3}</td>
-            <td>-</td>
-          `;
+      const tbody=document.querySelector('#fbTable tbody');
+      if(!tbody)return;
+      try{
+        const qRef=query(collection(db,'feedback'),orderBy('submittedAt','desc'));
+        const snap=await getDocs(qRef);
+        document.querySelector('#countLabel').textContent=`${snap.size} responses`;
+        tbody.innerHTML='';
+        snap.forEach(doc=>{
+          const r=doc.data();
+          const tr=document.createElement('tr');
+          const submitted=r.submittedAt?.toDate?r.submittedAt.toDate().toLocaleString():'';
+          tr.innerHTML=`<td>${submitted}</td><td>${r.certificate_name||r.q19||''}</td><td>${r.email||r.q20||''}</td><td>${r.q1||''}</td><td>${r.q2||''}</td><td>${r.q3||''}</td><td>…</td>`;
           tbody.appendChild(tr);
         });
-      } catch (e) {
-        console.error(e);
-      }
+      }catch(e){console.error(e);}
     }
 
-}
-
-    document.querySelector('#exportCsv').addEventListener('click', () => {
-      const table = document.querySelector('#fbTable');
-      const rows = [...table.querySelectorAll('tr')].map(tr =>
-        [...tr.children].map(td => {
-          const raw = (td.textContent || '').replace(/\s+/g, ' ').trim();
-          const s = raw.replace(/"/g, '""');
-          return /[",\n]/.test(s) ? `"${s}"` : s;
-        }).join(',')
-      );
-
-      // Add UTF‑8 BOM so Excel opens it cleanly
-      const csv = '\uFEFF' + rows.join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'feedback_export.csv';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    })
+    document.querySelector('#exportCsv').addEventListener('click',()=>{
+      const table=document.querySelector('#fbTable');
+      const rows=[...table.querySelectorAll('tr')].map(tr=>[...tr.children].map(td=>`"${(td.textContent||'').replace(/"/g,'""')}"`).join(','));
+      const csv=rows.join('\n');
+      const blob=new Blob([csv],{type:'text/csv'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;a.download='feedback_export.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1e3);
+    });
   </script>
 </body>
 </html>
