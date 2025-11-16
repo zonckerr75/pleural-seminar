@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+   
+   
+   
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAllowedEmail() {
+      return isSignedIn()
+        && request.auth.token.email != null
+        && (
+          request.auth.token.email.matches('(?i).*@wales\\.nhs\\.uk$') ||
+          request.auth.token.email.matches('(?i).*@nhs\\.net$')
+        );
+    }
+
+    // If you want the entire database locked to NHS logins:
+    match /{document=**} {
+      allow read, write: if isAllowedEmail();
+    }
+     
+   
+   
+   
+   
+   // ===== Poster + case scoring (your current behaviour) =====
+    match /scores/{docId} {
+      allow read, write: if true;
+    }
+
+    match /casesScore/{docId} {
+      allow read, write: if true;
+    }
+
+    // ===== Attendance / registration (QR check-in + admin live register) =====
+    // Open the whole attendance subtree so your existing pages keep working
+    match /attendance/{path=**} {
+      allow read, write: if true;
+    }
+
+    // Attendee master list (if used for prefill)
+    match /attendees/{token} {
+      allow read: if true;
+      allow write: if true;   // OK for this event; tighten later if needed
+    }
+
+    // ===== Helper: has this token checked in? =====
+    // For this seminar, check-ins are stored at:
+    // attendance / 2025-11-14 / checkins / {token}
+    function hasCheckedInForToken(t) {
+      return exists(
+        /databases/$(database)/documents/attendance/2025-11-14/checkins/$(t)
+      );
+    }
+
+    // ===== Feedback collection =====
+    match /feedback/{docId} {
+
+      // Only allow write if:
+      //  - "responses" is a map
+      //  - it has a non-empty string "token"
+      //  - there is a check-in doc for that token
+      allow create, update: if
+        request.resource.data.responses is map
+        && request.resource.data.responses.token is string
+        && request.resource.data.responses.token != ""
+        && hasCheckedInForToken(request.resource.data.responses.token);
+
+      // Results page can read all feedback
+      allow read: if true;
+    }
+
+    // ===== Everything else blocked =====
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

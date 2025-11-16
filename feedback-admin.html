@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pleural Seminar Wales 2025 — Feedback Admin</title>
+  <style>
+    :root {
+      --bg: #0b1320;
+      --panel: #0f172a;
+      --fg: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #22c55e;
+      --border: #1f2937;
+      --accent-soft: rgba(34, 197, 94, 0.15);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
+      color: var(--fg);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .layout {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+      gap: 16px;
+    }
+
+    aside {
+      width: 240px;
+      background: linear-gradient(180deg, #020617, #020617f2);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+      position: sticky;
+      top: 16px;
+      height: fit-content;
+    }
+
+    .brand {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .brand span {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    nav a {
+      display: block;
+      padding: 8px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.92rem;
+      color: var(--muted);
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    nav a:hover {
+      background: #020617;
+      border-color: var(--border);
+      color: var(--fg);
+    }
+
+    nav a.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: #bbf7d0;
+    }
+
+    main {
+      flex: 1;
+      background: linear-gradient(135deg, #020617f2, #020617ee);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      padding: 24px 24px 28px;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 2vw, 2rem);
+      margin: 0 0 4px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 span {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--accent);
+      margin-top: 4px;
+      text-transform: none;
+    }
+
+    p {
+      margin: 0 0 8px;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 80ch;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .toolbar-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .toolbar p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    button.primary {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      background: radial-gradient(circle at 20% 0, #4ade80, #22c55e);
+      color: #022c22;
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.35);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+      white-space: nowrap;
+    }
+
+    button.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px rgba(34, 197, 94, 0.45);
+      filter: brightness(1.05);
+    }
+
+    button.primary:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+    }
+
+    .status-line {
+      font-size: 0.85rem;
+      color: var(--muted);
+      min-height: 1.2em;
+    }
+
+    .status-line.error {
+      color: #fca5a5;
+    }
+
+    .status-line.success {
+      color: #bbf7d0;
+    }
+
+    .table-wrapper {
+      margin-top: 8px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.96);
+      overflow: auto;
+      max-height: 60vh;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      min-width: 600px;
+    }
+
+    thead tr {
+      background: rgba(15, 23, 42, 0.98);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.4);
+      text-align: left;
+    }
+
+    th {
+      font-weight: 500;
+      color: #cbd5f5;
+      white-space: nowrap;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    tbody tr:hover {
+      background: rgba(30, 64, 175, 0.6);
+    }
+
+    .cell-text {
+      max-width: 320px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        flex-direction: column;
+      }
+
+      aside {
+        width: 100%;
+        position: static;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      nav a {
+        padding: 6px 10px;
+        font-size: 0.82rem;
+      }
+
+      main {
+        padding: 18px 16px 22px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      aside {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .brand {
+        font-size: 0.9rem;
+      }
+
+      .toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+  authDomain: "pleural-seminar-2025.firebaseapp.com",
+  projectId: "pleural-seminar-2025",
+  storageBucket: "pleural-seminar-2025.appspot.com",
+  messagingSenderId: "914784082205",
+  appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
+};
+
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    function isAllowedEmail(email) {
+      if (!email) return false;
+      const lower = email.toLowerCase().trim();
+      return lower.endsWith('@wales.nhs.uk') || lower.endsWith('@nhs.net');
+    }
+  </script>
+</head>
+<body>
+  <div id="app" style="display:none;">
+    <div class="layout">
+      <aside>
+        <div class="brand">
+          Pleural Seminar Wales
+          <span>2025</span>
+        </div>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="agenda.html">Agenda</a>
+          <a href="venue.html">Venue</a>
+          <a href="posters.html">Posters</a>
+          <a href="feedback.html">Feedback</a>
+          <a href="faculty.html">Faculty</a>
+          <a href="about.html">About</a>
+          <a href="feedback-admin.html" class="active">Feedback admin</a>
+        </nav>
+      </aside>
+
+      <main>
+        <header>
+          <h1>
+            Feedback admin
+            <span>Review & export delegate feedback</span>
+          </h1>
+          <p>
+            This page shows all documents in the <code>feedback</code> collection. You can review the responses
+            in the table below and download a CSV file for analysis or reports.
+          </p>
+        </header>
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <p class="status-line" id="status-line">Loading feedback...</p>
+            <div class="tag">
+              <span class="tag-dot"></span>
+              <span id="count-label">0 records loaded</span>
+            </div>
+          </div>
+          <button class="primary" id="exportCsvBtn" disabled>Download CSV</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table id="feedbackTable">
+            <thead>
+              <tr id="header-row">
+                <!-- headers injected by JS -->
+              </tr>
+            </thead>
+            <tbody id="body-rows">
+              <!-- rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const db = firebase.firestore();
+    const statusLine = document.getElementById('status-line');
+    const countLabel = document.getElementById('count-label');
+    const exportBtn = document.getElementById('exportCsvBtn');
+    const headerRow = document.getElementById('header-row');
+    const bodyRows = document.getElementById('body-rows');
+
+    let headers = [];
+    let rows = [];
+
+    function setStatus(message, type) {
+      statusLine.textContent = message || '';
+      statusLine.className = 'status-line';
+      if (type) statusLine.classList.add(type);
+    }
+
+    function escapeCsvValue(value) {
+      if (value == null) return '';
+      let str = String(value);
+      if (str.includes('"') || str.includes(',') || str.includes('\n')) {
+        str = '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+    }
+
+    function buildTable() {
+      // Clear existing
+      headerRow.innerHTML = '';
+      bodyRows.innerHTML = '';
+
+      // Build header cells
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+
+      // Build body rows
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach((cell, idx) => {
+          const td = document.createElement('td');
+          if (idx >= 2) { // text-like fields after Doc ID + Token
+            const div = document.createElement('div');
+            div.className = 'cell-text';
+            div.textContent = cell == null ? '' : String(cell);
+            td.appendChild(div);
+          } else {
+            td.textContent = cell == null ? '' : String(cell);
+          }
+          tr.appendChild(td);
+        });
+        bodyRows.appendChild(tr);
+      });
+    }
+
+    function buildCsvAndDownload() {
+      if (!headers.length || !rows.length) return;
+
+      const lines = [];
+      // header row
+      lines.push(headers.map(escapeCsvValue).join(','));
+      // data rows
+      rows.forEach(row => {
+        const line = row.map(escapeCsvValue).join(',');
+        lines.push(line);
+      });
+
+      const csvContent = lines.join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'pleural-feedback-export.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function loadFeedback() {
+      try {
+        setStatus('Loading feedback from Firestore...', null);
+        exportBtn.disabled = true;
+        headerRow.innerHTML = '';
+        bodyRows.innerHTML = '';
+        headers = [];
+        rows = [];
+
+        const snapshot = await db.collection('feedback').get();
+
+        if (snapshot.empty) {
+          setStatus('No feedback records found in the "feedback" collection.', null);
+          countLabel.textContent = '0 records loaded';
+          return;
+        }
+
+        const allKeys = new Set();
+        const records = [];
+
+        snapshot.forEach(doc => {
+          const data = doc.data() || {};
+          const responses = data.responses || {};
+          const token = responses.token || '';
+          // Collect keys from responses (excluding token, which is special)
+          Object.keys(responses).forEach(k => {
+            if (k !== 'token') allKeys.add(k);
+          });
+
+          // Detect any top-level fields you might want (e.g. createdAt)
+          if ('createdAt' in data) allKeys.add('createdAt');
+
+          records.push({
+            id: doc.id,
+            token,
+            responses,
+            raw: data
+          });
+        });
+
+        // Turn key set into ordered list: Doc ID, Token, then sorted keys
+        const dynamicKeys = Array.from(allKeys).sort();
+        headers = ['Doc ID', 'Token', ...dynamicKeys];
+
+        // Build row arrays in same column order
+        records.forEach(rec => {
+          const row = [];
+          row.push(rec.id);
+          row.push(rec.token);
+
+          dynamicKeys.forEach(key => {
+            let value = null;
+            if (key === 'createdAt' && rec.raw && rec.raw.createdAt) {
+              const v = rec.raw.createdAt;
+              if (v.toDate) {
+                value = v.toDate().toISOString();
+              } else {
+                value = String(v);
+              }
+            } else if (key in rec.responses) {
+              value = rec.responses[key];
+            } else if (key in rec.raw) {
+              value = rec.raw[key];
+            } else {
+              value = '';
+            }
+            row.push(value);
+          });
+
+          rows.push(row);
+        });
+
+        buildTable();
+        setStatus('Feedback loaded successfully.', 'success');
+        countLabel.textContent = rows.length + (rows.length === 1 ? ' record loaded' : ' records loaded');
+        exportBtn.disabled = false;
+      } catch (err) {
+        console.error('Error loading feedback:', err);
+        setStatus('Error loading feedback: ' + (err.message || err.code), 'error');
+        countLabel.textContent = '0 records loaded';
+      }
+    }
+
+    // Auth guard
+    document.addEventListener('DOMContentLoaded', () => {
+      const app = document.getElementById('app');
+
+      firebase.auth().onAuthStateChanged((user) => {
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        const email = (user.email || '').toLowerCase().trim();
+        if (!isAllowedEmail(email)) {
+          alert('Access is restricted to @wales.nhs.uk or @nhs.net accounts.');
+          firebase.auth().signOut();
+          window.location.href = 'login.html';
+          return;
+        }
+
+        if (app) {
+          app.style.display = 'block';
+        }
+        loadFeedback();
+      });
+    });
+
+    exportBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      buildCsvAndDownload();
+    });
+  </script>
+</body>
+</html>
