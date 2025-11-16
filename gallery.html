@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Highlights — Pleural Seminar Wales 2025</title>
+  <meta name="color-scheme" content="dark" />
+  <style>
+    :root{
+      --bg:#0b1320;
+      --panel:#0f172a;
+      --fg:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#22c55e;
+      --border:#1f2937;
+    }
+
+    *,
+    *::before,
+    *::after{
+      box-sizing:border-box;
+    }
+
+    html,body{
+      height:100%;
+    }
+
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+    }
+
+    .app{
+      display:flex;
+      min-height:100dvh;
+    }
+
+    /* Sidebar (desktop) */
+    .sidebar{
+      width:264px;
+      background:var(--panel);
+      border-right:1px solid var(--border);
+      position:sticky;
+      top:0;
+      align-self:flex-start;
+      height:100dvh;
+      overflow:auto;
+    }
+
+    .sb-header{
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      padding:16px 18px;
+      border-bottom:1px solid var(--border);
+    }
+
+    .sb-header img{
+      height:36px;
+      width:auto;
+      display:block;
+    }
+
+    .brand{
+      font-weight:600;
+      letter-spacing:.2px;
+    }
+
+    nav.sb{
+      display:flex;
+      flex-direction:column;
+      padding:10px;
+    }
+
+    nav.sb a{
+      color:var(--fg);
+      text-decoration:none;
+      padding:10px 14px;
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+      font-size:.95rem;
+    }
+
+    nav.sb a:hover{
+      background:#0b1226;
+    }
+
+    nav.sb a.active{
+      background:#0c1b31;
+      outline:1px solid #16233f;
+    }
+
+    /* Content area */
+    .content{
+      flex:1;
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* Mobile top bar */
+    .topbar{
+      display:none;
+      position:sticky;
+      top:0;
+      z-index:50;
+      background:var(--panel);
+      border-bottom:1px solid var(--border);
+      padding:10px 14px;
+      align-items:center;
+      gap:10px;
+    }
+
+    .hamburger{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#020617;
+      color:var(--fg);
+      padding:8px;
+      cursor:pointer;
+      font-size:1.1rem;
+    }
+
+    .hamburger:focus{
+      outline:2px solid #1e3a8a;
+      outline-offset:2px;
+    }
+
+    .topbar .title{
+      font-weight:600;
+      font-size:.98rem;
+    }
+
+    /* Page layout */
+    .main{
+      padding:24px 32px 40px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    .page-header{
+      margin-bottom:24px;
+    }
+
+    .page-kicker{
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-size:.72rem;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+
+    .page-header h1{
+      margin:0 0 8px;
+      font-size:1.8rem;
+    }
+
+    .page-header p{
+      margin:0;
+      color:var(--muted);
+      max-width:600px;
+      font-size:.95rem;
+    }
+
+    .pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:14px;
+    }
+
+    .pill{
+      border-radius:999px;
+      border:1px solid var(--border);
+      padding:4px 10px;
+      font-size:.75rem;
+      color:var(--muted);
+    }
+
+    .pill--accent{
+      border-color:var(--accent);
+      color:var(--accent);
+    }
+
+    /* Sections */
+    .section{
+      margin-top:32px;
+      padding:20px 18px 22px;
+      background:rgba(15,23,42,.9);
+      border-radius:16px;
+      border:1px solid rgba(148,163,184,.25);
+    }
+
+    .section h2{
+      margin:0 0 4px;
+      font-size:1.1rem;
+    }
+
+    .section p.lead{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:.9rem;
+    }
+
+    .two-col{
+      display:grid;
+      grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);
+      gap:18px;
+    }
+
+    .meta-list{
+      list-style:none;
+      padding:0;
+      margin:0;
+      font-size:.9rem;
+    }
+
+    .meta-list li{
+      padding:4px 0;
+      color:var(--muted);
+    }
+
+    .meta-list strong{
+      color:var(--fg);
+      font-weight:500;
+    }
+
+    /* Gallery grid */
+    .gallery-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:12px;
+      margin-top:12px;
+    }
+
+    .gallery-item{
+      position:relative;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid rgba(15,23,42,.9);
+      background:#020617;
+      cursor:pointer;
+    }
+
+    .gallery-item img{
+      display:block;
+      width:100%;
+      height:160px;
+      object-fit:cover;
+      transition:transform .2s ease, opacity .2s ease;
+    }
+
+    .gallery-item:hover img{
+      transform:scale(1.05);
+      opacity:.9;
+    }
+
+    .gallery-caption{
+      position:absolute;
+      inset:auto 0 0;
+      padding:8px 10px;
+      background:linear-gradient(to top,rgba(15,23,42,.9),transparent);
+      font-size:.78rem;
+      color:var(--fg);
+    }
+
+    /* Video cards */
+    .video-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:16px;
+      margin-top:12px;
+    }
+
+    .video-card{
+      border-radius:16px;
+      border:1px solid rgba(148,163,184,.25);
+      background:#020617;
+      padding:10px 10px 14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .video-frame{
+      position:relative;
+      padding-top:56.25%;
+      border-radius:12px;
+      overflow:hidden;
+      background:#020617;
+    }
+
+    .video-frame iframe{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      border:0;
+    }
+
+    .video-meta-title{
+      font-size:.95rem;
+      font-weight:500;
+    }
+
+    .video-meta-text{
+      margin:0;
+      font-size:.82rem;
+      color:var(--muted);
+    }
+
+    /* Lightbox */
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.94);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:1000;
+    }
+
+    .lightbox.open{
+      display:flex;
+    }
+
+    .lightbox-inner{
+      max-width:min(90vw,1100px);
+      max-height:90vh;
+      position:relative;
+    }
+
+    .lightbox img{
+      max-width:100%;
+      max-height:100%;
+      display:block;
+      border-radius:16px;
+      border:1px solid rgba(148,163,184,.5);
+    }
+
+    .lightbox-close{
+      position:absolute;
+      top:-40px;
+      right:0;
+      background:#020617;
+      color:var(--fg);
+      border-radius:999px;
+      border:1px solid var(--border);
+      padding:4px 10px;
+      font-size:.8rem;
+      cursor:pointer;
+    }
+
+    .lightbox-caption{
+      margin-top:6px;
+      font-size:.8rem;
+      color:var(--muted);
+      text-align:right;
+    }
+
+    /* Drawer (mobile sidebar) */
+    .drawer{
+      display:none;
+    }
+
+    .backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.7);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .2s ease;
+      z-index:40;
+    }
+
+    .backdrop.open{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .drawer .sidebar{
+      transform:translateX(-100%);
+      transition:transform .2s ease;
+      position:fixed;
+      inset:0 auto 0 0;
+      z-index:50;
+    }
+
+    .drawer.open .sidebar{
+      transform:translateX(0);
+    }
+
+    @media (max-width: 900px){
+      .app > .sidebar{
+        display:none;
+      }
+      .topbar{
+        display:flex;
+      }
+      .content{
+        width:100%;
+      }
+      .main{
+        padding:16px 18px 28px;
+      }
+      .two-col{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Desktop sidebar -->
+    <aside class="sidebar" aria-label="Primary">
+      <div class="sb-header">
+        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
+        <div class="brand">Pleural Seminar Wales 2025</div>
+      </div>
+      <nav class="sb" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="agenda.html">Agenda</a>
+        <a href="venue.html">Venue</a>
+        <a href="posters.html">Posters</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="faculty.html">Faculty</a>
+        <a href="about.html">About</a>
+      </nav>
+    </aside>
+
+    <!-- Content area -->
+    <div class="content">
+      <!-- Mobile top bar -->
+      <div class="topbar">
+        <button class="hamburger" id="openMenu" aria-label="Open navigation menu">☰</button>
+        <span class="title">Pleural Seminar Wales 2025</span>
+      </div>
+
+      <main class="main">
+        <header class="page-header">
+          <div class="page-kicker">2025 highlights</div>
+          <h1>Seminar Highlights &amp; Gallery</h1>
+          <p>
+            A look back at Pleural Seminar Wales 2025 — from morning lectures and case discussions
+            to posters, hands-on conversations and end-of-day smiles.
+          </p>
+          <div class="pill-row">
+            <span class="pill pill--accent">Parkway Hotel &amp; Spa, Cwmbran</span>
+            <span class="pill">Live meeting &amp; livestream</span>
+            <span class="pill">Photos &amp; video highlights</span>
+          </div>
+        </header>
+
+        <section class="section" aria-labelledby="overview-heading">
+          <div class="two-col">
+            <div>
+              <h2 id="overview-heading">A day in snapshots</h2>
+              <p class="lead">
+                Use this page as a living gallery — you can keep adding photos and selected video clips
+                after each annual meeting to build up an archive of Pleural Seminar Wales.
+              </p>
+              <p class="lead">
+                Replace the placeholder images below with your own JPEGs in
+                <code>assets/gallery/</code> and drop in YouTube links for any talks you choose
+                to feature.
+              </p>
+            </div>
+            <div>
+              <ul class="meta-list">
+                <li><strong>Date:</strong> 14 November 2025</li>
+                <li><strong>Venue:</strong> Parkway Hotel &amp; Spa, Wentwood Suite</li>
+                <li><strong>Format:</strong> Whole-day meeting with live stream &amp; on-site audience</li>
+                <li><strong>Sessions:</strong> Keynote lectures, case presentations, poster walk-round</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="photos-heading">
+          <h2 id="photos-heading">Photo highlights</h2>
+          <p class="lead">
+            Drop your favourite images into <code>assets/gallery/</code>, then update the filenames below.
+            Click any photo to view it larger; use this space for room shots, speakers, posters, and group photos.
+          </p>
+
+          <div class="gallery-grid" id="galleryGrid">
+            <!-- Example placeholders – replace src values with your own files -->
+            <figure class="gallery-item" data-caption="Morning registration &amp; arrivals">
+              <img src="assets/gallery/photo1.jpg" alt="Delegates arriving and registering" loading="lazy">
+              <figcaption class="gallery-caption">Morning registration &amp; arrivals</figcaption>
+            </figure>
+
+            <figure class="gallery-item" data-caption="Opening session in the Wentwood Suite">
+              <img src="assets/gallery/photo2.jpg" alt="Opening plenary session in the main room" loading="lazy">
+              <figcaption class="gallery-caption">Opening session in the Wentwood Suite</figcaption>
+            </figure>
+
+            <figure class="gallery-item" data-caption="Case presentations and discussion">
+              <img src="assets/gallery/photo3.jpg" alt="Case presentation with audience discussion" loading="lazy">
+              <figcaption class="gallery-caption">Case presentations &amp; discussion</figcaption>
+            </figure>
+
+            <figure class="gallery-item" data-caption="Poster viewing &amp; informal conversations">
+              <img src="assets/gallery/photo4.jpg" alt="Delegates viewing posters and talking" loading="lazy">
+              <figcaption class="gallery-caption">Poster viewing &amp; informal conversations</figcaption>
+            </figure>
+
+            <figure class="gallery-item" data-caption="Faculty &amp; organising team">
+              <img src="assets/gallery/photo5.jpg" alt="Group photo of faculty and organisers" loading="lazy">
+              <figcaption class="gallery-caption">Faculty &amp; organising team</figcaption>
+            </figure>
+
+            <figure class="gallery-item" data-caption="End-of-day reflections">
+              <img src="assets/gallery/photo6.jpg" alt="Delegates at the end of the meeting" loading="lazy">
+              <figcaption class="gallery-caption">End-of-day reflections</figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section class="section" aria-labelledby="videos-heading">
+          <h2 id="videos-heading">Video highlights</h2>
+          <p class="lead">
+            Embed selected recordings or short highlight reels here. You can use cut segments from the livestream
+            (saved as new YouTube videos) or separate uploads with consented talks.
+          </p>
+
+          <div class="video-grid">
+            <!-- Replace the YouTube IDs below with your own highlight / talk videos -->
+            <article class="video-card">
+              <div class="video-frame">
+                <iframe
+                  src="https://www.youtube.com/embed/VIDEO_ID_1"
+                  title="Pleural Seminar 2025 – Highlights reel"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                ></iframe>
+              </div>
+              <div class="video-meta">
+                <div class="video-meta-title">Highlights reel</div>
+                <p class="video-meta-text">
+                  A short cut of key moments from the day — room shots, faculty introductions and snippets from sessions.
+                </p>
+              </div>
+            </article>
+
+            <article class="video-card">
+              <div class="video-frame">
+                <iframe
+                  src="https://www.youtube.com/embed/VIDEO_ID_2"
+                  title="Pleural Seminar 2025 – Selected talk"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                ></iframe>
+              </div>
+              <div class="video-meta">
+                <div class="video-meta-title">Featured talk</div>
+                <p class="video-meta-text">
+                  Use this slot for a single fully consented talk that you’d like to highlight for people who couldn’t attend.
+                </p>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Mobile drawer for sidebar -->
+    <div class="drawer" id="mobileDrawer" aria-hidden="true">
+      <aside class="sidebar" aria-label="Mobile navigation">
+        <div class="sb-header">
+          <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
+          <div class="brand">Pleural Seminar Wales 2025</div>
+        </div>
+        <nav class="sb" aria-label="Main navigation">
+          <a href="index.html">Home</a>
+          <a href="agenda.html">Agenda</a>
+          <a href="venue.html">Venue</a>
+          <a href="posters.html">Posters</a>
+          <a href="feedback.html">Feedback</a>
+          <a href="faculty.html">Faculty</a>
+          <a href="about.html">About</a>
+        </nav>
+      </aside>
+    </div>
+    <div class="backdrop" id="backdrop"></div>
+  </div>
+
+  <div class="lightbox" id="lightbox" aria-modal="true" role="dialog">
+    <div class="lightbox-inner">
+      <button class="lightbox-close" type="button" id="lightboxClose">Close</button>
+      <img src="" alt="" id="lightboxImage">
+      <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+  </div>
+
+  <script>
+    // Mobile drawer logic
+    (function () {
+      const openBtn = document.getElementById('openMenu');
+      const drawer = document.getElementById('mobileDrawer');
+      const backdrop = document.getElementById('backdrop');
+
+      if (!openBtn || !drawer || !backdrop) return;
+
+      function openDrawer() {
+        drawer.classList.add('open');
+        backdrop.classList.add('open');
+        drawer.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeDrawer() {
+        drawer.classList.remove('open');
+        backdrop.classList.remove('open');
+        drawer.setAttribute('aria-hidden', 'true');
+      }
+
+      openBtn.addEventListener('click', openDrawer);
+      backdrop.addEventListener('click', closeDrawer);
+      window.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeDrawer();
+      });
+    })();
+
+    // Simple lightbox for gallery images
+    (function () {
+      const grid = document.getElementById('galleryGrid');
+      const lightbox = document.getElementById('lightbox');
+      const img = document.getElementById('lightboxImage');
+      const caption = document.getElementById('lightboxCaption');
+      const closeBtn = document.getElementById('lightboxClose');
+
+      if (!grid || !lightbox || !img || !caption || !closeBtn) return;
+
+      function open(src, altText, capText) {
+        img.src = src;
+        img.alt = altText || '';
+        caption.textContent = capText || altText || '';
+        lightbox.classList.add('open');
+      }
+
+      function close() {
+        lightbox.classList.remove('open');
+        img.src = '';
+        img.alt = '';
+        caption.textContent = '';
+      }
+
+      grid.addEventListener('click', function (e) {
+        const target = e.target;
+        if (!(target instanceof HTMLElement)) return;
+        if (target.tagName.toLowerCase() === 'img') {
+          const figure = target.closest('.gallery-item');
+          const capText = figure ? figure.getAttribute('data-caption') : '';
+          open(target.src, target.alt, capText);
+        }
+      });
+
+      closeBtn.addEventListener('click', close);
+      lightbox.addEventListener('click', function (e) {
+        if (e.target === lightbox) close();
+      });
+      window.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') close();
+      });
+    })();
+  </script>
+</body>
+</html>
