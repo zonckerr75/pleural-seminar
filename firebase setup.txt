@@ -1,0 +1,7 @@
+const firebaseConfig = {
+    apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+    authDomain: "pleural-seminar-2025.firebaseapp.com",
+    projectId: "pleural-seminar-2025",
+    storageBucket: "pleural-seminar-2025.appspot.com",
+    messagingSenderId: "914784082205",
+    appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"

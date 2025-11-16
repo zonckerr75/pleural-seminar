@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pleural Seminar Wales 2025 — Home</title>
+  <meta name="color-scheme" content="dark">
+  <style>
+    :root{--bg:#0b1320;--panel:#0f172a;--fg:#e5e7eb;--muted:#94a3b8;--accent:#22c55e;--border:#1f2937}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
+
+    /* Layout */
+    .app{display:flex;min-height:100dvh}
+    .sidebar{width:264px;background:var(--panel);border-right:1px solid var(--border);position:sticky;top:0;align-self:flex-start;height:100dvh;overflow:auto}
+    .content{flex:1;min-width:0}
+
+    /* Sidebar */
+    .sb-header{display:flex;align-items:center;gap:.75rem;padding:16px 18px;border-bottom:1px solid var(--border)}
+    .sb-header img{height:36px;width:auto;display:block}
+    .brand{font-weight:600;letter-spacing:.2px}
+    nav.sb{display:flex;flex-direction:column;padding:10px}
+    nav.sb a{color:var(--fg);text-decoration:none;padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:.6rem}
+    nav.sb a:hover{background:#0b1226}
+    nav.sb a.active{background:#0c1b31;outline:1px solid #16233f}
+
+    /* Top mobile bar */
+    .topbar{display:none;position:sticky;top:0;z-index:999;background:var(--panel);border-bottom:1px solid var(--border);padding:10px 14px;align-items:center;gap:10px}
+    .hamburger{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer}
+    .hamburger:focus{outline:2px solid #1e3a8a}
+    .topbar .title{font-weight:600}
+
+    /* Hero */
+    .hero{position:relative;padding:56px 24px 28px;background:linear-gradient(180deg,rgba(24,37,67,.6),rgba(11,19,32,0));border-bottom:1px solid var(--border)}
+    .hero-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center}
+    .hero img.logo{max-width:120px;height:auto}
+    .hero h1{margin:0;font-size:28px}
+    .hero p{margin:.25rem 0 0;color:var(--muted)}
+
+    /* Main content */
+    .container{max-width:1100px;margin:0 auto;padding:24px}
+    .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px}
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(12,1fr)}
+    .col-6{grid-column:span 6}
+    .col-12{grid-column:span 12}
+
+    /* Backdrop + drawer (mobile) */
+    .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:1000}
+    .backdrop.show{opacity:1;pointer-events:auto}
+    .drawer{position:fixed;inset:0;display:none;z-index:1000}
+    .drawer.open{display:flex}
+    .drawer[hidden]{display:none !important}
+    @media (min-width: 901px){ .drawer{display:none !important} }
+    .drawer .sidebar{transform:translateX(-100%);transition:transform .2s ease;position:relative;z-index:1001}
+    .drawer.open .sidebar{transform:translateX(0)}
+
+    /* Responsive */
+    @media (max-width: 900px){
+      /* Hide only the DESKTOP sidebar, not the mobile drawer's sidebar */
+      .app > .sidebar{display:none}
+      .topbar{display:flex}
+      .content{width:100%}
+      .hero-inner{grid-template-columns:80px 1fr}
+      .hero img.logo{max-width:80px}
+      .grid{grid-template-columns:1fr}
+      .col-6,.col-12{grid-column:1/-1}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Desktop sidebar -->
+    <aside class="sidebar" aria-label="Primary">
+      <div class="sb-header">
+        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
+        <div class="brand">Pleural Seminar Wales 2025</div>
+      </div>
+      <nav class="sb" aria-label="Main navigation">
+        <a href="index.html" class="active">Home</a>
+        <a href="agenda.html">Agenda</a>
+        <a href="venue.html">Venue</a>
+        <a href="posters.html">Posters</a>
+        <a href="feedback-info.html">Feedback</a>
+        <a href="faculty.html">Faculty</a>
+        <a href="about.html">About</a>
+      </nav>
+    </aside>
+
+    <!-- Content area -->
+    <div class="content">
+      <!-- Mobile top bar -->
+      <div class="topbar">
+        
+	<button class="hamburger" id="openMenu"
+        	aria-label="Open menu" aria-controls="mobileDrawer"
+        	aria-expanded="false" type="button"
+        	onclick="window.__openDrawer && window.__openDrawer()"
+        	style="color:#22c55e;">☰</button>
+
+
+
+        <span class="title">Pleural Seminar Wales 2025</span>
+      </div>
+
+      <!-- Hero -->
+      <section class="hero" role="banner">
+        <div class="hero-inner">
+          <img class="logo" src="/assets/branding/logo-txt.png" alt="Pleural Seminar Wales 2025" />
+          <div>
+            <h1>Pleural Seminar Wales 2025</h1>
+            <p>Wales Pleural Group </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Page content -->
+      <main class="container" id="main">
+        <div class="grid">
+          <div class="col-6">
+            <div class="card">
+              <h2 style="margin-top:0">Welcome</h2>
+              <p>Welcome to the Pleural Seminar Wales 2025.
+This meeting brings together clinicians, nurses, and allied health professionals to discuss real-world challenges and evidence-based approaches to pleural disease.
+We hope today offers valuable insights and fosters new collaborations..</p>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="card">
+              <h2 style="margin-top:0">Quick links</h2>
+              <ul>
+                <li><a href="agenda.html">Agenda</a></li>
+		<li><a href="posters.html">Poster Gallery</a></li>
+                <li><a href="faculty.html">Faculty area</a></li>
+		<li><a href="about.html">About</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card">
+              <h3 style="margin-top:0">Venue & Housekeeping</h3>
+              <p>See <a href="venue.html">Venue</a> for getting here, Wi‑Fi, parking, catering etc.</p>
+            </div>
+          </div>
+        </div>
+
+<div class="col-12">
+  <div class="card" id="livestream">
+    <h3 style="margin-top:0">🔴 Live Stream</h3>
+    <p class="muted">Watch the Pleural Seminar sessions live here on the day of the event.</p>
+
+    <!-- Player container -->
+    <div id="streamBox" style="position:relative;aspect-ratio:16/9;border:1px solid var(--border);border-radius:12px;overflow:hidden;min-height:300px;display:flex;align-items:center;justify-content:center;">
+      <div id="placeholder" style="text-align:center;color:var(--muted);">
+        <p style="font-size:1.1rem;">The live stream isn’t active yet.</p>
+        <p>It will appear here once the session begins.</p>
+      </div>
+    </div>
+
+    <p class="muted" style="margin-top:8px">
+      If the player does not load, <a href="#" id="ytFallback">open the stream on YouTube</a>.
+    </p>
+  </div>
+</div>
+
+<script>
+  // --- Toggle live stream here ---
+  // When ready, set window.PSW_LIVE_ID = 'YOUR_YOUTUBE_ID';
+  window.PSW_LIVE_ID = "lU8DdVlm77I"; // leave empty until live
+
+  const box = document.getElementById("streamBox");
+  const placeholder = document.getElementById("placeholder");
+  const ytFallback = document.getElementById("ytFallback");
+
+  if (window.PSW_LIVE_ID) {
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://www.youtube.com/embed/${window.PSW_LIVE_ID}`;
+    iframe.title = "Pleural Seminar Wales 2025 Live Stream";
+    iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    iframe.allowFullscreen = true;
+    iframe.style.cssText = "width:100%;height:100%;border:0;";
+    box.innerHTML = "";
+    box.appendChild(iframe);
+    ytFallback.href = `https://www.youtube.com/watch?v=${window.PSW_LIVE_ID}`;
+  } else {
+    ytFallback.href = "#";
+  }
+</script>
+
+
+
+
+
+
+      </main>
+    </div>
+  </div>
+
+
+  <!-- Mobile drawer markup (hidden on desktop) -->
+  <div class="drawer" id="mobileDrawer" aria-hidden="true" hidden>
+    <aside class="sidebar" role="dialog" aria-label="Mobile menu">
+      <div class="sb-header">
+        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
+        <div class="brand">Pleural Seminar Wales 2025</div>
+      </div>
+      <nav class="sb" aria-label="Mobile navigation">
+        <a href="index.html">Home</a>
+        <a href="agenda.html">Agenda</a>
+        <a href="venue.html">Venue</a>
+        <a href="posters.html">Posters</a>
+        <a href="feedback-info.html">Feedback</a>
+        <a href="faculty.html">Faculty</a>
+        <a href="about.html">About</a>
+      </nav>
+    </aside>
+    <div class="backdrop" id="backdrop"></div>
+  </div>
+
+  <script>
+    (function(){
+      const openBtn = document.getElementById('openMenu');
+      const drawer = document.getElementById('mobileDrawer');
+      const backdrop = document.getElementById('backdrop');
+      if(!openBtn || !drawer || !backdrop){ return; }
+      let lastFocus = null;
+
+      function openDrawer(){
+        lastFocus = document.activeElement;
+        drawer.hidden = false; // ensure display can toggle
+        drawer.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        openBtn.setAttribute('aria-expanded','true');
+        drawer.setAttribute('aria-hidden','false');
+        backdrop.classList.add('show');
+      }
+      function closeDrawer(){
+        drawer.classList.remove('open');
+        backdrop.classList.remove('show');
+        document.body.style.overflow = '';
+        openBtn.setAttribute('aria-expanded','false');
+        drawer.setAttribute('aria-hidden','true');
+        // hide after animation
+        setTimeout(()=>{ drawer.hidden = true; }, 200);
+        if(lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+      }
+
+      // expose for inline fallback
+      window.__openDrawer = openDrawer;
+
+      // open/close handlers
+      openBtn.addEventListener('click', openDrawer);
+      openBtn.addEventListener('touchstart', openDrawer, {passive:true});
+      backdrop.addEventListener('click', closeDrawer);
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDrawer(); });
+      // Close drawer on link click (allow navigation)
+      drawer.querySelectorAll('a').forEach(a=>{
+        a.addEventListener('click', ()=>{ closeDrawer(); });
+      });
+    })();
+  </script>
+</body>
+</html>
+
+<!-- rebuild -->
