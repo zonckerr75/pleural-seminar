@@ -1,672 +1,412 @@
+
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <title>Gallery — Pleural Seminar Wales 2025</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Highlights — Pleural Seminar Wales 2025</title>
-  <meta name="color-scheme" content="dark" />
   <style>
-    :root{
+    :root {
       --bg:#0b1320;
       --panel:#0f172a;
       --fg:#e5e7eb;
       --muted:#94a3b8;
       --accent:#22c55e;
       --border:#1f2937;
+      --accent-soft:rgba(34,197,94,0.12);
     }
 
-    *,
-    *::before,
-    *::after{
-      box-sizing:border-box;
-    }
+    * { box-sizing:border-box; }
 
-    html,body{
+    html, body {
       height:100%;
-    }
-
-    body{
       margin:0;
-      background:var(--bg);
+      padding:0;
+    }
+
+    body {
+      background:radial-gradient(circle at top,#111827 0,#020617 55%);
       color:var(--fg);
-      font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
-    }
-
-    .app{
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
       display:flex;
-      min-height:100dvh;
     }
 
-    /* Sidebar (desktop) */
-    .sidebar{
-      width:264px;
-      background:var(--panel);
+    .layout {
+      display:flex;
+      min-height:100vh;
+      width:100%;
+    }
+
+    .sidebar {
+      width:260px;
+      background:rgba(15,23,42,0.96);
       border-right:1px solid var(--border);
+      padding:1.5rem 1.25rem;
       position:sticky;
       top:0;
       align-self:flex-start;
-      height:100dvh;
-      overflow:auto;
     }
 
-    .sb-header{
+    .logo {
       display:flex;
       align-items:center;
       gap:.75rem;
-      padding:16px 18px;
-      border-bottom:1px solid var(--border);
+      margin-bottom:2rem;
     }
 
-    .sb-header img{
-      height:36px;
-      width:auto;
-      display:block;
-    }
-
-    .brand{
-      font-weight:600;
-      letter-spacing:.2px;
-    }
-
-    nav.sb{
+    .logo-mark {
+      width:34px;
+      height:34px;
+      border-radius:999px;
+      background:radial-gradient(circle at 30% 0,#4ade80 0,#22c55e 40%,#16a34a 70%,#0f766e 100%);
       display:flex;
-      flex-direction:column;
-      padding:10px;
-    }
-
-    nav.sb a{
-      color:var(--fg);
-      text-decoration:none;
-      padding:10px 14px;
-      border-radius:10px;
-      display:flex;
-      align-items:center;
-      gap:.6rem;
-      font-size:.95rem;
-    }
-
-    nav.sb a:hover{
-      background:#0b1226;
-    }
-
-    nav.sb a.active{
-      background:#0c1b31;
-      outline:1px solid #16233f;
-    }
-
-    /* Content area */
-    .content{
-      flex:1;
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-    }
-
-    /* Mobile top bar */
-    .topbar{
-      display:none;
-      position:sticky;
-      top:0;
-      z-index:50;
-      background:var(--panel);
-      border-bottom:1px solid var(--border);
-      padding:10px 14px;
-      align-items:center;
-      gap:10px;
-    }
-
-    .hamburger{
-      display:inline-flex;
       align-items:center;
       justify-content:center;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background:#020617;
-      color:var(--fg);
-      padding:8px;
-      cursor:pointer;
-      font-size:1.1rem;
+      color:#022c22;
+      font-weight:700;
+      font-size:1.15rem;
+      box-shadow:0 0 0 1px rgba(34,197,94,0.5),0 18px 35px rgba(15,118,110,0.6);
     }
 
-    .hamburger:focus{
-      outline:2px solid #1e3a8a;
-      outline-offset:2px;
-    }
-
-    .topbar .title{
-      font-weight:600;
-      font-size:.98rem;
-    }
-
-    /* Page layout */
-    .main{
-      padding:24px 32px 40px;
-      max-width:1200px;
-      margin:0 auto;
-    }
-
-    .page-header{
-      margin-bottom:24px;
-    }
-
-    .page-kicker{
+    .logo-text h1 {
+      font-size:1rem;
+      letter-spacing:.08em;
       text-transform:uppercase;
-      letter-spacing:.18em;
-      font-size:.72rem;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-
-    .page-header h1{
-      margin:0 0 8px;
-      font-size:1.8rem;
-    }
-
-    .page-header p{
       margin:0;
-      color:var(--muted);
-      max-width:600px;
-      font-size:.95rem;
     }
 
-    .pill-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:14px;
-    }
-
-    .pill{
-      border-radius:999px;
-      border:1px solid var(--border);
-      padding:4px 10px;
+    .logo-text p {
+      margin:.1rem 0 0;
       font-size:.75rem;
       color:var(--muted);
     }
 
-    .pill--accent{
-      border-color:var(--accent);
-      color:var(--accent);
+    nav {
+      display:flex;
+      flex-direction:column;
+      gap:.35rem;
+      margin-top:.5rem;
     }
 
-    /* Sections */
-    .section{
-      margin-top:32px;
-      padding:20px 18px 22px;
-      background:rgba(15,23,42,.9);
-      border-radius:16px;
-      border:1px solid rgba(148,163,184,.25);
-    }
-
-    .section h2{
-      margin:0 0 4px;
-      font-size:1.1rem;
-    }
-
-    .section p.lead{
-      margin:0 0 16px;
+    .nav-section-title {
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:.68rem;
       color:var(--muted);
-      font-size:.9rem;
+      margin:.75rem 0 .25rem;
     }
 
-    .two-col{
-      display:grid;
-      grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);
-      gap:18px;
-    }
-
-    .meta-list{
-      list-style:none;
-      padding:0;
-      margin:0;
-      font-size:.9rem;
-    }
-
-    .meta-list li{
-      padding:4px 0;
+    .nav-link {
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+      padding:.45rem .6rem;
+      border-radius:.6rem;
       color:var(--muted);
-    }
-
-    .meta-list strong{
-      color:var(--fg);
-      font-weight:500;
-    }
-
-    /* Gallery grid */
-    .gallery-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:12px;
-      margin-top:12px;
-    }
-
-    .gallery-item{
-      position:relative;
-      border-radius:14px;
-      overflow:hidden;
-      border:1px solid rgba(15,23,42,.9);
-      background:#020617;
+      text-decoration:none;
+      font-size:.9rem;
+      border:1px solid transparent;
+      transition:background .15s ease,border-color .15s ease,color .15s ease,transform .1s ease;
       cursor:pointer;
     }
 
-    .gallery-item img{
-      display:block;
-      width:100%;
-      height:160px;
-      object-fit:cover;
-      transition:transform .2s ease, opacity .2s ease;
-    }
-
-    .gallery-item:hover img{
-      transform:scale(1.05);
+    .nav-link span.icon {
+      width:1.1rem;
+      text-align:center;
+      font-size:1rem;
       opacity:.9;
     }
 
-    .gallery-caption{
-      position:absolute;
-      inset:auto 0 0;
-      padding:8px 10px;
-      background:linear-gradient(to top,rgba(15,23,42,.9),transparent);
-      font-size:.78rem;
+    .nav-link:hover {
+      background:rgba(15,23,42,0.9);
+      border-color:rgba(148,163,184,0.35);
       color:var(--fg);
+      transform:translateY(-1px);
     }
 
-    /* Video cards */
-    .video-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-      gap:16px;
-      margin-top:12px;
+    .nav-link.active {
+      background:linear-gradient(to right,rgba(34,197,94,0.16),rgba(34,197,94,0.04));
+      border-color:rgba(34,197,94,0.9);
+      color:#bbf7d0;
+      box-shadow:0 0 0 1px rgba(34,197,94,0.35),0 18px 40px rgba(22,163,74,0.45);
     }
 
-    .video-card{
-      border-radius:16px;
-      border:1px solid rgba(148,163,184,.25);
-      background:#020617;
-      padding:10px 10px 14px;
+    .nav-link.active span.icon {
+      color:#4ade80;
+    }
+
+    .main {
+      flex:1;
+      padding:2rem 3vw 3rem;
+      max-width:1200px;
+      margin:0 auto;
       display:flex;
       flex-direction:column;
-      gap:8px;
     }
 
-    .video-frame{
-      position:relative;
-      padding-top:56.25%;
-      border-radius:12px;
-      overflow:hidden;
-      background:#020617;
+    .page-header {
+      display:flex;
+      flex-direction:column;
+      gap:.5rem;
+      margin-bottom:2rem;
     }
 
-    .video-frame iframe{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      border:0;
-    }
-
-    .video-meta-title{
-      font-size:.95rem;
-      font-weight:500;
-    }
-
-    .video-meta-text{
-      margin:0;
-      font-size:.82rem;
+    .page-kicker {
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-size:.68rem;
       color:var(--muted);
     }
 
-    /* Lightbox */
-    .lightbox{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.94);
-      display:none;
+    .page-title {
+      font-size:1.7rem;
+      font-weight:600;
+      letter-spacing:.03em;
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+    }
+
+    .page-subtitle {
+      color:var(--muted);
+      max-width:44rem;
+      font-size:.9rem;
+    }
+
+    .pill {
+      background:rgba(15,23,42,0.9);
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      padding:.2rem .7rem;
+      font-size:.7rem;
+      text-transform:uppercase;
+      letter-spacing:.17em;
+      color:var(--muted);
+    }
+
+    .gallery-chooser {
+      flex:1;
+      display:flex;
       align-items:center;
       justify-content:center;
-      z-index:1000;
     }
 
-    .lightbox.open{
+    .chooser-inner {
+      background:rgba(15,23,42,0.96);
+      border-radius:1.3rem;
+      border:1px solid rgba(15,23,42,0.95);
+      padding:2.2rem 2.5rem;
+      max-width:640px;
+      width:100%;
+      box-shadow:0 22px 55px rgba(15,23,42,0.9);
+      text-align:center;
+      animation:fadeUp 0.5s ease-out;
+    }
+
+    .chooser-title {
+      font-size:1.1rem;
+      margin-bottom:.4rem;
+    }
+
+    .chooser-text {
+      font-size:.9rem;
+      color:var(--muted);
+      margin-bottom:1.2rem;
+    }
+
+    .chooser-buttons {
       display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:1rem;
+      margin-top:1rem;
     }
 
-    .lightbox-inner{
-      max-width:min(90vw,1100px);
-      max-height:90vh;
+    .cta-btn {
       position:relative;
-    }
-
-    .lightbox img{
-      max-width:100%;
-      max-height:100%;
-      display:block;
-      border-radius:16px;
-      border:1px solid rgba(148,163,184,.5);
-    }
-
-    .lightbox-close{
-      position:absolute;
-      top:-40px;
-      right:0;
-      background:#020617;
-      color:var(--fg);
+      min-width:180px;
+      padding:.85rem 1.6rem;
       border-radius:999px;
-      border:1px solid var(--border);
-      padding:4px 10px;
-      font-size:.8rem;
+      border:none;
       cursor:pointer;
+      font-size:.95rem;
+      font-weight:600;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+      color:#ecfdf5;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:.45rem;
+      background:linear-gradient(145deg,#16a34a,#22c55e,#4ade80);
+      box-shadow:
+        0 18px 35px rgba(22,163,74,0.7),
+        inset 0 1px 0 rgba(255,255,255,0.35);
+      transform:translateY(0);
+      transition:
+        box-shadow .18s ease,
+        transform .18s ease,
+        filter .18s ease;
     }
 
-    .lightbox-caption{
-      margin-top:6px;
+    .cta-btn::before {
+      content:"";
+      position:absolute;
+      inset:1px 1px auto;
+      height:45%;
+      border-radius:inherit;
+      background:linear-gradient(to bottom,rgba(255,255,255,0.5),rgba(255,255,255,0.02));
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .cta-btn.secondary {
+      background:linear-gradient(145deg,#0ea5e9,#22d3ee,#38bdf8);
+      box-shadow:
+        0 18px 35px rgba(37,99,235,0.7),
+        inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+
+    .cta-btn span.icon {
+      font-size:1.1rem;
+    }
+
+    .cta-btn:hover {
+      transform:translateY(-3px);
+      box-shadow:
+        0 24px 45px rgba(22,163,74,0.95),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+      filter:brightness(1.05);
+    }
+
+    .cta-btn.secondary:hover {
+      box-shadow:
+        0 24px 45px rgba(37,99,235,0.95),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+    }
+
+    .cta-btn:active {
+      transform:translateY(-1px);
+      box-shadow:
+        0 12px 25px rgba(22,163,74,0.8),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+      filter:brightness(0.98);
+    }
+
+    .cta-btn.secondary:active {
+      box-shadow:
+        0 12px 25px rgba(37,99,235,0.8),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+
+    .hint-line {
+      margin-top:1.4rem;
       font-size:.8rem;
       color:var(--muted);
-      text-align:right;
     }
 
-    /* Drawer (mobile sidebar) */
-    .drawer{
-      display:none;
+    .hint-line span {
+      color:#4ade80;
     }
 
-    .backdrop{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.7);
-      opacity:0;
-      pointer-events:none;
-      transition:opacity .2s ease;
-      z-index:40;
+    @keyframes fadeUp {
+      from {
+        opacity:0;
+        transform:translateY(10px);
+      }
+      to {
+        opacity:1;
+        transform:translateY(0);
+      }
     }
 
-    .backdrop.open{
-      opacity:1;
-      pointer-events:auto;
-    }
-
-    .drawer .sidebar{
-      transform:translateX(-100%);
-      transition:transform .2s ease;
-      position:fixed;
-      inset:0 auto 0 0;
-      z-index:50;
-    }
-
-    .drawer.open .sidebar{
-      transform:translateX(0);
-    }
-
-    @media (max-width: 900px){
-      .app > .sidebar{
+    @media (max-width:900px) {
+      .sidebar {
         display:none;
       }
-      .topbar{
-        display:flex;
+      .main {
+        padding:1.5rem 1.25rem 2.5rem;
       }
-      .content{
-        width:100%;
+      .chooser-inner {
+        padding:1.7rem 1.4rem 2rem;
       }
-      .main{
-        padding:16px 18px 28px;
-      }
-      .two-col{
-        grid-template-columns:1fr;
+      .chooser-buttons {
+        flex-direction:column;
       }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <!-- Desktop sidebar -->
-    <aside class="sidebar" aria-label="Primary">
-      <div class="sb-header">
-        <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
-        <div class="brand">Pleural Seminar Wales 2025</div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-mark">P</div>
+        <div class="logo-text">
+          <h1>Pleural Seminar</h1>
+          <p>Wales · 2025</p>
+        </div>
       </div>
-      <nav class="sb" aria-label="Main navigation">
-        <a href="index.html">Home</a>
-        <a href="agenda.html">Agenda</a>
-        <a href="venue.html">Venue</a>
-        <a href="posters.html">Posters</a>
-        <a href="feedback.html">Feedback</a>
-        <a href="faculty.html">Faculty</a>
-        <a href="about.html">About</a>
-      </nav>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Navigate</div>
+        <a href="index.html" class="nav-link">
+          <span class="icon">🏠</span>
+          <span>Overview</span>
+        </a>
+        <a href="agenda.html" class="nav-link">
+          <span class="icon">🗓</span>
+          <span>Agenda</span>
+        </a>
+        <a href="faculty.html" class="nav-link">
+          <span class="icon">👩‍⚕️</span>
+          <span>Faculty</span>
+        </a>
+        <a href="gallery.html" class="nav-link active">
+          <span class="icon">🖼</span>
+          <span>Gallery</span>
+        </a>
+      </div>
     </aside>
 
-    <!-- Content area -->
-    <div class="content">
-      <!-- Mobile top bar -->
-      <div class="topbar">
-        <button class="hamburger" id="openMenu" aria-label="Open navigation menu">☰</button>
-        <span class="title">Pleural Seminar Wales 2025</span>
-      </div>
-
-      <main class="main">
-        <header class="page-header">
-          <div class="page-kicker">2025 highlights</div>
-          <h1>Seminar Highlights &amp; Gallery</h1>
-          <p>
-            A look back at Pleural Seminar Wales 2025 — from morning lectures and case discussions
-            to posters, hands-on conversations and end-of-day smiles.
-          </p>
-          <div class="pill-row">
-            <span class="pill pill--accent">Parkway Hotel &amp; Spa, Cwmbran</span>
-            <span class="pill">Live meeting &amp; livestream</span>
-            <span class="pill">Photos &amp; video highlights</span>
-          </div>
-        </header>
-
-        <section class="section" aria-labelledby="overview-heading">
-          <div class="two-col">
-            <div>
-              <h2 id="overview-heading">A day in snapshots</h2>
-              <p class="lead">
-                A few random photos showcasing the day at Pleural Seminar Wales 2025
-              </p>
-              <p class="lead">
-                Individual talks by our presenters on the day are available further down the page
-              </p>
-            </div>
-            <div>
-              <ul class="meta-list">
-                <li><strong>Date:</strong> 14 November 2025</li>
-                <li><strong>Venue:</strong> Parkway Hotel &amp; Spa, Wentwood Suite</li>
-                <li><strong>Format:</strong> Whole-day meeting with live stream &amp; on-site audience</li>
-                <li><strong>Sessions:</strong> Keynote lectures, case presentations, poster walk-round</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="section" aria-labelledby="photos-heading">
-          <h2 id="photos-heading">Photo highlights</h2>
-          <p class="lead">
-            Drop your favourite images into <code>assets/gallery/</code>, then update the filenames below.
-            Click any photo to view it larger; use this space for room shots, speakers, posters, and group photos.
-          </p>
-
-          <div class="gallery-grid" id="galleryGrid">
-            <!-- Example placeholders – replace src values with your own files -->
-            <figure class="gallery-item" data-caption="Morning registration &amp; arrivals">
-              <img src="assets/gallery/photo1.jpg" alt="Delegates arriving and registering" loading="lazy">
-              <figcaption class="gallery-caption">Morning registration &amp; arrivals</figcaption>
-            </figure>
-
-            <figure class="gallery-item" data-caption="Opening session in the Wentwood Suite">
-              <img src="assets/gallery/photo2.jpg" alt="Opening plenary session in the main room" loading="lazy">
-              <figcaption class="gallery-caption">Opening session in the Wentwood Suite</figcaption>
-            </figure>
-
-            <figure class="gallery-item" data-caption="Case presentations and discussion">
-              <img src="assets/gallery/photo3.jpg" alt="Case presentation with audience discussion" loading="lazy">
-              <figcaption class="gallery-caption">Case presentations &amp; discussion</figcaption>
-            </figure>
-
-            <figure class="gallery-item" data-caption="Poster viewing &amp; informal conversations">
-              <img src="assets/gallery/photo4.jpg" alt="Delegates viewing posters and talking" loading="lazy">
-              <figcaption class="gallery-caption">Poster viewing &amp; informal conversations</figcaption>
-            </figure>
-
-            <figure class="gallery-item" data-caption="Faculty &amp; organising team">
-              <img src="assets/gallery/photo5.jpg" alt="Group photo of faculty and organisers" loading="lazy">
-              <figcaption class="gallery-caption">Faculty &amp; organising team</figcaption>
-            </figure>
-
-            <figure class="gallery-item" data-caption="End-of-day reflections">
-              <img src="assets/gallery/photo6.jpg" alt="Delegates at the end of the meeting" loading="lazy">
-              <figcaption class="gallery-caption">End-of-day reflections</figcaption>
-            </figure>
-          </div>
-        </section>
-
-        <section class="section" aria-labelledby="videos-heading">
-          <h2 id="videos-heading">Video highlights</h2>
-          <p class="lead">
-            Embed selected recordings or short highlight reels here. You can use cut segments from the livestream
-            (saved as new YouTube videos) or separate uploads with consented talks.
-          </p>
-
-          <div class="video-grid">
-            <!-- Replace the YouTube IDs below with your own highlight / talk videos -->
-            <article class="video-card">
-              <div class="video-frame">
-                <iframe
-                  src="https://www.youtube.com/embed/VIDEO_ID_1"
-                  title="Pleural Seminar 2025 – Highlights reel"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen
-                ></iframe>
-              </div>
-              <div class="video-meta">
-                <div class="video-meta-title">Highlights reel</div>
-                <p class="video-meta-text">
-                  A short cut of key moments from the day — room shots, faculty introductions and snippets from sessions.
-                </p>
-              </div>
-            </article>
-
-            <article class="video-card">
-              <div class="video-frame">
-                <iframe
-                  src="https://www.youtube.com/embed/VIDEO_ID_2"
-                  title="Pleural Seminar 2025 – Selected talk"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen
-                ></iframe>
-              </div>
-              <div class="video-meta">
-                <div class="video-meta-title">Featured talk</div>
-                <p class="video-meta-text">
-                  Use this slot for a single fully consented talk that you’d like to highlight for people who couldn’t attend.
-                </p>
-              </div>
-            </article>
-          </div>
-        </section>
-      </main>
-    </div>
-
-    <!-- Mobile drawer for sidebar -->
-    <div class="drawer" id="mobileDrawer" aria-hidden="true">
-      <aside class="sidebar" aria-label="Mobile navigation">
-        <div class="sb-header">
-          <img src="/assets/branding/logo.png" alt="Pleural Seminar logo">
-          <div class="brand">Pleural Seminar Wales 2025</div>
+    <main class="main">
+      <header class="page-header">
+        <div class="page-kicker">Pleural Seminar Wales 2025</div>
+        <div class="page-title">
+          Gallery
+          <span class="pill">Photos &amp; videos</span>
         </div>
-        <nav class="sb" aria-label="Main navigation">
-          <a href="index.html">Home</a>
-          <a href="agenda.html">Agenda</a>
-          <a href="venue.html">Venue</a>
-          <a href="posters.html">Posters</a>
-          <a href="feedback.html">Feedback</a>
-          <a href="faculty.html">Faculty</a>
-          <a href="about.html">About</a>
-        </nav>
-      </aside>
-    </div>
-    <div class="backdrop" id="backdrop"></div>
+        <div class="page-subtitle">
+          Choose what you’d like to explore from the day. You can browse photos in a full-screen gallery view,
+          or watch recorded sessions once they’re available.
+        </div>
+      </header>
+
+      <section class="gallery-chooser">
+        <div class="chooser-inner">
+          <div class="chooser-title">What would you like to view?</div>
+          <div class="chooser-text">
+            Select <strong>Photos</strong> for still images from the day, or <strong>Videos</strong> to access talk recordings
+            and other media when they’re published.
+          </div>
+
+          <div class="chooser-buttons">
+            <a href="photos.html" class="cta-btn">
+              <span class="icon">📸</span>
+              <span>View photos</span>
+            </a>
+            <a href="videos.html" class="cta-btn secondary">
+              <span class="icon">▶️</span>
+              <span>View videos</span>
+            </a>
+          </div>
+
+          <div class="hint-line">
+            Tip: <span>Photos</span> open in a swipeable gallery with keyboard and arrow controls.
+          </div>
+        </div>
+      </section>
+    </main>
   </div>
-
-  <div class="lightbox" id="lightbox" aria-modal="true" role="dialog">
-    <div class="lightbox-inner">
-      <button class="lightbox-close" type="button" id="lightboxClose">Close</button>
-      <img src="" alt="" id="lightboxImage">
-      <div class="lightbox-caption" id="lightboxCaption"></div>
-    </div>
-  </div>
-
-  <script>
-    // Mobile drawer logic
-    (function () {
-      const openBtn = document.getElementById('openMenu');
-      const drawer = document.getElementById('mobileDrawer');
-      const backdrop = document.getElementById('backdrop');
-
-      if (!openBtn || !drawer || !backdrop) return;
-
-      function openDrawer() {
-        drawer.classList.add('open');
-        backdrop.classList.add('open');
-        drawer.setAttribute('aria-hidden', 'false');
-      }
-
-      function closeDrawer() {
-        drawer.classList.remove('open');
-        backdrop.classList.remove('open');
-        drawer.setAttribute('aria-hidden', 'true');
-      }
-
-      openBtn.addEventListener('click', openDrawer);
-      backdrop.addEventListener('click', closeDrawer);
-      window.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') closeDrawer();
-      });
-    })();
-
-    // Simple lightbox for gallery images
-    (function () {
-      const grid = document.getElementById('galleryGrid');
-      const lightbox = document.getElementById('lightbox');
-      const img = document.getElementById('lightboxImage');
-      const caption = document.getElementById('lightboxCaption');
-      const closeBtn = document.getElementById('lightboxClose');
-
-      if (!grid || !lightbox || !img || !caption || !closeBtn) return;
-
-      function open(src, altText, capText) {
-        img.src = src;
-        img.alt = altText || '';
-        caption.textContent = capText || altText || '';
-        lightbox.classList.add('open');
-      }
-
-      function close() {
-        lightbox.classList.remove('open');
-        img.src = '';
-        img.alt = '';
-        caption.textContent = '';
-      }
-
-      grid.addEventListener('click', function (e) {
-        const target = e.target;
-        if (!(target instanceof HTMLElement)) return;
-        if (target.tagName.toLowerCase() === 'img') {
-          const figure = target.closest('.gallery-item');
-          const capText = figure ? figure.getAttribute('data-caption') : '';
-          open(target.src, target.alt, capText);
-        }
-      });
-
-      closeBtn.addEventListener('click', close);
-      lightbox.addEventListener('click', function (e) {
-        if (e.target === lightbox) close();
-      });
-      window.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') close();
-      });
-    })();
-  </script>
 </body>
 </html>
