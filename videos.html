@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Videos — Pleural Seminar Wales 2025</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg:#0b1320;
+      --panel:#0f172a;
+      --fg:#e5e7eb;
+      --muted:#94a3b8;
+      --accent:#22c55e;
+      --border:#1f2937;
+    }
+
+    * { box-sizing:border-box; }
+
+    html, body {
+      height:100%;
+      margin:0;
+      padding:0;
+    }
+
+    body {
+      background:radial-gradient(circle at top,#111827 0,#020617 55%);
+      color:var(--fg);
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;
+      display:flex;
+    }
+
+    .layout {
+      display:flex;
+      min-height:100vh;
+      width:100%;
+    }
+
+    .sidebar {
+      width:260px;
+      background:rgba(15,23,42,0.96);
+      border-right:1px solid var(--border);
+      padding:1.5rem 1.25rem;
+      position:sticky;
+      top:0;
+      align-self:flex-start;
+    }
+
+    .logo {
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      margin-bottom:2rem;
+    }
+
+    .logo-mark {
+      width:34px;
+      height:34px;
+      border-radius:999px;
+      background:radial-gradient(circle at 30% 0,#4ade80 0,#22c55e 40%,#16a34a 70%,#0f766e 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#022c22;
+      font-weight:700;
+      font-size:1.15rem;
+      box-shadow:0 0 0 1px rgba(34,197,94,0.5),0 18px 35px rgba(15,118,110,0.6);
+    }
+
+    .logo-text h1 {
+      font-size:1rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin:0;
+    }
+
+    .logo-text p {
+      margin:.1rem 0 0;
+      font-size:.75rem;
+      color:var(--muted);
+    }
+
+    .nav-section-title {
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:.68rem;
+      color:var(--muted);
+      margin:.75rem 0 .25rem;
+    }
+
+    .nav-link {
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+      padding:.45rem .6rem;
+      border-radius:.6rem;
+      color:var(--muted);
+      text-decoration:none;
+      font-size:.9rem;
+      border:1px solid transparent;
+      transition:background .15s ease,border-color .15s ease,color .15s ease,transform .1s ease;
+      cursor:pointer;
+    }
+
+    .nav-link span.icon {
+      width:1.1rem;
+      text-align:center;
+      font-size:1rem;
+      opacity:.9;
+    }
+
+    .nav-link:hover {
+      background:rgba(15,23,42,0.9);
+      border-color:rgba(148,163,184,0.35);
+      color:var(--fg);
+      transform:translateY(-1px);
+    }
+
+    .nav-link.active {
+      background:linear-gradient(to right,rgba(34,197,94,0.16),rgba(34,197,94,0.04));
+      border-color:rgba(34,197,94,0.9);
+      color:#bbf7d0;
+      box-shadow:0 0 0 1px rgba(34,197,94,0.35),0 18px 40px rgba(22,163,74,0.45);
+    }
+
+    .nav-link.active span.icon {
+      color:#4ade80;
+    }
+
+    .main {
+      flex:1;
+      padding:2rem 3vw 3rem;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    .page-header {
+      display:flex;
+      flex-direction:column;
+      gap:.5rem;
+      margin-bottom:1.5rem;
+    }
+
+    .page-kicker {
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-size:.68rem;
+      color:var(--muted);
+    }
+
+    .page-title {
+      font-size:1.6rem;
+      font-weight:600;
+      letter-spacing:.03em;
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+    }
+
+    .page-subtitle {
+      color:var(--muted);
+      max-width:44rem;
+      font-size:.9rem;
+    }
+
+    .pill {
+      background:rgba(15,23,42,0.9);
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.5);
+      padding:.2rem .7rem;
+      font-size:.7rem;
+      text-transform:uppercase;
+      letter-spacing:.17em;
+      color:var(--muted);
+    }
+
+    .videos-panel {
+      background:rgba(15,23,42,0.92);
+      border-radius:1rem;
+      border:1px solid rgba(15,23,42,0.95);
+      box-shadow:0 22px 45px rgba(15,23,42,0.85);
+      padding:1.5rem 1.5rem 2rem;
+    }
+
+    /* New video grid styles */
+    .videos-section {
+      margin-bottom:2.5rem;
+    }
+
+    .videos-section-header {
+      display:flex;
+      flex-direction:column;
+      gap:.25rem;
+      margin-bottom:1rem;
+    }
+
+    .videos-section-title {
+      font-size:1.15rem;
+      font-weight:600;
+      color:var(--fg);
+    }
+
+    .videos-section-subtitle {
+      font-size:.85rem;
+      color:var(--muted);
+    }
+
+    .videos-grid {
+      display:grid;
+      grid-template-columns:1fr;
+      gap:1rem;
+      margin-top:1rem;
+    }
+
+    @media (min-width:768px) {
+      .videos-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+    }
+
+    .video-card {
+      background:rgba(15,23,42,0.96);
+      border:1px solid rgba(148,163,184,0.18);
+      border-radius:1rem;
+      padding:1rem 1.1rem 1.25rem;
+      box-shadow:0 14px 32px rgba(15,23,42,0.9);
+      display:flex;
+      flex-direction:column;
+      gap:.55rem;
+    }
+
+    .video-meta {
+      font-size:.78rem;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      color:var(--muted);
+    }
+
+    .video-title {
+      font-size:1rem;
+      font-weight:600;
+      color:#e5e7eb;
+    }
+
+    .video-speaker {
+      font-size:.86rem;
+      color:#9ca3af;
+    }
+
+    .video-frame {
+      margin-top:.35rem;
+      background:#020617;
+      border-radius:.7rem;
+      border:1px dashed rgba(148,163,184,0.35);
+      color:#64748b;
+      padding:1.1rem;
+      text-align:center;
+      font-size:.85rem;
+      font-style:italic;
+    }
+
+    .case-divider {
+      border:0;
+      border-top:1px solid rgba(148,163,184,0.25);
+      margin:2.1rem 0 1.6rem;
+    }
+
+    @media (max-width:900px) {
+      .sidebar {
+        display:none;
+      }
+      .main {
+        padding:1.5rem 1.25rem 2.5rem;
+      }
+      .videos-panel {
+        padding:1.25rem 1.1rem 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-mark">P</div>
+        <div class="logo-text">
+          <h1>Pleural Seminar</h1>
+          <p>Wales · 2025</p>
+        </div>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-section-title">Navigate</div>
+        <a href="index.html" class="nav-link">
+          <span class="icon">🏠</span>
+          <span>Overview</span>
+        </a>
+        <a href="agenda.html" class="nav-link">
+          <span class="icon">🗓</span>
+          <span>Agenda</span>
+        </a>
+        <a href="faculty.html" class="nav-link">
+          <span class="icon">👩‍⚕️</span>
+          <span>Faculty</span>
+        </a>
+        <a href="gallery.html" class="nav-link active">
+          <span class="icon">🖼</span>
+          <span>Gallery</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="page-header">
+        <div class="page-kicker">Pleural Seminar Wales 2025</div>
+        <div class="page-title">
+          Videos
+          <span class="pill">On-demand library</span>
+        </div>
+        <div class="page-subtitle">
+          Edited recordings from the day.Talks are grouped into the main programme
+          and case presentations.
+        </div>
+      </header>
+
+      <section class="videos-panel">
+
+        <!-- Main programme section -->
+        <div class="videos-section">
+          <div class="videos-section-header">
+            <div class="videos-section-title">Main Programme</div>
+            <div class="videos-section-subtitle">
+              Plenary talks and invited lectures from Pleural Seminar Wales 2025.
+            </div>
+          </div>
+
+          <div class="videos-grid">
+            <!-- 1 -->
+            <div class="video-card">
+              <div class="video-meta">Session 1</div>
+              <div class="video-title">Straight to biopsy?</div>
+              <div class="video-speaker">Prof Naj Rahman</div>
+              
+
+	<div class="video-frame">
+  	<iframe width="100%" height="260"
+   	 src="https://www.youtube.com/embed/01WinhXSzk4"
+    	title="Seminar session"
+    	frameborder="0"
+    	allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    	allowfullscreen></iframe>
+	</div>
+         
+            <!-- 2 -->
+            <div class="video-card">
+              <div class="video-meta">Session 2</div>
+              <div class="video-title">Update in mesothelioma research — HIT-MESO Trial</div>
+              <div class="video-speaker">Dr Paul Shaw</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- 3 -->
+            <div class="video-card">
+              <div class="video-meta">Session 3</div>
+              <div class="video-title">LAT practice in the UK 2024</div>
+              <div class="video-speaker">Richard Westley</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- 4 -->
+            <div class="video-card">
+              <div class="video-meta">Session 4</div>
+              <div class="video-title">Clinical applications of AI</div>
+              <div class="video-speaker">Prof Alan Fraser</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- 5 -->
+            <div class="video-card">
+              <div class="video-meta">Session 5</div>
+              <div class="video-title">Chest drain practice at the Grange University Hospital</div>
+              <div class="video-speaker">Natnael Afesha</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- 6 -->
+            <div class="video-card">
+              <div class="video-meta">Session 6</div>
+              <div class="video-title">Legal aspects in asbestos-related pleural disease</div>
+              <div class="video-speaker">Hayley Hills &amp; Satinder Bains (Irwin Mitchell)</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- 7 -->
+            <div class="video-card">
+              <div class="video-meta">Session 7</div>
+              <div class="video-title">Pleural standards</div>
+              <div class="video-speaker">Dr Alina Ionescu</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- 8 -->
+            <div class="video-card">
+              <div class="video-meta">Session 8</div>
+              <div class="video-title">Thoracic ultrasound training</div>
+              <div class="video-speaker">Dr Alina Ionescu</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- 9 -->
+            <div class="video-card">
+              <div class="video-meta">Session 9</div>
+              <div class="video-title">10 years of Ambulatory Pleural Procedure Service</div>
+              <div class="video-speaker">Dr Narendra Chinnappa</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- 10 -->
+            <div class="video-card">
+              <div class="video-meta">Session 10</div>
+              <div class="video-title">Empyema management</div>
+              <div class="video-speaker">Dr Nora Ramley</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="case-divider" />
+
+        <!-- Case presentations section -->
+        <div class="videos-section">
+          <div class="videos-section-header">
+            <div class="videos-section-title">Case Presentations</div>
+            <div class="videos-section-subtitle">
+              Selected complex and educational cases presented during the afternoon session.
+            </div>
+          </div>
+
+          <div class="videos-grid">
+            <!-- C1 -->
+            <div class="video-card">
+              <div class="video-meta">Case 1</div>
+              <div class="video-title">Serious incident</div>
+              <div class="video-speaker">Sara Davies</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- C2 -->
+            <div class="video-card">
+              <div class="video-meta">Case 2</div>
+              <div class="video-title">What is in the differential?</div>
+              <div class="video-speaker">Sarah Case</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- C3 -->
+            <div class="video-card">
+              <div class="video-meta">Case 3</div>
+              <div class="video-title">What does this milky appearance of pleural fluid hide?</div>
+              <div class="video-speaker">Sion Freeman</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- C4 -->
+            <div class="video-card">
+              <div class="video-meta">Case 4</div>
+              <div class="video-title">An expected pleural finding</div>
+              <div class="video-speaker">Dana Bendajki</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- C5 -->
+            <div class="video-card">
+              <div class="video-meta">Case 5</div>
+              <div class="video-title">On the Rocks — alcohol and its impact on pleural fluid</div>
+              <div class="video-speaker">Alexander Kyriakou-Haniche</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+
+            <!-- C6 -->
+            <div class="video-card">
+              <div class="video-meta">Case 6</div>
+              <div class="video-title">Chest drain needed? Or maybe… not?</div>
+              <div class="video-speaker">Gokul Muthaluraj</div>
+              <div class="video-frame">Video coming soon</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+</body>
+</html>
