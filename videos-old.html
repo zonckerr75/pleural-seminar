@@ -181,6 +181,7 @@
       padding:1.5rem 1.5rem 2rem;
     }
 
+    /* New video grid styles */
     .videos-section {
       margin-bottom:2.5rem;
     }
@@ -249,19 +250,12 @@
       margin-top:.35rem;
       background:#020617;
       border-radius:.7rem;
-      border:1px solid rgba(148,163,184,0.35); /* solid, not dashed */
+      border:1px dashed rgba(148,163,184,0.35);
       color:#64748b;
-      padding:.6rem;
+      padding:1.1rem;
       text-align:center;
       font-size:.85rem;
       font-style:italic;
-    }
-
-    .video-frame iframe {
-      width:100%;
-      height:260px;
-      border:0;
-      border-radius:.55rem;
     }
 
     .case-divider {
@@ -279,9 +273,6 @@
       }
       .videos-panel {
         padding:1.25rem 1.1rem 1.6rem;
-      }
-      .video-frame iframe {
-        height:220px;
       }
     }
   </style>
@@ -326,8 +317,8 @@
           <span class="pill">On-demand library</span>
         </div>
         <div class="page-subtitle">
-          Edited recordings from the day will appear here once available. Talks are grouped into the main programme
-          and case presentations. To publish a video, just replace the placeholder VIDEO_ID in the iframe for that card.
+          Edited recordings from the day.Talks are grouped into the main programme
+          and case presentations.
         </div>
       </header>
 
@@ -348,74 +339,72 @@
               <div class="video-meta">Session 1</div>
               <div class="video-title">Straight to biopsy?</div>
               <div class="video-speaker">Prof Naj Rahman</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_1 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/01WinhXSzk4"
-                  title="Straight to biopsy? — Prof Naj Rahman"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
-            </div>
+              
 
+	<div class="video-frame">
+  	<iframe width="100%" height="260"
+   	 src="https://www.youtube.com/embed/01WinhXSzk4"
+    	title="Seminar session"
+    	frameborder="0"
+    	allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    	allowfullscreen></iframe>
+	</div>
+         
             <!-- 2 -->
             <div class="video-card">
               <div class="video-meta">Session 2</div>
               <div class="video-title">Update in mesothelioma research — HIT-MESO Trial</div>
               <div class="video-speaker">Dr Paul Shaw</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_2 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/VaHPP3jot0g"
-                  title="Update in mesothelioma research — HIT-MESO Trial — Dr Paul Shaw"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
-            </div>
+
+	<div class="video-frame">
+  	<iframe width="100%" height="260"
+   	 src="https://www.youtube.com/embed/VaHPP3jot0g"
+    	title="Seminar session"
+    	frameborder="0"
+    	allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    	allowfullscreen></iframe>
+	</div>
+
+          
 
             <!-- 3 -->
             <div class="video-card">
               <div class="video-meta">Session 3</div>
               <div class="video-title">LAT practice in the UK 2024</div>
               <div class="video-speaker">Richard Westley</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_3 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/HuUPX6sLXd8"
-                  title="LAT practice in the UK 2024 — Richard Westley"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
-            </div>
+
+	<div class="video-frame">
+  	<iframe width="100%" height="260"
+   	 src="https://www.youtube.com/embed/HuUPX6sLXd8
+    	title="Seminar session"
+    	frameborder="0"
+    	allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    	allowfullscreen></iframe>
+	</div>
+
 
             <!-- 4 -->
             <div class="video-card">
               <div class="video-meta">Session 4</div>
               <div class="video-title">Clinical applications of AI</div>
               <div class="video-speaker">Prof Alan Fraser</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_4 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/QfomcYd1j8k"
-                  title="Clinical applications of AI — Prof Alan Fraser"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
-            </div>
+	<div class="video-frame">
+  	<iframe width="100%" height="260"
+   	 src="https://www.youtube.com/embed/QfomcYd1j8k
+    	title="Seminar session"
+    	frameborder="0"
+    	allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    	allowfullscreen></iframe>
+	</div>
+
+
 
             <!-- 5 -->
             <div class="video-card">
               <div class="video-meta">Session 5</div>
               <div class="video-title">Chest drain practice at the Grange University Hospital</div>
               <div class="video-speaker">Natnael Afesha</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_5 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/VIDEO_ID_5"
-                  title="Chest drain practice at the Grange University Hospital — Natnael Afesha"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- 6 -->
@@ -423,14 +412,7 @@
               <div class="video-meta">Session 6</div>
               <div class="video-title">Legal aspects in asbestos-related pleural disease</div>
               <div class="video-speaker">Hayley Hills &amp; Satinder Bains (Irwin Mitchell)</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_6 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/VIDEO_ID_6"
-                  title="Legal aspects in asbestos-related pleural disease — Hayley Hills &amp; Satinder Bains"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- 7 -->
@@ -438,14 +420,7 @@
               <div class="video-meta">Session 7</div>
               <div class="video-title">Pleural standards</div>
               <div class="video-speaker">Dr Alina Ionescu</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_7 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/VIDEO_ID_7"
-                  title="Pleural standards — Dr Alina Ionescu"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- 8 -->
@@ -453,14 +428,7 @@
               <div class="video-meta">Session 8</div>
               <div class="video-title">Thoracic ultrasound training</div>
               <div class="video-speaker">Dr Alina Ionescu</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_8 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/VIDEO_ID_8"
-                  title="Thoracic ultrasound training — Dr Alina Ionescu"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- 9 -->
@@ -468,14 +436,7 @@
               <div class="video-meta">Session 9</div>
               <div class="video-title">10 years of Ambulatory Pleural Procedure Service</div>
               <div class="video-speaker">Dr Narendra Chinnappa</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_9 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/VIDEO_ID_9"
-                  title="10 years of Ambulatory Pleural Procedure Service — Dr Narendra Chinnappa"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- 10 -->
@@ -483,14 +444,7 @@
               <div class="video-meta">Session 10</div>
               <div class="video-title">Empyema management</div>
               <div class="video-speaker">Dr Nora Ramley</div>
-              <div class="video-frame">
-                <!-- Replace VIDEO_ID_10 with the YouTube ID for this session -->
-                <iframe
-                  src="https://www.youtube.com/embed/VIDEO_ID_10"
-                  title="Empyema management — Dr Nora Ramley"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
           </div>
         </div>
@@ -512,14 +466,7 @@
               <div class="video-meta">Case 1</div>
               <div class="video-title">Serious incident</div>
               <div class="video-speaker">Sara Davies</div>
-              <div class="video-frame">
-                <!-- Replace CASE_VIDEO_ID_1 with the YouTube ID for this case -->
-                <iframe
-                  src="https://www.youtube.com/embed/CASE_VIDEO_ID_1"
-                  title="Case: Serious incident — Sara Davies"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- C2 -->
@@ -527,14 +474,7 @@
               <div class="video-meta">Case 2</div>
               <div class="video-title">What is in the differential?</div>
               <div class="video-speaker">Sarah Case</div>
-              <div class="video-frame">
-                <!-- Replace CASE_VIDEO_ID_2 with the YouTube ID for this case -->
-                <iframe
-                  src="https://www.youtube.com/embed/CASE_VIDEO_ID_2"
-                  title="Case: What is in the differential? — Sarah Case"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- C3 -->
@@ -542,14 +482,7 @@
               <div class="video-meta">Case 3</div>
               <div class="video-title">What does this milky appearance of pleural fluid hide?</div>
               <div class="video-speaker">Sion Freeman</div>
-              <div class="video-frame">
-                <!-- Replace CASE_VIDEO_ID_3 with the YouTube ID for this case -->
-                <iframe
-                  src="https://www.youtube.com/embed/CASE_VIDEO_ID_3"
-                  title="Case: What does this milky appearance of pleural fluid hide? — Sion Freeman"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- C4 -->
@@ -557,14 +490,7 @@
               <div class="video-meta">Case 4</div>
               <div class="video-title">An expected pleural finding</div>
               <div class="video-speaker">Dana Bendajki</div>
-              <div class="video-frame">
-                <!-- Replace CASE_VIDEO_ID_4 with the YouTube ID for this case -->
-                <iframe
-                  src="https://www.youtube.com/embed/CASE_VIDEO_ID_4"
-                  title="Case: An expected pleural finding — Dana Bendajki"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- C5 -->
@@ -572,14 +498,7 @@
               <div class="video-meta">Case 5</div>
               <div class="video-title">On the Rocks — alcohol and its impact on pleural fluid</div>
               <div class="video-speaker">Alexander Kyriakou-Haniche</div>
-              <div class="video-frame">
-                <!-- Replace CASE_VIDEO_ID_5 with the YouTube ID for this case -->
-                <iframe
-                  src="https://www.youtube.com/embed/CASE_VIDEO_ID_5"
-                  title="Case: On the Rocks — alcohol and its impact on pleural fluid — Alexander Kyriakou-Haniche"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
 
             <!-- C6 -->
@@ -587,14 +506,7 @@
               <div class="video-meta">Case 6</div>
               <div class="video-title">Chest drain needed? Or maybe… not?</div>
               <div class="video-speaker">Gokul Muthaluraj</div>
-              <div class="video-frame">
-                <!-- Replace CASE_VIDEO_ID_6 with the YouTube ID for this case -->
-                <iframe
-                  src="https://www.youtube.com/embed/CASE_VIDEO_ID_6"
-                  title="Case: Chest drain needed? Or maybe… not? — Gokul Muthaluraj"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowfullscreen></iframe>
-              </div>
+              <div class="video-frame">Video coming soon</div>
             </div>
           </div>
         </div>
