@@ -397,7 +397,7 @@
 
         <div class="footer-text">
           <strong>No password required.</strong> Your NHS inbox is your key. If you continue to have problems
-          signing in, please contact the Pleural Seminar organising team.
+          signing in, please email admin@pleuralseminar.wales
         </div>
       </div>
     </div>
@@ -485,7 +485,7 @@
         let message = "Something went wrong while sending your login link.";
         if (err && err.message && typeof err.message === "string") {
           if (err.message.toLowerCase().includes("permission")) {
-            message = "Login is currently restricted. Please contact the organising team.";
+            message = "Login is currently restricted. Please email admin@pleuralseminar.wales.";
           }
         }
         setStatus(message, "error");
