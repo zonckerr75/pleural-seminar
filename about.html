@@ -1,106 +1,384 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>About — Pleural Seminar Wales 2025</title>
-  <meta name="description" content="About Pleural Seminar Wales — objectives, Wales Pleural Group, contact details, acknowledgements, and past events." />
+  <title>About — Pleural Seminar Wales</title>
+  <meta name="description" content="About Pleural Seminar Wales, objectives, Wales Pleural Group, contact details, acknowledgements, and past events." />
   <style>
-    :root{
-      --bg:#0b1320; --panel:#0f172a; --fg:#e5e7eb; --muted:#94a3b8;
-      --accent:#22c55e; --border:#1f2937; --link:#8dd8a8
+    :root {
+      --bg-color: #020617;
+      --card-bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-color: #1f2937;
+      --radius-lg: 18px;
+      --radius-sm: 8px;
+      --shadow-soft: 0 24px 50px rgba(15, 23, 42, 0.85);
     }
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--fg);
-      font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif
+
+    * {
+      box-sizing: border-box;
     }
-    a{color:var(--link);}
-    /* Layout */
-    .app{display:grid; grid-template-columns: 260px 1fr; min-height:100vh}
-    nav.sidebar{
-      position:sticky; top:0; align-self:start; height:100vh; overflow:auto;
-      background:var(--panel); border-right:1px solid var(--border); padding:1rem
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(15, 23, 42, 0.9), transparent 55%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.9), #020617 60%);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
-    .brand{display:flex; align-items:center; gap:.6rem; margin-bottom:1rem}
-    .brand .logo{width:36px; height:36px; border:1px solid var(--border); border-radius:8px; display:grid; place-items:center; font-weight:700}
-    .brand h1{font-size:1rem; margin:0; line-height:1.2}
-    .navlinks{display:flex; flex-direction:column; gap:.25rem; margin-top:.5rem}
-    .navlinks a{display:block; padding:.5rem .6rem; border-radius:8px; text-decoration:none; color:var(--fg); border:1px solid transparent}
-    .navlinks a:hover{border-color:var(--border); background:rgba(255,255,255,.02)}
-    .navlinks a.active{border-color:var(--accent);}
-    main{padding:2rem; max-width:1100px}
-    header.pagehead{margin-bottom:1.25rem}
-    header.pagehead h2{margin:0 0 .25rem 0; font-size:1.6rem}
-    header.pagehead p{margin:0; color:var(--muted)}
-    section{margin:2rem 0}
-    h3{margin:.2rem 0 1rem 0}
-    .lead{color:var(--muted)}
-    /* Two-column definition list for group section */
-    .kv{display:grid; grid-template-columns: 220px 1fr; gap:.5rem 1rem; border:1px solid var(--border); background:var(--panel); border-radius:12px; padding:1rem}
-    .kv dt{font-weight:700}
-    .kv dd{margin:0}
+
+    .shell {
+      width: 100%;
+      max-width: 1180px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.99));
+      border-radius: 26px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 18px 20px 24px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .shell {
+        padding: 22px 30px 26px;
+      }
+    }
+
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.06), transparent 55%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Top navigation */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      padding-bottom: 10px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo {
+      width: 40px;
+      height: auto;
+      border-radius: 6px;
+      background: none;
+      box-shadow: none;
+      display: block;
+    }
+
+    .nav-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-title-main {
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-title-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.86rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-link {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      text-decoration: none;
+      background: transparent;
+      transition: all 0.16s ease-out;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+      border-color: rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .nav-link.active {
+      color: #e0f2fe;
+      border-color: rgba(56, 189, 248, 0.9);
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.95));
+      box-shadow: 0 12px 26px rgba(8, 47, 73, 0.8);
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nav-links {
+        justify-content: flex-start;
+      }
+    }
+
+    /* Page content */
+    .page {
+      padding-top: 8px;
+      max-width: 1100px;
+    }
+
+    header.pagehead {
+      margin-bottom: 1.4rem;
+    }
+
+    header.pagehead h2 {
+      margin: 0 0 0.3rem 0;
+      font-size: 1.55rem;
+      letter-spacing: 0.02em;
+    }
+
+    header.pagehead p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    section {
+      margin: 1.9rem 0;
+    }
+
+    h3 {
+      margin: 0.2rem 0 0.9rem 0;
+      font-size: 1.05rem;
+    }
+
+    .lead {
+      color: var(--text-muted);
+    }
+
+    .page p {
+      font-size: 0.9rem;
+    }
+
+    .page ul {
+      font-size: 0.9rem;
+    }
+
+    /* Two-column definition list for Wales Pleural Group */
+    .kv {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 0.5rem 1.25rem;
+      margin: 1rem 0 0;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    .kv dt {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .kv dd {
+      margin: 0;
+      color: var(--text-muted);
+    }
+
     /* Cards grid for Past Events */
-    .cards{display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:1rem}
-    .card{background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:.75rem}
-    .card header{display:flex; justify-content:space-between; align-items:baseline; gap:.5rem}
-    .card .year{margin:0; font-size:1.1rem; line-height:1.2}
-    .card .type{color:var(--muted); font-size:.9rem}
-    .thumb{border:0; padding:0; background:transparent; cursor:pointer; border-radius:10px; overflow:hidden; line-height:0}
-    .thumb img{width:100%; height:auto; display:block; aspect-ratio:4/5; object-fit:cover}
-    .btn{display:inline-block; text-decoration:none; font-weight:600; border:1px solid var(--border);
-      padding:.5rem .75rem; border-radius:10px; background:var(--bg); color:var(--fg)}
-    .btn:hover{outline:2px solid var(--accent); outline-offset:2px}
-    /* Contact card */
-    .contact{border:1px solid var(--border); background:var(--panel); border-radius:12px; padding:1rem; max-width:600px}
-    /* Image modal */
-    .img-modal{position:fixed; inset:0; display:none; place-items:center; background:rgba(0,0,0,.7); z-index:2000; padding:2rem}
-    .img-modal[aria-hidden="false"]{display:grid}
-    .img-modal img{max-width:min(100%, 1000px); max-height:85vh; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,.5)}
-    .img-modal .close{position:absolute; top:1rem; right:1rem; background:#000; color:#fff; border:0; width:40px; height:40px; border-radius:999px; font-size:1.5rem; cursor:pointer}
-    /* Mobile */
-    .hamburger{
-      display:none;
-      position:fixed; top:.75rem; left:.75rem; z-index:2100;
-      background:var(--bg); border:1px solid var(--border); color:var(--fg);
-      padding:.5rem .65rem; border-radius:8px
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
     }
-    @media (max-width: 900px){
-      .app{grid-template-columns: 1fr}
-      nav.sidebar{position:fixed; left:0; top:0; bottom:0; transform:translateX(-100%); transition:transform .25s ease}
-      nav.sidebar.open{transform:none}
-      .hamburger{display:block}
-      main{padding:4rem 1rem 2rem}
-      .kv{grid-template-columns: 1fr}
+
+    .card {
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.9);
+    }
+
+    .card header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .card .year {
+      margin: 0;
+      font-size: 1.1rem;
+      line-height: 1.2;
+    }
+
+    .card .type {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .thumb {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 10px;
+      overflow: hidden;
+      line-height: 0;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: auto;
+      display: block;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid rgba(51, 65, 85, 1);
+      padding: 0.5rem 0.75rem;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--text-main);
+      font-size: 0.85rem;
+    }
+
+    .btn:hover {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Contact card */
+    .contact {
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 12px;
+      padding: 1rem;
+      max-width: 600px;
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.9);
+    }
+
+    /* Image modal */
+    .img-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      padding: 2rem;
+    }
+
+    .img-modal[aria-hidden="false"] {
+      display: grid;
+    }
+
+    .img-modal img {
+      max-width: min(100%, 1000px);
+      max-height: 85vh;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .img-modal .close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      border: 0;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-main);
+      display: grid;
+      place-items: center;
+    }
+
+    .page a,
+    .page a:visited {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .page a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 900px) {
+      .kv {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <button class="hamburger" aria-controls="sidebar" aria-expanded="false">Menu</button>
-  <div class="app">
-    <!-- Sidebar -->
-    <nav id="sidebar" class="sidebar" aria-label="Primary">
-      <div class="brand">
-        <div class="logo" aria-hidden="true">WP</div>
-        <h1>Pleural Seminar Wales</h1>
-      </div>
-      <div class="navlinks">
-        <a href="index.html">Home</a>
-        <a href="agenda.html">Agenda</a>
-	<a href="venue.html">Venue</a>
-        <a href="posters.html">Posters</a>
-        <a href="feedback-info.html">Feedback</a>
-	<a href="faculty.html">Faculty</a>
-	
-        
-        <a class="active" href="about.html" aria-current="page">About</a>
-      </div>
-    </nav>
+  <main class="shell">
+    <div class="content">
+      <header class="nav">
+        <div class="nav-brand">
+          <img src="assets/branding/logo.png" class="nav-logo" alt="PleuraWales logo" />
+          <div class="nav-title">
+            <div class="nav-title-main">Pleural Seminar Wales</div>
+            <div class="nav-title-sub">About the meeting and group</div>
+          </div>
+        </div>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="news.html" class="nav-link">News &amp; Events</a>
+          <a href="about.html" class="nav-link active">About</a>
+          <a href="members.html" class="nav-link">Members</a>
+        </nav>
+      </header>
 
-    <!-- Main -->
-    <main>
+      <div class="page">
+
       <header class="pagehead">
         <h2>About Pleural Seminar Wales 2025</h2>
         <p class="lead">Objectives, Wales Pleural Group, contact details, acknowledgements, and past events.</p>
@@ -219,24 +497,17 @@
           </article>
         </div>
       </section>
-    </main>
-  </div>
 
-  <!-- Image Modal -->
-  <div id="imgModal" class="img-modal" aria-hidden="true" role="dialog" aria-label="Image viewer">
-    <button class="close" aria-label="Close viewer">&times;</button>
-    <img id="modalImg" alt="">
+      </div>
+    </div>
+  </main>
+
+  <div id="imgModal" class="img-modal" aria-hidden="true">
+    <button class="close" type="button" aria-label="Close image viewer">&times;</button>
+    <img id="modalImg" src="" alt="" />
   </div>
 
   <script>
-    // Mobile sidebar toggle
-    const ham = document.querySelector('.hamburger');
-    const sidebar = document.getElementById('sidebar');
-    ham?.addEventListener('click', ()=>{
-      const isOpen = sidebar.classList.toggle('open');
-      ham.setAttribute('aria-expanded', String(isOpen));
-    });
-
     // Simple image modal logic
     (function () {
       const modal = document.getElementById('imgModal');
@@ -249,6 +520,7 @@
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
       }
+
       function closeModal() {
         modal.setAttribute('aria-hidden', 'true');
         modalImg.src = '';
@@ -263,6 +535,7 @@
         }
         if (e.target === modal) closeModal();
       });
+
       closeBtn.addEventListener('click', closeModal);
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') closeModal();
