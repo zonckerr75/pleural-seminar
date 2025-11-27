@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin – News editor — Wales Pleural Group</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-color: #020617;
+      --card-bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-color: #1f2937;
+      --radius-lg: 18px;
+      --radius-sm: 8px;
+      --shadow-soft: 0 24px 50px rgba(15, 23, 42, 0.85);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(15,23,42,0.9), transparent 55%),
+        radial-gradient(circle at bottom, rgba(15,23,42,0.9), #020617 60%);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 900px;
+      background: radial-gradient(circle at top left, rgba(15,23,42,0.96), rgba(15,23,42,0.99));
+      border-radius: 26px;
+      border: 1px solid rgba(148,163,184,0.35);
+      padding: 18px 20px 24px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .shell { padding: 22px 30px 26px; }
+    }
+
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(56,189,248,0.06), transparent 55%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .content { position: relative; z-index: 1; }
+
+    /* Top navigation */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(31,41,55,0.9);
+      padding-bottom: 10px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo {
+      width: 40px;
+      height: auto;
+      border-radius: 6px;
+      display: block;
+    }
+
+    .nav-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-title-main {
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-title-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.86rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-link {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      text-decoration: none;
+      background: transparent;
+      transition: all 0.16s ease-out;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+      border-color: rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.9);
+    }
+
+    .nav-link.active {
+      color: #e0f2fe;
+      border-color: rgba(56,189,248,0.9);
+      background: radial-gradient(circle at top, rgba(56,189,248,0.18), rgba(15,23,42,0.95));
+      box-shadow: 0 12px 26px rgba(8,47,73,0.8);
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nav-links { justify-content: flex-start; }
+    }
+
+    /* Page header */
+    .page-header {
+      margin-top: 6px;
+      margin-bottom: 18px;
+    }
+
+    .page-kicker {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 4px;
+    }
+
+    .page-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .page-title-main {
+      font-size: 1.45rem;
+      letter-spacing: 0.03em;
+    }
+
+    .pill {
+      font-size: 0.72rem;
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(56,189,248,0.8);
+      background: rgba(15,23,42,0.9);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .page-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 640px;
+      margin-top: 6px;
+    }
+
+    /* Admin form */
+    .admin-panel {
+      margin-top: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(31,41,55,0.95);
+      background: radial-gradient(circle at top, rgba(15,23,42,0.98), #020617);
+      padding: 16px 18px 18px;
+      box-shadow: 0 18px 40px rgba(15,23,42,0.85);
+    }
+
+    .admin-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .admin-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 6px rgba(34,197,94,0.18);
+    }
+
+    .admin-dot.error {
+      background: #f97373;
+      box-shadow: 0 0 0 6px rgba(248,113,113,0.22);
+    }
+
+    .admin-label-strong {
+      font-weight: 500;
+      color: #e5e7eb;
+    }
+
+    .admin-user {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="date"],
+    textarea,
+    select {
+      border-radius: 10px;
+      border: 1px solid rgba(31,41,55,0.95);
+      background: rgba(15,23,42,0.96);
+      color: var(--text-main);
+      font-size: 0.86rem;
+      padding: 6px 9px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    .field-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .field-inline > * {
+      flex: 1 1 140px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 4px;
+    }
+
+    .btn-primary {
+      border-radius: 999px;
+      border: none;
+      background: radial-gradient(circle at top left, #38bdf8, #0ea5e9);
+      color: #020617 !important;
+      font-weight: 600;
+      font-size: 0.86rem;
+      padding: 8px 18px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 16px 32px rgba(8,47,73,0.8);
+      transition: all 0.16s ease-out;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 40px rgba(8,47,73,0.95);
+    }
+
+    .btn-ghost {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(148,163,184,0.9);
+      color: #e5e7eb;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .message {
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
+    .message.success { color: #4ade80; }
+    .message.error { color: #f97373; }
+
+    .admin-locked {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      padding: 0.6rem 0.2rem;
+    }
+
+    .admin-locked strong {
+      color: #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="content">
+      <header class="nav">
+        <div class="nav-brand">
+          <img src="assets/branding/logo.png" class="nav-logo" alt="Wales Pleural Group logo" />
+          <div class="nav-title">
+            <div class="nav-title-main">Wales Pleural Group</div>
+            <div class="nav-title-sub">Admin · News editor</div>
+          </div>
+        </div>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="news.html" class="nav-link">News &amp; Events</a>
+          <a href="about.html" class="nav-link">About</a>
+          <a href="members.html" class="nav-link active">Members</a>
+        </nav>
+      </header>
+
+      <header class="page-header">
+        <div class="page-kicker">Admin tools</div>
+        <div class="page-title-row">
+          <div class="page-title-main">News &amp; events editor</div>
+          <span class="pill">Private</span>
+        </div>
+        <p class="page-subtitle">
+          Use this page to add or update items in the <code>news</code> collection in Firestore. Entries appear
+          automatically on the public News &amp; Events page. Access is restricted to signed-in users with an
+          approved email address.
+        </p>
+      </header>
+
+      <section class="admin-panel" aria-label="Admin news form">
+        <div class="admin-status" id="adminStatus">
+          <span class="admin-dot" id="adminDot"></span>
+          <span class="admin-label-strong" id="adminLabel">Checking access</span>
+          <span id="adminHint">– verifying your login and permissions.</span>
+        </div>
+        <div class="admin-user" id="adminUserInfo"></div>
+
+        <div id="adminLocked" class="admin-locked" style="display:none;">
+          <strong>Access restricted.</strong> You need to be logged in with an approved NHS or NHS.net email address
+          via the PleuraWales members area to use this page.
+        </div>
+
+        <form id="newsForm" style="display:none;">
+          <div class="field-group">
+            <label for="title">Title <span style="color:#f97373;">*</span></label>
+            <input type="text" id="title" autocomplete="off" />
+          </div>
+
+          <div class="field-group">
+            <label for="summary">Summary</label>
+            <textarea id="summary" autocomplete="off" placeholder="Optional short description (1–3 sentences)."></textarea>
+          </div>
+
+          <div class="field-group">
+            <label for="url">Link URL <span style="color:#f97373;">*</span></label>
+            <input type="url" id="url" autocomplete="off" placeholder="https://…" />
+            <div class="helper-text">Paste a link to the trial, guideline, article or event page.</div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-inline">
+              <div>
+                <label for="category">Category</label>
+                <select id="category">
+                  <option value="Trial">Trial</option>
+                  <option value="Guidelines">Guidelines</option>
+                  <option value="Event">Event</option>
+                  <option value="Service">Service update</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label for="date">Date</label>
+                <input type="date" id="date" />
+                <div class="helper-text">Defaults to today if left blank.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="checkbox-row">
+              <input type="checkbox" id="pinned" />
+              <label for="pinned">Pin this update to the top of the list</label>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button type="submit" class="btn-primary" id="submitBtn">
+              <span>Post update</span>
+            </button>
+            <button type="button" class="btn-ghost" id="resetBtn">Reset form</button>
+            <div class="helper-text">
+              New items should appear on the public News &amp; Events page within a few seconds.
+            </div>
+          </div>
+
+          <div class="message" id="formMessage"></div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      Timestamp
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    // IMPORTANT: uses the same Firebase project as the rest of the site
+    const firebaseConfig = {
+      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+      authDomain: "pleural-seminar-2025.firebaseapp.com",
+      projectId: "pleural-seminar-2025",
+      storageBucket: "pleural-seminar-2025.appspot.com",
+      messagingSenderId: "914784082205",
+      appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const adminStatus = document.getElementById("adminStatus");
+    const adminDot = document.getElementById("adminDot");
+    const adminLabel = document.getElementById("adminLabel");
+    const adminHint = document.getElementById("adminHint");
+    const adminUserInfo = document.getElementById("adminUserInfo");
+    const adminLocked = document.getElementById("adminLocked");
+    const form = document.getElementById("newsForm");
+    const titleInput = document.getElementById("title");
+    const summaryInput = document.getElementById("summary");
+    const urlInput = document.getElementById("url");
+    const categoryInput = document.getElementById("category");
+    const dateInput = document.getElementById("date");
+    const pinnedInput = document.getElementById("pinned");
+    const submitBtn = document.getElementById("submitBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const formMessage = document.getElementById("formMessage");
+
+    // Optional: restrict who can edit news
+    // You can add specific addresses here if you want it locked down further.
+    const allowedDomains = ["wales.nhs.uk", "nhs.net"];
+    const allowedEditorEmails = [
+      // e.g. "ali.thahseen@wales.nhs.uk"
+    ];
+
+    function emailAllowed(email) {
+      if (!email) return false;
+      const lower = email.toLowerCase();
+      if (allowedEditorEmails.length && allowedEditorEmails.includes(lower)) return true;
+      const domain = lower.split("@")[1] || "";
+      if (allowedDomains.includes(domain)) return true;
+      return false;
+    }
+
+    function setStatus(type, label, hint) {
+      if (type === "error") {
+        adminDot.classList.add("error");
+      } else {
+        adminDot.classList.remove("error");
+      }
+      adminLabel.textContent = label;
+      adminHint.textContent = hint || "";
+    }
+
+    function setFormEnabled(enabled) {
+      submitBtn.disabled = !enabled;
+      resetBtn.disabled = !enabled;
+    }
+
+    function resetForm() {
+      titleInput.value = "";
+      summaryInput.value = "";
+      urlInput.value = "";
+      categoryInput.value = "Trial";
+      dateInput.value = "";
+      pinnedInput.checked = false;
+      formMessage.textContent = "";
+      formMessage.className = "message";
+    }
+
+    // Default: prefill date with today
+    (function prefillDate() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      dateInput.value = `${yyyy}-${mm}-${dd}`;
+    })();
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        setStatus("error", "Not signed in", "– please log in via the members area.");
+        adminUserInfo.textContent = "";
+        adminLocked.style.display = "block";
+        form.style.display = "none";
+        return;
+      }
+
+      const email = user.email || "";
+      adminUserInfo.textContent = `Signed in as: ${email}`;
+
+      if (!emailAllowed(email)) {
+        setStatus("error", "Access denied", "– this page is restricted to approved editors.");
+        adminLocked.style.display = "block";
+        form.style.display = "none";
+        return;
+      }
+
+      setStatus("ok", "Editor access granted", "– you can post updates to the News & Events page.");
+      adminLocked.style.display = "none";
+      form.style.display = "grid";
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      formMessage.textContent = "";
+      formMessage.className = "message";
+
+      const title = titleInput.value.trim();
+      const url = urlInput.value.trim();
+
+      if (!title || !url) {
+        formMessage.textContent = "Title and URL are required.";
+        formMessage.classList.add("error");
+        return;
+      }
+
+      setFormEnabled(false);
+      formMessage.textContent = "Saving…";
+      formMessage.classList.remove("success", "error");
+
+      try {
+        const dateStr = dateInput.value;
+        const dateObj = dateStr ? new Date(dateStr) : new Date();
+        const ts = Timestamp.fromDate(dateObj);
+
+        // Write using the capitalised field names that news.html already supports
+        await addDoc(collection(db, "news"), {
+          Title: title,
+          Summary: summaryInput.value.trim(),
+          URL: url,
+          Category: categoryInput.value,
+          Date: ts,
+          Pinned: !!pinnedInput.checked
+        });
+
+        formMessage.textContent = "News item saved successfully. It should appear on the public page shortly.";
+        formMessage.classList.add("success");
+        setFormEnabled(true);
+      } catch (err) {
+        console.error("Error saving news:", err);
+        formMessage.textContent = "There was a problem saving this item. Please try again.";
+        formMessage.classList.add("error");
+        setFormEnabled(true);
+      }
+    });
+
+    resetBtn.addEventListener("click", () => {
+      resetForm();
+    });
+  </script>
+</body>
+</html>
