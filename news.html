@@ -426,8 +426,7 @@
         <div class="page-kicker">PleuraWales Portal</div>
         <div class="page-title-row">
           <div class="page-title-main">News &amp; events</div>
-          <span class="pill">Firestore powered</span>
-        </div>
+          </div>
         <p class="page-subtitle">
           Updates on local pleural service activity, national meetings, guidelines, and key studies or trials of interest.
           Items on this page are loaded from the PleuraWales Firestore database so they can be updated without changing
@@ -481,8 +480,14 @@
     } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
     const firebaseConfig = {
-      // Your firebaseConfig goes here (same as other PleuraWales pages)
-    };
+    apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+    authDomain: "pleural-seminar-2025.firebaseapp.com",
+    projectId: "pleural-seminar-2025",
+    storageBucket: "pleural-seminar-2025.appspot.com",
+    messagingSenderId: "914784082205",
+    appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
+
+};
 
     let app, db;
     try {
