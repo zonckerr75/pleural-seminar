@@ -33,14 +33,29 @@
 
     .shell {
       width: 100%;
-      max-width: 720px;
+      max-width: 1000px;
       background: var(--panel);
       border-radius: 26px;
       border: 1px solid var(--border);
-      padding: 26px;
+      padding: 22px 26px 26px;
       box-shadow: var(--shadow);
       position: relative;
     }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cert-panel {
+      margin: 18px auto 0;
+      max-width: 640px;
+      border-radius: 22px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,0.8);
+      padding: 20px 22px 24px;
+    }
+
 
     h1 {
       margin: 0 0 4px;
@@ -114,87 +129,41 @@
       color: var(--text-muted);
     }
   
-    /* Top nav for certificates page */
-    .nav {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-      margin-bottom:18px;
-      padding-bottom:10px;
-      border-bottom:1px solid rgba(31,41,55,0.85);
-    }
-    .nav-brand {
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-    .nav-logo {
-      width:40px;
-      height:auto;
-      border-radius:6px;
-    }
-    .nav-title {
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .nav-title-main {
-      font-size:0.95rem;
-      letter-spacing:0.08em;
-      text-transform:uppercase;
-    }
-    .nav-title-sub {
-      font-size:0.78rem;
-      color:var(--text-muted);
-    }
-    .nav-links {
-      display:flex;
-      gap:8px;
-      font-size:0.85rem;
-    }
-    .nav-link {
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid transparent;
-      color:var(--text-muted);
-      text-decoration:none;
-    }
-    .nav-link:hover {
-      color:var(--text);
-      border-color:rgba(148,163,184,0.7);
-    }
-    .nav-link.active {
-      color:#e0f2fe;
-      border-color:var(--accent);
-      background:radial-gradient(circle at top, rgba(56,189,248,0.18), rgba(15,23,42,0.95));
-    }
-    .cert-body {
-      margin-top:16px;
-    }
+/* Top navigation (shared) */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;
+border-bottom:1px solid rgba(31,41,55,0.9);padding-bottom:10px;}
+.nav-brand{display:flex;align-items:center;gap:10px;}
+.nav-logo{width:40px;height:auto;border-radius:6px;}
+.nav-title{display:flex;flex-direction:column;gap:2px;}
+.nav-title-main{text-transform:uppercase;letter-spacing:0.08em;font-size:0.98rem;}
+.nav-title-sub{font-size:0.78rem;color:var(--text-muted);}
+.nav-links{display:flex;gap:8px;font-size:0.86rem;}
+.nav-link{padding:6px 10px;border-radius:999px;color:var(--text-muted);text-decoration:none;border:1px solid transparent;}
+.nav-link.active{color:#e0f2fe;border-color:var(--accent);}
 
-  </style>
+</style>
 </head>
 
 <body>
-  <div class="shell">
-
-    <header class="nav">
-      <div class="nav-brand">
-        <img src="assets/branding/logo.png" class="nav-logo" alt="Wales Pleural Group logo" />
-        <div class="nav-title">
-          <div class="nav-title-main">Wales Pleural Group</div>
-          <div class="nav-title-sub">Certificates</div>
+  <main class="shell">
+    <div class="content">
+      <header class="nav">
+        <div class="nav-brand">
+          <img src="assets/branding/logo.png" class="nav-logo" />
+          <div class="nav-title">
+            <div class="nav-title-main">Wales Pleural Group</div>
+            <div class="nav-title-sub">Certificates</div>
+          </div>
         </div>
-      </div>
-      <nav class="nav-links">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="news.html" class="nav-link">News &amp; Events</a>
-        <a href="about.html" class="nav-link">About</a>
-        <a href="members.html" class="nav-link active">Members</a>
-      </nav>
-    </header>
-    <div class="cert-body">
+        <nav class="nav-links">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="news.html" class="nav-link">News &amp; Events</a>
+          <a href="about.html" class="nav-link">About</a>
+          <a href="members.html" class="nav-link active">Members</a>
+        </nav>
+      </header>
+
+      <section class="cert-panel">
     <h1>Pleural Seminar Wales – Certificates</h1>
     <p class="subtitle">
       Retrieve certificates associated with your email from the most recent Pleural Seminar Wales event.
@@ -233,10 +202,12 @@
       results.innerHTML = `
         <div class="cert-item"><a href="#">Attendance certificate (PDF)</a></div>
         <div class="cert-item"><a href="#">Presentation certificate (PDF)</a></div>
-        <div class="cert-item"><a href="#">Feedback summary (PDF)</a>
-    </div>
+        <div class="cert-item"><a href="#">Feedback summary (PDF)</a></div>
       `;
     });
   </script>
+      </section>
+    </div>
+  </main>
 </body>
 </html>
