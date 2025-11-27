@@ -643,21 +643,13 @@
       try {
         const q = query(
           collection(db, "news"),
+          orderBy("pinned", "desc"),
           orderBy("date", "desc")
         );
         const snap = await getDocs(q);
         const items = [];
         snap.forEach((doc) => {
           items.push(doc.data());
-        });
-        // Sort pinned items to the top client-side
-        items.sort((a, b) => {
-          const bp = b.pinned ? 1 : 0;
-          const ap = a.pinned ? 1 : 0;
-          if (bp !== ap) return bp - ap;
-          const bd = b.date && b.date.toDate ? b.date.toDate().getTime() : 0;
-          const ad = a.date && a.date.toDate ? a.date.toDate().getTime() : 0;
-          return bd - ad;
         });
         allItems = items;
         statusLoading.style.display = "none";
