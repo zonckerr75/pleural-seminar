@@ -563,29 +563,16 @@
       dateInput.value = `${yyyy}-${mm}-${dd}`;
     })();
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        setStatus("error", "Not signed in", "– please log in via the members area.");
-        adminUserInfo.textContent = "";
-        adminLocked.style.display = "block";
-        form.style.display = "none";
-        return;
-      }
+    // TEMPORARY: allow access without login so you can test the page
+onAuthStateChanged(auth, (user) => {
+  const email = user && user.email ? user.email : "test (no auth)";
+  adminUserInfo.textContent = `Signed in as: ${email}`;
 
-      const email = user.email || "";
-      adminUserInfo.textContent = `Signed in as: ${email}`;
+  setStatus("ok", "Editor access (test mode)", "– authentication checks are temporarily disabled.");
+  adminLocked.style.display = "none";
+  form.style.display = "grid";
+});
 
-      if (!emailAllowed(email)) {
-        setStatus("error", "Access denied", "– this page is restricted to approved editors.");
-        adminLocked.style.display = "block";
-        form.style.display = "none";
-        return;
-      }
-
-      setStatus("ok", "Editor access granted", "– you can post updates to the News & Events page.");
-      adminLocked.style.display = "none";
-      form.style.display = "grid";
-    });
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
