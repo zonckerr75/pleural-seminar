@@ -678,7 +678,8 @@
         return e.endsWith("@wales.nhs.uk") || e.endsWith("@nhs.net");
       }
 
-      nhsForm.addEventListener("submit", function (e) {
+ 
+      nhsForm.addEventListener("submit", async function (e) {
         e.preventDefault();
         nhsError.hidden = true;
         nhsSuccess.hidden = true;
@@ -700,18 +701,43 @@
           return;
         }
 
-        // Placeholder: this is where we will call a Firebase Function (registerNhsUser)
         nhsSubmit.disabled = true;
         nhsSubmit.textContent = "Submitting...";
 
-        setTimeout(function () {
+        try {
+          const res = await fetch(
+            "https://us-central1-pleural-seminar-2025.cloudfunctions.net/registerNhsUser",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name, organisation: org, email }),
+            }
+          );
+
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.message || "Registration failed.");
+          }
+
           nhsSuccess.textContent =
+            data.message ||
             "If this email is eligible, you will shortly receive a message with a link to verify your address and set your password.";
           nhsSuccess.hidden = false;
+        } catch (err) {
+          nhsError.textContent =
+            err.message ||
+            "There was a problem submitting your details. Please try again.";
+          nhsError.hidden = false;
+        } finally {
           nhsSubmit.disabled = false;
           nhsSubmit.textContent = "Register with NHS email";
-        }, 600);
+        }
       });
+
+
+
+
+
 
       otherSubmit.addEventListener("click", function () {
         otherError.hidden = true;
