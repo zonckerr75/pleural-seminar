@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PleuraWales – Previous seminars archive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-color: #020617;
+      --card-bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-color: #1f2937;
+      --radius-lg: 18px;
+      --radius-sm: 10px;
+      --shadow-soft: 0 24px 50px rgba(15, 23, 42, 0.85);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(15, 23, 42, 0.9), transparent 55%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.9), #020617 60%);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 900px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.99));
+      border-radius: 26px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 24px 20px 22px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .shell {
+        padding: 28px 28px 24px;
+      }
+    }
+
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.06), transparent 55%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    header.top {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      padding-bottom: 12px;
+    }
+
+    @media (min-width: 720px) {
+      header.top {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .title-block p {
+      margin: 6px 0 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .header-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      max-width: 280px;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    @media (min-width: 720px) {
+      .header-note {
+        text-align: right;
+      }
+    }
+
+    .year-list {
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .year-card {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.98), #020617);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+      overflow: hidden;
+    }
+
+    .year-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      position: relative;
+      z-index: 1;
+    }
+
+    .year-main {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .year-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .year-pill {
+      font-size: 0.7rem;
+      padding: 1px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .year-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .year-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .toggle-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      background: rgba(15, 23, 42, 0.9);
+      flex-shrink: 0;
+    }
+
+    .year-card.open .toggle-icon {
+      transform: rotate(90deg);
+      border-color: rgba(56, 189, 248, 0.9);
+    }
+
+    .year-body {
+      border-top: 1px solid rgba(31, 41, 55, 0.9);
+      padding: 10px 14px 12px;
+      display: none;
+    }
+
+    .year-card.open .year-body {
+      display: block;
+    }
+
+    .resource-list {
+      list-style: none;
+      margin: 4px 0 0;
+      padding: 0;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .resource-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .resource-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 999px;
+      margin-top: 6px;
+      background: rgba(148, 163, 184, 0.9);
+      flex-shrink: 0;
+    }
+
+    .resource-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .resource-label {
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    .resource-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .chip-link {
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--accent);
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chip-link span.icon {
+      font-size: 0.9rem;
+    }
+
+    .chip-link:hover {
+      border-color: rgba(56, 189, 248, 0.9);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .chip-link.disabled {
+      opacity: 0.55;
+      cursor: default;
+      border-style: dashed;
+    }
+
+    .chip-link.disabled:hover {
+      border-color: rgba(31, 41, 55, 0.95);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+    }
+
+    .footer-note a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .year-header {
+        align-items: flex-start;
+      }
+      .year-meta {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="content">
+      <header class="top">
+        <div class="title-block">
+          <h1>
+            Previous seminars
+            <span class="badge">Archive</span>
+          </h1>
+          <p>
+            Browse material from previous Pleural Seminar Wales events. The 2025 seminar includes a full digital
+            archive, while earlier years currently provide agenda-only records.
+          </p>
+        </div>
+        <div class="header-note">
+          Links marked as agenda, photos or videos will take you to either the main Pleural Seminar Wales site or
+          downloadable PDF files, as available.
+        </div>
+      </header>
+
+      <section class="year-list" aria-label="Previous seminar years">
+        <!-- 2025 -->
+        <article class="year-card open" data-year="2025">
+          <button class="year-header" type="button" aria-expanded="true">
+            <div class="year-main">
+              <div class="year-title">
+                Pleural Seminar Wales 2025
+                <span class="year-pill">Full archive</span>
+              </div>
+              <div class="year-subtitle">
+                Parkway Hotel &amp; Spa, Cwmbran – agenda, photos and on‑demand videos available.
+              </div>
+            </div>
+            <div class="year-meta">
+              <span>2025 programme</span>
+              <div class="toggle-icon" aria-hidden="true">›</div>
+            </div>
+          </button>
+          <div class="year-body">
+            <ul class="resource-list">
+              <li>
+                <span class="resource-dot"></span>
+                <div class="resource-main">
+                  <span class="resource-label">Agenda &amp; programme</span>
+                  <span>
+                    Full programme for the day, including main sessions, case presentations and timings.
+                  </span>
+                  <div class="resource-links">
+                    <a href="agenda.html" class="chip-link">
+                      <span class="icon">🗓</span>
+                      <span>View agenda (web)</span>
+                    </a>
+                    <a href="#" class="chip-link disabled" aria-disabled="true">
+                      <span class="icon">📄</span>
+                      <span>Download agenda (PDF – coming soon)</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+
+              <li>
+                <span class="resource-dot"></span>
+                <div class="resource-main">
+                  <span class="resource-label">Photos</span>
+                  <span>
+                    Image gallery from the seminar, including plenary sessions, workshops and networking.
+                  </span>
+                  <div class="resource-links">
+                    <a href="photos.html" class="chip-link">
+                      <span class="icon">🖼</span>
+                      <span>Open photo gallery</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+
+              <li>
+                <span class="resource-dot"></span>
+                <div class="resource-main">
+                  <span class="resource-label">Videos</span>
+                  <span>
+                    Edited recordings of talks and case presentations, hosted as an on‑demand video library.
+                  </span>
+                  <div class="resource-links">
+                    <a href="videos.html" class="chip-link">
+                      <span class="icon">🎥</span>
+                      <span>View videos</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 2024 -->
+        <article class="year-card" data-year="2024">
+          <button class="year-header" type="button" aria-expanded="false">
+            <div class="year-main">
+              <div class="year-title">
+                Pleural Seminar Wales 2024
+                <span class="year-pill">Agenda only</span>
+              </div>
+              <div class="year-subtitle">
+                Earlier seminar – agenda summary available for reference.
+              </div>
+            </div>
+            <div class="year-meta">
+              <span>2024 programme</span>
+              <div class="toggle-icon" aria-hidden="true">›</div>
+            </div>
+          </button>
+          <div class="year-body">
+            <ul class="resource-list">
+              <li>
+                <span class="resource-dot"></span>
+                <div class="resource-main">
+                  <span class="resource-label">Agenda &amp; programme</span>
+                  <span>
+                    Session outline, speakers and timings for the 2024 Pleural Seminar Wales meeting.
+                  </span>
+                  <div class="resource-links">
+                    <a href="#" class="chip-link disabled" aria-disabled="true">
+                      <span class="icon">📄</span>
+                      <span>Agenda PDF (to be added)</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- 2023 -->
+        <article class="year-card" data-year="2023">
+          <button class="year-header" type="button" aria-expanded="false">
+            <div class="year-main">
+              <div class="year-title">
+                Pleural Seminar Wales 2023
+                <span class="year-pill">Agenda only</span>
+              </div>
+              <div class="year-subtitle">
+                Historical seminar – programme available as a downloadable agenda.
+              </div>
+            </div>
+            <div class="year-meta">
+              <span>2023 programme</span>
+              <div class="toggle-icon" aria-hidden="true">›</div>
+            </div>
+          </button>
+          <div class="year-body">
+            <ul class="resource-list">
+              <li>
+                <span class="resource-dot"></span>
+                <div class="resource-main">
+                  <span class="resource-label">Agenda &amp; programme</span>
+                  <span>
+                    Outline of sessions and speakers for the 2023 meeting.
+                  </span>
+                  <div class="resource-links">
+                    <a href="#" class="chip-link disabled" aria-disabled="true">
+                      <span class="icon">📄</span>
+                      <span>Agenda PDF (to be added)</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </article>
+
+        <!-- Template / future years note -->
+        <article class="year-card" aria-label="Future archive entries">
+          <div class="year-header" style="cursor:default;">
+            <div class="year-main">
+              <div class="year-title">
+                Future seminars
+                <span class="year-pill">Coming soon</span>
+              </div>
+              <div class="year-subtitle">
+                Once future Pleural Seminar Wales events take place, their agendas and digital material will be added
+                here.
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="footer-note">
+        <span>
+          Return to <a href="members.html">Members dashboard</a>
+        </span>
+        <span>
+          For older records or queries, please contact <a href="mailto:admin@pleurawales.org.uk">admin@pleurawales.org.uk</a>.
+        </span>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Simple accordion behaviour for year cards
+    (function () {
+      const cards = document.querySelectorAll(".year-card[data-year]");
+
+      cards.forEach((card) => {
+        const header = card.querySelector(".year-header");
+        const body = card.querySelector(".year-body");
+
+        if (!header || !body) return;
+
+        header.addEventListener("click", () => {
+          const isOpen = card.classList.contains("open");
+          const expanded = header.getAttribute("aria-expanded") === "true";
+
+          if (isOpen || expanded) {
+            card.classList.remove("open");
+            header.setAttribute("aria-expanded", "false");
+          } else {
+            card.classList.add("open");
+            header.setAttribute("aria-expanded", "true");
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

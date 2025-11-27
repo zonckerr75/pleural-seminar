@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PleuraWales – Members dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-color: #020617;
+      --card-bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+      --border-color: #1f2937;
+      --radius-lg: 18px;
+      --radius-sm: 10px;
+      --shadow-soft: 0 24px 50px rgba(15, 23, 42, 0.85);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(15, 23, 42, 0.9), transparent 55%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.9), #020617 60%);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: 100%;
+      max-width: 1080px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.99));
+      border-radius: 26px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 22px 20px 22px;
+      box-shadow: var(--shadow-soft);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .shell {
+        padding: 28px 30px 26px;
+      }
+    }
+
+    .shell::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.06), transparent 55%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    header.top {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      padding-bottom: 12px;
+    }
+
+    @media (min-width: 720px) {
+      header.top {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+    }
+
+    .title-block h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .title-block p {
+      margin: 6px 0 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .user-bar {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      align-self: flex-start;
+      max-width: 100%;
+    }
+
+    .logout-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(248, 113, 113, 0.8);
+      background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.18), rgba(15, 23, 42, 0.98));
+      color: #fecaca;
+      font-size: 0.78rem;
+      padding: 5px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .logout-btn span.icon {
+      font-size: 0.9rem;
+    }
+
+    .logout-btn:hover {
+      background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.26), rgba(15, 23, 42, 1));
+    }
+
+    .user-label {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 4px;
+      font-size: 0.78rem;
+    }
+
+    .user-caption {
+      color: var(--text-muted);
+    }
+
+    #user-name {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    #user-email {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      opacity: 0.9;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 720px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .card {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.98), #020617);
+      padding: 14px 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 55%);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-pill {
+      font-size: 0.7rem;
+      padding: 1px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      background: rgba(15, 23, 42, 0.8);
+      color: var(--text-muted);
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .card-list {
+      list-style: none;
+      padding: 0;
+      margin: 6px 0 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .card-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .card-list span.bullet {
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      margin-top: 6px;
+      background: rgba(148, 163, 184, 0.8);
+    }
+
+    .card-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-link {
+      border-radius: 999px;
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: rgba(15, 23, 42, 0.85);
+      color: var(--accent);
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-link:hover {
+      border-color: rgba(56, 189, 248, 0.9);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .footer-note a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
+    }
+
+    .tagline {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="content">
+      <header class="top">
+        <div class="title-block">
+          <h1>
+            Members dashboard
+            <span class="badge">PleuraWales</span>
+          </h1>
+          <p>
+            Access protocols, forums, certificates and previous seminar material in one place.
+          </p>
+        </div>
+
+        <div class="user-bar">
+          <button type="button" class="logout-btn" id="logout-btn">
+            <span class="icon" aria-hidden="true">⟲</span>
+            <span>Log out</span>
+          </button>
+          <div class="user-label">
+            <span class="user-caption">Logged in as</span>
+            <span id="user-name">Loading…</span>
+            <span id="user-email">&lt;checking email&gt;</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="grid" aria-label="Members sections">
+        <!-- Protocols -->
+        <article class="card">
+          <div class="card-inner">
+            <h2 class="card-title">
+              Protocols
+              <span class="card-pill">Clinical resources</span>
+            </h2>
+            <p>
+              Local and national pleural pathways, SOPs and clinic tools gathered in one location for quick reference.
+            </p>
+            <ul class="card-list">
+              <li>
+                <span class="bullet"></span>
+                <span>Pleural effusion and pneumothorax pathways.</span>
+              </li>
+              <li>
+                <span class="bullet"></span>
+                <span>Clinic proformas, MDT summaries and referral templates.</span>
+              </li>
+            </ul>
+            <div class="card-actions">
+              <a href="protocols.html" class="btn-link">
+                <span>View protocols</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Forums -->
+        <article class="card">
+          <div class="card-inner">
+            <h2 class="card-title">
+              Forums
+              <span class="card-pill">Discussion areas</span>
+            </h2>
+            <p>
+              Space for ongoing discussion around pleural practice across Wales, including dedicated areas for PAs and
+              CNS colleagues.
+            </p>
+            <ul class="card-list">
+              <li>
+                <span class="bullet"></span>
+                <span>General forum for cases, pathways and service issues.</span>
+              </li>
+              <li>
+                <span class="bullet"></span>
+                <span>Separate PA and CNS threads for role-specific topics.</span>
+              </li>
+            </ul>
+            <div class="card-actions">
+              <a href="forums.html" class="btn-link">
+                <span>Go to forums</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Certificates -->
+        <article class="card">
+          <div class="card-inner">
+            <h2 class="card-title">
+              Certificates
+              <span class="card-pill">PleuraWales seminar</span>
+            </h2>
+            <p>
+              Retrieve certificates linked to your email from the most recent PleuraWales seminar, including attendance
+              and presentation certificates.
+            </p>
+            <ul class="card-list">
+              <li>
+                <span class="bullet"></span>
+                <span>Attendance certificates for delegates.</span>
+              </li>
+              <li>
+                <span class="bullet"></span>
+                <span>Certificates for poster and case presentations where applicable.</span>
+              </li>
+            </ul>
+            <div class="card-actions">
+              <a href="certificates.html" class="btn-link">
+                <span>View certificates</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Previous seminars -->
+        <article class="card">
+          <div class="card-inner">
+            <h2 class="card-title">
+              Previous seminars
+              <span class="card-pill">Archive</span>
+            </h2>
+            <p>
+              Browse material from previous PleuraWales events, grouped by year, including agendas, photos and videos
+              where available.
+            </p>
+            <ul class="card-list">
+              <li>
+                <span class="bullet"></span>
+                <span>Full archive for the most recent seminar.</span>
+              </li>
+              <li>
+                <span class="bullet"></span>
+                <span>Agenda-only records for earlier years.</span>
+              </li>
+            </ul>
+            <div class="card-actions">
+              <a href="previous.html" class="btn-link">
+                <span>Browse archive</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <div class="footer-note">
+        <span class="tagline">
+          You are currently signed in to the PleuraWales members area. Close the browser or use “Log out” if you are on
+          a shared device.
+        </span>
+        <span>
+          Back to <a href="index.html">Home</a> · <a href="news.html">News &amp; events</a>
+        </span>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Placeholder only: this is where Firebase Auth wiring will go.
+    // - Use onAuthStateChanged to:
+    //   * redirect to login.html if no user is signed in
+    //   * populate #user-name and #user-email for the signed-in user
+    // - Wire #logout-btn to call signOut(auth) and then redirect to index.html.
+
+    (function () {
+      const nameEl = document.getElementById("user-name");
+      const emailEl = document.getElementById("user-email");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      // Temporary placeholder so the page doesn't feel "dead" before Firebase is wired.
+      nameEl.textContent = "PleuraWales member";
+      emailEl.textContent = "<email hidden>";
+
+      logoutBtn.addEventListener("click", function () {
+        // This will be replaced with Firebase signOut(auth) once the SDK is wired in.
+        alert("Log out will sign you out of PleuraWales once Firebase Auth is connected.");
+      });
+    })();
+  </script>
+</body>
+</html>
