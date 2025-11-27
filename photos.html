@@ -70,7 +70,7 @@
       z-index: 1;
     }
 
-    /* Top navigation */
+    /* Top navigation (shared) */
     .nav {
       display: flex;
       align-items: center;
@@ -155,6 +155,7 @@
       }
     }
 
+    /* Page header */
     .page-header {
       margin-top: 6px;
       margin-bottom: 18px;
@@ -168,7 +169,15 @@
       margin-bottom: 4px;
     }
 
-    .page-title {
+    .page-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .page-title-main {
       font-size: 1.45rem;
       letter-spacing: 0.03em;
     }
@@ -182,7 +191,6 @@
       color: var(--accent);
       text-transform: uppercase;
       letter-spacing: 0.14em;
-      margin-left: 0.5rem;
     }
 
     .page-subtitle {
@@ -192,6 +200,7 @@
       margin-top: 6px;
     }
 
+    /* Gallery */
     .gallery-panel {
       background: rgba(15, 23, 42, 0.96);
       border-radius: 1rem;
@@ -201,175 +210,171 @@
     }
 
     .gallery-intro {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:1rem;
-      margin-bottom:1rem;
-      border-bottom:1px solid rgba(30,64,175,0.45);
-      padding-bottom:1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(30, 64, 175, 0.45);
+      padding-bottom: 1rem;
     }
 
     .gallery-intro-text {
-      font-size:.9rem;
-      color:var(--text-muted);
+      font-size: 0.9rem;
     }
 
     .gallery-hint {
-      display:flex;
-      align-items:center;
-      gap:.45rem;
-      font-size:.8rem;
-      color:var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
     }
 
     .gallery-hint-dot {
-      width:9px;
-      height:9px;
-      border-radius:999px;
-      background:#22c55e;
-      box-shadow:0 0 0 6px rgba(34,197,94,.18);
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.18);
     }
 
     .gallery-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
-      gap:.75rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
     }
 
     .thumb {
-      position:relative;
-      border-radius:.9rem;
-      overflow:hidden;
-      border:1px solid rgba(15,23,42,.9);
-      background:#020617;
-      cursor:pointer;
-      box-shadow:0 16px 34px rgba(15,23,42,.7);
+      position: relative;
+      border-radius: 0.9rem;
+      overflow: hidden;
+      border: 1px solid rgba(15, 23, 42, 0.9);
+      background: #020617;
+      cursor: pointer;
+      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.7);
     }
 
     .thumb img {
-      width:100%;
-      height:100%;
-      display:block;
-      aspect-ratio:4/3;
-      object-fit:cover;
-      transition:transform .18s ease-out, opacity .18s ease-out;
+      width: 100%;
+      height: 100%;
+      display: block;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      transition: transform 0.18s ease-out, opacity 0.18s ease-out;
     }
 
     .thumb:hover img {
-      transform:scale(1.04);
-      opacity:.96;
+      transform: scale(1.04);
+      opacity: 0.96;
     }
 
     /* Lightbox */
     .lightbox {
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.92);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:50;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.92);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      backdrop-filter: blur(14px);
     }
 
     .lightbox.open {
-      display:flex;
+      display: flex;
     }
 
     .lightbox-inner {
-      max-width:min(1000px, 96vw);
-      max-height:88vh;
-      padding:1rem;
-      border-radius:1rem;
-      border:1px solid rgba(148,163,184,0.65);
-      background:radial-gradient(circle at top, rgba(15,23,42,.98), #020617);
-      box-shadow:0 24px 60px rgba(15,23,42,.95);
-      display:flex;
-      flex-direction:column;
-      gap:.6rem;
+      position: relative;
+      max-width: 90vw;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
-    .lightbox-main {
-      position:relative;
-      border-radius:.8rem;
-      overflow:hidden;
-      border:1px solid rgba(30,64,175,.6);
-      background:#020617;
+    .lightbox-img-wrapper {
+      position: relative;
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: #020617;
+      box-shadow: 0 26px 60px rgba(0, 0, 0, 0.95);
     }
 
-    .lightbox-main::before {
-      content:"";
-      display:block;
-      padding-top:56.25%;
-    }
-
-    .lightbox-main img {
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:contain;
-    }
-
-    .lightbox-controls {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:.5rem;
-      font-size:.8rem;
-      color:var(--text-muted);
-      margin-top:.25rem;
-    }
-
-    .lightbox-buttons {
-      display:flex;
-      align-items:center;
-      gap:.35rem;
+    .lightbox-img-wrapper img {
+      max-width: 88vw;
+      max-height: 82vh;
+      display: block;
+      object-fit: contain;
     }
 
     .lightbox-close {
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.7);
-      background:rgba(15,23,42,.9);
-      width:28px;
-      height:28px;
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      font-size:1rem;
-      color:var(--text-main);
+      position: absolute;
+      top: -40px;
+      right: 0;
+      padding: 0.25rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .lightbox-close:hover {
+      color: #e5e7eb;
+      border-color: rgba(248, 250, 252, 0.7);
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
     }
 
     .lightbox-arrow {
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,.7);
-      background:rgba(15,23,42,.9);
-      width:30px;
-      height:30px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      margin:0 .6rem;
-      color:var(--text-main);
-      font-size:1.1rem;
+      pointer-events: auto;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.96);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin: 0 0.6rem;
+      color: #e5e7eb;
+      font-size: 1.1rem;
     }
 
     .lightbox-arrow:hover {
-      border-color:rgba(248,250,252,0.9);
-      background:rgba(15,23,42,1);
+      border-color: rgba(248, 250, 252, 0.9);
+      background: rgba(15, 23, 42, 1);
     }
 
     .lightbox-counter {
-      margin-top:.6rem;
-      font-size:.8rem;
-      color:var(--text-muted);
-      text-align:center;
+      margin-top: 0.6rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: center;
     }
 
-    @media (max-width:900px) {
+    @media (max-width: 640px) {
       .gallery-panel {
-        padding:1rem 1rem 1.5rem;
+        padding: 1rem 1rem 1.5rem;
+      }
+      .gallery-grid {
+        gap: 0.6rem;
       }
     }
   </style>
@@ -393,206 +398,22 @@
         </nav>
       </header>
 
-3,42,0.8);
-      transform-origin:center;
-      transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,filter .16s ease;
-    }
-
-    .thumb::after {
-      content:"";
-      position:absolute;
-      inset:0;
-      background:radial-gradient(circle at top,rgba(15,23,42,0.0),rgba(15,23,42,0.85));
-      opacity:.15;
-      transition:opacity .16s ease;
-    }
-
-    .thumb img {
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      filter:saturate(1.15) contrast(1.05);
-      transition:transform .2s ease,filter .2s ease;
-    }
-
-    .thumb:hover {
-      transform:translateY(-3px) scale(1.01);
-      box-shadow:0 22px 45px rgba(0,0,0,0.9);
-      border-color:rgba(34,197,94,0.6);
-    }
-
-    .thumb:hover::after {
-      opacity:.05;
-    }
-
-    .thumb:hover img {
-      transform:scale(1.03);
-      filter:saturate(1.2) contrast(1.08);
-    }
-
-    .lightbox {
-      position:fixed;
-      inset:0;
-      background:rgba(2,6,23,0.92);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:50;
-      backdrop-filter:blur(14px);
-    }
-
-    .lightbox.open {
-      display:flex;
-    }
-
-    .lightbox-inner {
-      position:relative;
-      max-width:90vw;
-      max-height:88vh;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-    }
-
-    .lightbox-img-wrapper {
-      position:relative;
-      border-radius:1rem;
-      overflow:hidden;
-      border:1px solid rgba(148,163,184,0.5);
-      background:#020617;
-      box-shadow:0 26px 60px rgba(0,0,0,0.95);
-    }
-
-    .lightbox-img-wrapper img {
-      max-width:88vw;
-      max-height:82vh;
-      display:block;
-      object-fit:contain;
-    }
-
-    .lightbox-close {
-      position:absolute;
-      top:-40px;
-      right:0;
-      padding:.25rem .8rem;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.5);
-      background:rgba(15,23,42,0.95);
-      color:var(--muted);
-      font-size:.8rem;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      gap:.35rem;
-    }
-
-    .lightbox-close:hover {
-      color:var(--fg);
-      border-color:rgba(248,250,252,0.7);
-    }
-
-    .lightbox-nav {
-      position:absolute;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      pointer-events:none;
-    }
-
-    .lightbox-arrow {
-      pointer-events:auto;
-      width:40px;
-      height:40px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.6);
-      background:rgba(15,23,42,0.96);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      margin:0 .6rem;
-      color:var(--fg);
-      font-size:1.1rem;
-    }
-
-    .lightbox-arrow:hover {
-      border-color:rgba(248,250,252,0.9);
-      background:rgba(15,23,42,1);
-    }
-
-    .lightbox-counter {
-      margin-top:.6rem;
-      font-size:.8rem;
-      color:var(--muted);
-    }
-
-    @media (max-width:900px) {
-      .sidebar {
-        display:none;
-      }
-      .main {
-        padding:1.5rem 1.25rem 2.5rem;
-      }
-      .gallery-panel {
-        padding:1rem 1rem 1.5rem;
-      }
-      .gallery-grid {
-        gap:.6rem;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="logo">
-        <div class="logo-mark">P</div>
-        <div class="logo-text">
-          <h1>Pleural Seminar</h1>
-          <p>Wales · 2025</p>
-        </div>
-      </div>
-
-      <div class="nav-section">
-        <div class="nav-section-title">Navigate</div>
-        <a href="index.html" class="nav-link">
-          <span class="icon">🏠</span>
-          <span>Overview</span>
-        </a>
-        <a href="agenda.html" class="nav-link">
-          <span class="icon">🗓</span>
-          <span>Agenda</span>
-        </a>
-        <a href="faculty.html" class="nav-link">
-          <span class="icon">👩‍⚕️</span>
-          <span>Faculty</span>
-        </a>
-        <a href="gallery.html" class="nav-link active">
-          <span class="icon">🖼</span>
-          <span>Gallery</span>
-        </a>
-      </div>
-    </aside>
-
-    <main class="main">
       <header class="page-header">
         <div class="page-kicker">Pleural Seminar Wales 2025</div>
-        <div class="page-title">
-          Photos
+        <div class="page-title-row">
+          <div class="page-title-main">Photos</div>
           <span class="pill">Image gallery</span>
         </div>
-        <div class="page-subtitle">
-          Click any image below to open it in a larger gallery view, then use the arrows or your keyboard to move between photos.
-        </div>
+        <p class="page-subtitle">
+          Click any image below to open it in a larger gallery view, then use the arrows or your keyboard to move
+          between photos.
+        </p>
       </header>
 
       <section class="gallery-panel">
         <div class="gallery-intro">
           <div class="gallery-intro-text">
-            A selection of photos from the day
+            A selection of photos from the day.
           </div>
           <div class="gallery-hint">
             <div class="gallery-hint-dot"></div>
@@ -602,8 +423,8 @@
 
         <div id="galleryGrid" class="gallery-grid"></div>
       </section>
-    </main>
-  </div>
+    </div>
+  </main>
 
   <div id="lightbox" class="lightbox" aria-hidden="true">
     <div class="lightbox-inner">
@@ -622,155 +443,111 @@
   </div>
 
   <script>
-    // ADD YOUR PHOTOS HERE
-    // Put files in assets/gallery/ and reference them in this array.
-    const images = [
-      "assets/gallery/photo1.jpg",
-      "assets/gallery/photo2.jpg",
-      "assets/gallery/photo4.jpg",
-      "assets/gallery/ph
-    </div>
-  </main>
-
-  <div class="lightbox" id="lightbox" aria-hidden="true">
-    <div class="lightbox-inner">
-      <div class="lightbox-main">
-        <img id="lightboxImg" src="" alt="Gallery image" />
-      </div>
-      <div class="lightbox-controls">
-        <div class="lightbox-buttons">
-          <button class="lightbox-arrow" type="button" id="lightboxPrev" aria-label="Previous image">‹</button>
-          <button class="lightbox-arrow" type="button" id="lightboxNext" aria-label="Next image">›</button>
-        </div>
-        <button class="lightbox-close" type="button" id="lightboxClose" aria-label="Close gallery">×</button>
-      </div>
-      <div class="lightbox-counter" id="lightboxCounter"></div>
-    </div>
-  </div>
-
-  <script>
-
-    // ADD YOUR PHOTOS HERE
-    // Put files in assets/gallery/ and reference them in this array.
+    // Image list – files are expected under assets/gallery/
     const images = [
       "assets/gallery/photo1.jpg",
       "assets/gallery/photo2.jpg",
       "assets/gallery/photo4.jpg",
       "assets/gallery/photo5.jpg",
-      "assets/gallery/photo6.jpg" ,
+      "assets/gallery/photo6.jpg",
       "assets/gallery/photo7.jpg",
       "assets/gallery/photo8.jpg",
-      "assets/gallery/photo9.jpg" ,
+      "assets/gallery/photo9.jpg",
       "assets/gallery/photo10.jpg",
       "assets/gallery/photo11.jpg",
-      "assets/gallery/photo12.jpg" ,
+      "assets/gallery/photo12.jpg",
       "assets/gallery/photo13.jpg",
       "assets/gallery/photo14.jpg",
-      "assets/gallery/photo15.jpg" ,
+      "assets/gallery/photo15.jpg",
       "assets/gallery/photo16.jpg",
       "assets/gallery/photo17.jpg",
-      "assets/gallery/photo18.jpg" ,
+      "assets/gallery/photo18.jpg",
       "assets/gallery/photo19.jpg",
       "assets/gallery/photo20.jpg",
-      "assets/gallery/photo21.jpg" ,
+      "assets/gallery/photo21.jpg",
       "assets/gallery/photo22.jpg",
       "assets/gallery/photo23.jpg",
-      "assets/gallery/photo24.jpg" ,
+      "assets/gallery/photo24.jpg",
       "assets/gallery/photo25.jpg",
       "assets/gallery/photo26.jpg",
-      "assets/gallery/photo27.jpg" ,
+      "assets/gallery/photo27.jpg",
       "assets/gallery/photo28.jpg",
       "assets/gallery/photo29.jpg",
-      "assets/gallery/photo30.jpg" ,
+      "assets/gallery/photo30.jpg",
       "assets/gallery/photo31.jpg",
       "assets/gallery/photo32.jpg",
-      "assets/gallery/photo33.jpg" ,
+      "assets/gallery/photo33.jpg",
       "assets/gallery/photo34.jpg",
       "assets/gallery/photo35.jpg",
-      "assets/gallery/photo36.jpg" ,
-      "assets/gallery/photo37.jpg" 
-  
-
+      "assets/gallery/photo36.jpg",
+      "assets/gallery/photo37.jpg"
     ];
 
-    const grid = document.getElementById('galleryGrid');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightboxImg');
-    const lightboxCounter = document.getElementById('lightboxCounter');
-    const btnClose = document.getElementById('lightboxClose');
-    const btnPrev = document.getElementById('lightboxPrev');
-    const btnNext = document.getElementById('lightboxNext');
+    const grid = document.getElementById("galleryGrid");
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const lightboxCounter = document.getElementById("lightboxCounter");
+    const btnClose = document.getElementById("lightboxClose");
+    const btnPrev = document.getElementById("lightboxPrev");
+    const btnNext = document.getElementById("lightboxNext");
 
     let currentIndex = 0;
 
-    function renderThumbnails() {
-      if (!grid) return;
-      grid.innerHTML = "";
-      images.forEach((src, index) => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'thumb';
-        const img = document.createElement('img');
-        img.src = src;
-        img.alt = "Seminar photo";
-        img.loading = "lazy";
-        wrapper.appendChild(img);
-        wrapper.addEventListener('click', () => openLightbox(index));
-        grid.appendChild(wrapper);
-      });
-    }
-
     function openLightbox(index) {
-      if (!images.length) return;
       currentIndex = index;
-      updateLightboxImage();
-      lightbox.classList.add('open');
-      lightbox.setAttribute('aria-hidden', 'false');
-      document.body.style.overflow = 'hidden';
+      updateLightbox();
+      lightbox.classList.add("open");
+      lightbox.setAttribute("aria-hidden", "false");
     }
 
     function closeLightbox() {
-      lightbox.classList.remove('open');
-      lightbox.setAttribute('aria-hidden', 'true');
-      document.body.style.overflow = '';
-    }
-
-    function updateLightboxImage() {
-      const src = images[currentIndex];
-      lightboxImg.src = src;
-      lightboxCounter.textContent = (currentIndex + 1) + " / " + images.length;
+      lightbox.classList.remove("open");
+      lightbox.setAttribute("aria-hidden", "true");
     }
 
     function showPrev() {
-      if (!images.length) return;
       currentIndex = (currentIndex - 1 + images.length) % images.length;
-      updateLightboxImage();
+      updateLightbox();
     }
 
     function showNext() {
-      if (!images.length) return;
       currentIndex = (currentIndex + 1) % images.length;
-      updateLightboxImage();
+      updateLightbox();
     }
 
-    btnClose.addEventListener('click', closeLightbox);
-    btnPrev.addEventListener('click', showPrev);
-    btnNext.addEventListener('click', showNext);
+    function updateLightbox() {
+      lightboxImg.src = images[currentIndex];
+      lightboxCounter.textContent = `Photo ${currentIndex + 1} of ${images.length}`;
+    }
 
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) {
-        closeLightbox();
-      }
+    function renderThumbnails() {
+      images.forEach((src, index) => {
+        const div = document.createElement("div");
+        div.className = "thumb";
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = `Pleural Seminar Wales photo ${index + 1}`;
+        div.appendChild(img);
+        div.addEventListener("click", () => openLightbox(index));
+        grid.appendChild(div);
+      });
+    }
+
+    btnClose.addEventListener("click", closeLightbox);
+    btnPrev.addEventListener("click", showPrev);
+    btnNext.addEventListener("click", showNext);
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLightbox();
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (!lightbox.classList.contains('open')) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') showPrev();
-      if (e.key === 'ArrowRight') showNext();
+    document.addEventListener("keydown", (e) => {
+      if (!lightbox.classList.contains("open")) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") showPrev();
+      if (e.key === "ArrowRight") showNext();
     });
 
     renderThumbnails();
-  
   </script>
 </body>
 </html>
