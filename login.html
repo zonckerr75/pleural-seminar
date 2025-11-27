@@ -2,541 +2,555 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pleural Seminar Wales – Secure NHS Login</title>
+  <title>PleuraWales – Log in</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg: #020617;
-      --bg-alt: #020617;
-      --card: #020617;
-      --accent: #16a34a; /* green accent */
-      --accent-soft: rgba(22, 163, 74, 0.18);
-      --accent-strong: rgba(22, 163, 74, 0.7);
+      --bg-color: #020617;
+      --card-bg: #020617;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
       --text-main: #e5e7eb;
       --text-muted: #9ca3af;
-      --error: #f97373;
+      --danger: #f97373;
+      --border-color: #1f2937;
+      --radius-lg: 18px;
+      --radius-sm: 8px;
+      --shadow-soft: 0 24px 50px rgba(15, 23, 42, 0.85);
     }
 
     * {
       box-sizing: border-box;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(15, 23, 42, 0.9), transparent 55%),
+        radial-gradient(circle at bottom, rgba(15, 23, 42, 0.9), #020617 60%);
+      color: var(--text-main);
       display: flex;
       align-items: center;
       justify-content: center;
-      background:
-        radial-gradient(circle at 0 0, #0f172a 0, transparent 55%),
-        radial-gradient(circle at 100% 0, #022c22 0, transparent 55%),
-        #020617;
-      color: var(--text-main);
-    }
-
-    .wrapper {
-      width: 100%;
-      max-width: 480px;
       padding: 24px;
     }
 
-    .card {
+    .shell {
+      width: 100%;
+      max-width: 960px;
+      background: radial-gradient(circle at top left, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.99));
+      border-radius: 26px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 18px 20px 24px;
+      box-shadow: var(--shadow-soft);
       position: relative;
-      border-radius: 20px;
-      padding: 22px 20px 18px;
-      background: radial-gradient(circle at top left, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
-      border: 1px solid rgba(148,163,184,0.25);
-      box-shadow:
-        0 24px 60px rgba(0,0,0,0.75),
-        inset 0 1px 0 rgba(255,255,255,0.02);
       overflow: hidden;
     }
 
-    .card::before {
+    @media (min-width: 768px) {
+      .shell {
+        padding: 22px 30px 26px;
+      }
+    }
+
+    .shell::before {
       content: "";
       position: absolute;
-      inset: -120px;
+      inset: -40%;
       background:
-        radial-gradient(circle at 0 0, var(--accent-soft), transparent 55%),
-        radial-gradient(circle at 100% 0, rgba(56,189,248,0.16), transparent 55%);
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.06), transparent 55%);
       opacity: 0.5;
       pointer-events: none;
     }
 
-    .card-inner {
+    .content {
       position: relative;
       z-index: 1;
     }
 
-    .top-row {
+    /* Top navigation (matches index.html) */
+    .nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 10px;
-      gap: 12px;
+      gap: 14px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      padding-bottom: 10px;
     }
 
-    .logo-block {
+    .nav-brand {
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .logo-image {
+    .nav-logo {
       width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      border: 1px solid rgba(148,163,184,0.7);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at 30% 0%, rgba(248,250,252,0.18), rgba(15,23,42,1));
-      box-shadow: 0 8px 20px rgba(0,0,0,0.9);
-    }
-
-    .logo-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      height: auto;
+      border-radius: 6px;
+      background: none;
+      box-shadow: none;
       display: block;
     }
 
-    .logo-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .logo-text span:first-child {
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-    }
-
-    .logo-text span:last-child {
-      font-size: 16px;
-      font-weight: 600;
-      color: #e5e7eb;
-    }
-
-    .tag {
-      padding: 5px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      border: 1px solid rgba(148,163,184,0.35);
-      color: var(--text-muted);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(15,23,42,0.9);
-    }
-
-    .tag-pill {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--accent);
-      box-shadow: 0 0 12px var(--accent-strong);
-    }
-
-    h1 {
-      font-size: 22px;
-      margin: 6px 0 4px;
-    }
-
-    .subtitle {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      line-height: 1.5;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    label {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    input {
-      width: 100%;
-      padding: 9px 11px;
-      border-radius: 9px;
-      border: 1px solid rgba(148,163,184,0.6);
-      background: rgba(15,23,42,0.94);
-      color: var(--text-main);
-      font-size: 14px;
-      outline: none;
-      transition: border 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
-    }
-
-    input::placeholder {
-      color: #6b7280;
-    }
-
-    input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent-soft);
-      background: rgba(15,23,42,1);
-    }
-
-    .hint {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .nhs-note {
-      font-size: 11px;
-      color: #e0f2fe;
-      background: rgba(8,47,73,0.9);
-      border-radius: 9px;
-      padding: 7px 9px;
-      border: 1px solid rgba(56,189,248,0.5);
-      margin-top: 2px;
-      margin-bottom: 8px;
-      line-height: 1.45;
-    }
-
-    .nhs-note code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      font-size: 11px;
-      color: #bae6fd;
-    }
-
-    .btn-row {
-      margin-top: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    button[type="submit"] {
-      border: none;
-      border-radius: 999px;
-      padding: 9px 16px;
-      font-size: 14px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      color: #ecfdf5;
-      background: radial-gradient(circle at 0 0, #4ade80, #16a34a);
-      box-shadow:
-        0 10px 24px rgba(22,163,74,0.75),
-        inset 0 1px 0 rgba(255,255,255,0.18);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.08s ease;
-    }
-
-    button[type="submit"]:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow:
-        0 14px 30px rgba(22,163,74,0.85),
-        inset 0 1px 0 rgba(255,255,255,0.2);
-      filter: brightness(1.03);
-    }
-
-    button[type="submit"]:active:not(:disabled) {
-      transform: translateY(0);
-      box-shadow:
-        0 6px 16px rgba(22,163,74,0.7),
-        inset 0 1px 0 rgba(255,255,255,0.16);
-    }
-
-    button[type="submit"]:disabled {
-      opacity: 0.7;
-      cursor: default;
-      box-shadow:
-        0 4px 10px rgba(15,23,42,0.8),
-        inset 0 1px 0 rgba(255,255,255,0.06);
-    }
-
-    .btn-subtext {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .status {
-      font-size: 12px;
-      min-height: 18px;
-      margin-top: 6px;
-    }
-
-    .status.error {
-      color: var(--error);
-    }
-
-    .status.success {
-      color: #bbf7d0;
-    }
-
-    .helper-links {
-      margin-top: 6px;
-      font-size: 11px;
-      color: var(--text-muted);
+    .nav-title {
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .helper-links a,
-    .footer-text a {
-      color: var(--accent);
-      text-decoration: underline;
-      text-decoration-thickness: 1px;
-      text-underline-offset: 3px;
+    .nav-title-main {
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
 
-    .footer-text {
-      font-size: 11px;
+    .nav-title-sub {
+      font-size: 0.78rem;
       color: var(--text-muted);
-      margin-top: 10px;
-      line-height: 1.5;
     }
 
-    .footer-text strong {
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.86rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-link {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      text-decoration: none;
+      background: transparent;
+      transition: all 0.16s ease-out;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+      border-color: rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .nav-link.active {
+      color: #e0f2fe;
+      border-color: rgba(56, 189, 248, 0.9);
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.95));
+      box-shadow: 0 12px 26px rgba(8, 47, 73, 0.8);
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nav-links {
+        justify-content: flex-start;
+      }
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.1fr);
+      gap: 20px;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 880px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .intro {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 520px;
+    }
+
+    .intro h1 {
+      margin: 0 0 8px;
+      font-size: 1.4rem;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .intro-tag {
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .intro p {
+      margin: 0 0 10px;
+    }
+
+    .intro ul {
+      margin: 6px 0 0 1rem;
+      padding: 0;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .intro ul li {
+      margin-bottom: 4px;
+    }
+
+    .card {
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.98), #020617);
+      padding: 16px 16px 18px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 4px;
+    }
+
+    .card-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .card-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: right;
+      max-width: 180px;
+    }
+
+    .status {
+      font-size: 0.78rem;
+      margin-bottom: 10px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.18);
+    }
+
+    .status-dot.error {
+      background: #f97373;
+      box-shadow: 0 0 0 6px rgba(248, 113, 113, 0.22);
+    }
+
+    .status span.label {
+      font-weight: 500;
       color: #e5e7eb;
     }
 
-    @media (max-width: 480px) {
-      .card {
-        padding: 20px 16px 16px;
-      }
+    .field {
+      margin-bottom: 12px;
+    }
 
-      h1 {
-        font-size: 20px;
-      }
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .input {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.16s ease-out;
+    }
+
+    .input:focus {
+      border-color: rgba(56, 189, 248, 0.85);
+      box-shadow: 0 0 0 1px rgba(8, 47, 73, 0.7);
+      background: rgba(15, 23, 42, 1);
+    }
+
+    .hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin: 2px 0 0;
+    }
+
+    .hint a,
+    .hint a:visited {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .hint a:hover {
+      text-decoration: underline;
+    }
+
+    .error {
+      font-size: 0.78rem;
+      color: var(--danger);
+      margin: 4px 0 0;
+    }
+
+    .success {
+      font-size: 0.8rem;
+      color: #4ade80;
+      margin: 6px 0 0;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .btn-primary {
+      border: none;
+      border-radius: 999px;
+      background: radial-gradient(circle at top left, #38bdf8, #0ea5e9);
+      color: #020617;
+      font-weight: 600;
+      font-size: 0.86rem;
+      padding: 8px 18px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 16px 32px rgba(8, 47, 73, 0.8);
+      transition: all 0.16s ease-out;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 46px rgba(8, 47, 73, 0.95);
+    }
+
+    .btn-primary[disabled] {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .link-secondary,
+    .link-secondary:visited {
+      font-size: 0.8rem;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .link-secondary:hover {
+      text-decoration: underline;
+    }
+
+    .footer-note {
+      margin-top: 10px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .footer-note a,
+    .footer-note a:visited {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer-note a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div class="wrapper">
-    <div class="card">
-      <div class="card-inner">
-        <div class="top-row">
-          <div class="logo-block">
-            <div class="logo-image">
-              <!-- Using your no-text logo from /assets/branding -->
-              <img src="/assets/branding/logo.png" alt="Pleural Seminar Wales logo" />
-            </div>
-            <div class="logo-text">
-              <span>Pleural Seminar Wales</span>
-              <span>Secure NHS Access</span>
-            </div>
+  <main class="shell">
+    <div class="content">
+      <header class="nav">
+        <div class="nav-brand">
+          <img src="assets/branding/logo.png" class="nav-logo" alt="PleuraWales logo" />
+          <div class="nav-title">
+            <div class="nav-title-main">Pleural Seminar Wales</div>
+            <div class="nav-title-sub">Educational network for pleural disease</div>
           </div>
-          <span class="tag">
-            <span class="tag-pill"></span>
-            NHS-only
-          </span>
         </div>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="news.html" class="nav-link">News &amp; Events</a>
+          <a href="about.html" class="nav-link">About</a>
+          <a href="members.html" class="nav-link active">Members</a>
+        </nav>
+      </header>
 
-        <h1>Sign in with your NHS email</h1>
-        <p class="subtitle">
-          No password to remember. We’ll email you a secure, one-time sign-in link. Once signed in,
-          you’ll stay logged in on this browser until you sign out.
-        </p>
+      <section class="layout">
+        <section class="intro">
+          <h1>
+            Sign in
+            <span class="intro-tag">Members area</span>
+          </h1>
+          <p>
+            Use your registered email address and password to access the PleuraWales members area. Once signed in, you
+            can view protocols, forum spaces, certificates and material from previous seminars.
+          </p>
+          <p>
+            If you have recently registered, please check your inbox for a message asking you to confirm your email and
+            set a password before signing in here.
+          </p>
 
-        <form id="loginForm">
-          <div class="field">
-            <label for="name">Full name</label>
-            <input id="name" type="text" autocomplete="name" placeholder="e.g. John Doe" required />
-          </div>
+          <ul>
+            <li><strong>NHS email users</strong> – use the email you registered with on the PleuraWales portal.</li>
+            <li>
+              <strong>Other professional emails</strong> – you will only be able to sign in once your request has been
+              approved.
+            </li>
+          </ul>
+        </section>
 
-          <div class="field">
-            <label for="org">Organisation</label>
-            <input id="org" type="text" autocomplete="organization" placeholder="e.g. HB / Hospital name" required />
-            <div class="hint">Hospital / Health board / Organisation</div>
-          </div>
-
-          <div class="field">
-            <label for="email">NHS email address</label>
-            <input
-              id="email"
-              type="email"
-              autocomplete="email"
-              placeholder="name@wales.nhs.uk or name@nhs.net"
-              required
-            />
-          </div>
-
-          <div class="nhs-note">
-            Access is restricted to NHS emails:
-            <br />• <code>@wales.nhs.uk</code>
-            <br />• <code>@nhs.net</code>
-          </div>
-
-          <div class="btn-row">
-            <button type="submit" id="submitBtn">
-              <span id="btnLabel">Send secure login link</span>
-            </button>
-            <div class="btn-subtext">
-              Already signed in on this device? You’ll be taken straight to the main site.
+        <section class="card" aria-label="Login form">
+          <header class="card-header">
+            <div>
+              <h2 class="card-title">Log in to PleuraWales</h2>
+              <p class="card-subtitle">
+                For security, please only sign in on trusted devices and remember to log out when you have finished.
+              </p>
             </div>
+           
+           
+          </header>
+
+          <div class="status" id="status-normal">
+            <span class="status-dot"></span>
+            <span class="label">Ready</span>
+            <span>– enter your details and we will check them against the members system.</span>
+          </div>
+          <div class="status" id="status-error" hidden>
+            <span class="status-dot error"></span>
+            <span class="label">There was a problem signing you in.</span>
+            <span id="status-error-text"></span>
           </div>
 
-          <div id="status" class="status"></div>
+          <form id="login-form" novalidate>
+            <div class="field">
+              <label for="email">Email address</label>
+              <input
+                id="email"
+                class="input"
+                type="email"
+                autocomplete="email"
+                placeholder="name@wales.nhs.uk or work email"
+                required
+              />
+            </div>
 
-          <div class="helper-links">
-            <span>Didn't receive the email?</span>
-            <span>
-              • Check your <strong>spam / junk</strong> folder<br />
-              • Make sure you used your <strong>NHS email</strong><br />
-              • Or simply try sending the link again<br />
-              • If problems persist, email
-              <a href="mailto:admin@pleuralseminar.wales">admin@pleuralseminar.wales</a>
-            </span>
-          </div>
-        </form>
+            <div class="field">
+              <label for="password">Password</label>
+              <input
+                id="password"
+                class="input"
+                type="password"
+                autocomplete="current-password"
+                required
+              />
+              <p class="hint">
+                <a href="forgot-password.html">Forgot your password?</a>
+              </p>
+            </div>
 
-        <div class="footer-text">
-          <strong>No password required.</strong> Your NHS inbox is your key. If you continue to have
-          problems signing in, please email
-          <a href="mailto:admin@pleuralseminar.wales">admin@pleuralseminar.wales</a>.
-        </div>
-      </div>
+            <div class="btn-row">
+              <button type="submit" class="btn-primary" id="login-submit">
+                <span>Log in</span>
+                <span aria-hidden="true">→</span>
+              </button>
+              <a href="registration.html" class="link-secondary">New to PleuraWales? Create an account</a>
+            </div>
+          </form>
+
+          <p class="footer-note">
+            Having trouble accessing your account? Please contact
+            <a href="mailto:admin@pleurawales.org.uk">admin@pleurawales.org.uk</a> with your name, role and workplace.
+          </p>
+        </section>
+      </section>
     </div>
-  </div>
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
+  </main>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
-      authDomain: "pleural-seminar-2025.firebaseapp.com",
-      projectId: "pleural-seminar-2025",
-      storageBucket: "pleural-seminar-2025.appspot.com",
-      messagingSenderId: "914784082205",
-      appId: "1:1:914784082205:web:448e2d4fe8e9579075a9f4"
-    };
+    // Placeholder client-side behaviour only.
+    // In production this will call Firebase Authentication's signInWithEmailAndPassword
+    // and redirect to members.html on success.
+    (function () {
+      const form = document.getElementById("login-form");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const submitBtn = document.getElementById("login-submit");
+      const statusNormal = document.getElementById("status-normal");
+      const statusError = document.getElementById("status-error");
+      const statusErrorText = document.getElementById("status-error-text");
 
-    if (firebase.apps.length === 0) {
-      firebase.initializeApp(firebaseConfig);
-    }
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        statusError.hidden = true;
+        statusNormal.hidden = false;
+        statusErrorText.textContent = "";
 
-    const auth = firebase.auth();
-    const functions = firebase.functions();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
 
-    const loginForm = document.getElementById("loginForm");
-    const statusEl = document.getElementById("status");
-    const submitBtn = document.getElementById("submitBtn");
-    const btnLabel = document.getElementById("btnLabel");
-
-    function setStatus(message, type) {
-      statusEl.textContent = message || "";
-      statusEl.className = "status" + (type ? " " + type : "");
-    }
-
-    function setLoading(isLoading) {
-      submitBtn.disabled = isLoading;
-      btnLabel.textContent = isLoading ? "Sending link…" : "Send secure login link";
-    }
-
-    function isValidNhsEmail(email) {
-      if (!email) return false;
-      const lower = email.trim().toLowerCase();
-      return lower.endsWith("@nhs.net") || lower.endsWith("@wales.nhs.uk");
-    }
-
-    const EMAIL_KEY = "ps_login_email";
-
-    // --- COMPLETE EMAIL LINK SIGN-IN IF USER CAME FROM EMAIL ---
-    (function handleEmailLinkSignIn() {
-      const href = window.location.href;
-      if (auth.isSignInWithEmailLink(href)) {
-        let email = window.localStorage.getItem(EMAIL_KEY);
-
-        if (!email) {
-          email = window.prompt("Please confirm your NHS email address to complete sign in:");
+        if (!email || !password) {
+          statusNormal.hidden = true;
+          statusError.hidden = false;
+          statusErrorText.textContent = " Please enter both your email address and password.";
+          return;
         }
 
-        if (email) {
-          auth
-            .signInWithEmailLink(email, href)
-            .then(() => {
-              window.localStorage.removeItem(EMAIL_KEY);
-              // Clean up URL (remove oobCode etc) then go to main site
-              window.history.replaceState({}, document.title, "/login.html");
-              window.location.href = "/index.html";
-            })
-            .catch((err) => {
-              console.error("Error completing email-link sign-in:", err);
-              setStatus("We couldn't complete your sign-in link. Please request a new link.", "error");
-            });
-        }
-      }
+        // Placeholder UX: pretend we are checking with the server.
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Checking...";
+
+        setTimeout(function () {
+          // In the live version, this branch will be replaced with success / error
+          // logic based on Firebase's signInWithEmailAndPassword response.
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Log in";
+
+          // For now we simply show a generic success hint or keep the normal state.
+          statusNormal.hidden = false;
+        }, 600);
+      });
     })();
-
-    // If already signed in, go straight to the main site
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        window.location.href = "/index.html";
-      }
-    });
-
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      setStatus("", "");
-      const name = document.getElementById("name").value.trim();
-      const org = document.getElementById("org").value.trim();
-      const email = document.getElementById("email").value.trim();
-
-      if (!isValidNhsEmail(email)) {
-        setStatus("Please use a valid @nhs.net or @wales.nhs.uk email address.", "error");
-        return;
-      }
-
-      // Save email locally so we can complete sign-in when user clicks the link
-      window.localStorage.setItem(EMAIL_KEY, email);
-
-      setLoading(true);
-
-      try {
-        const sendLoginLink = functions.httpsCallable("sendLoginLink");
-        const result = await sendLoginLink({ email, name, organisation: org });
-
-        if (result.data && result.data.success) {
-          setStatus(
-            "If this email is recognised, a secure login link has been sent to your NHS inbox.",
-            "success"
-          );
-          loginForm.reset();
-        } else {
-          setStatus("We couldn't send a login link just now. Please try again in a moment.", "error");
-        }
-      } catch (err) {
-        console.error(err);
-        let message = "Something went wrong while sending your login link.";
-        if (err && err.message && typeof err.message === "string") {
-          if (err.message.toLowerCase().includes("permission")) {
-            message = "Login is currently restricted. Please contact the organising team.";
-          }
-        }
-        setStatus(message, "error");
-      } finally {
-        setLoading(false);
-      }
-    });
   </script>
 </body>
 </html>
