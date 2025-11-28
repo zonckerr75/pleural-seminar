@@ -1,4 +1,3 @@
-// assets/js/auth-guard.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
@@ -14,27 +13,38 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const userEmailSpan = document.getElementById("user-email");
-const logoutBtn = document.getElementById("logout-btn");
+function displayNameForUser(user) {
+  if (user.displayName && user.displayName.trim() !== "") {
+    return user.displayName.trim();
+  }
+  if (user.email) {
+    const email = user.email;
+    const atIndex = email.indexOf("@");
+    return atIndex > 0 ? email.slice(0, atIndex) : email;
+  }
+  return "PleuraWales member";
+}
 
-const currentPath = window.location.pathname;
-const redirectParam = encodeURIComponent(currentPath + window.location.search);
+const nameEl = document.getElementById("user-name");
+const logoutBtn = document.getElementById("logout-btn");
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
-    // Preserve where they were trying to go
-    window.location.href = "login.html?redirect=" + redirectParam;
+    // Not signed in – send to login
+    window.location.href = "login.html";
     return;
   }
 
-  if (userEmailSpan) {
-    userEmailSpan.textContent = user.email;
+  if (nameEl) {
+    nameEl.textContent = displayNameForUser(user);
   }
 
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       signOut(auth).then(() => {
         window.location.href = "login.html";
+      }).catch((err) => {
+        console.error("Error signing out:", err);
       });
     });
   }

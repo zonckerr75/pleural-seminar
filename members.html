@@ -304,10 +304,160 @@
       font-size: 0.78rem;
       color: var(--text-muted);
     }
+  
+    /* Top navigation (shared) */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+      padding-bottom: 10px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-logo {
+      width: 40px;
+      height: auto;
+      border-radius: 6px;
+      background: none;
+      box-shadow: none;
+      display: block;
+    }
+
+    .nav-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .nav-title-main {
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .nav-title-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.86rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-link {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      text-decoration: none;
+      background: transparent;
+      transition: all 0.16s ease-out;
+    }
+
+    .nav-link:hover {
+      color: var(--text-main);
+      border-color: rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .nav-link.active {
+      color: #e0f2fe;
+      border-color: rgba(56, 189, 248, 0.9);
+      background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), rgba(15, 23, 42, 0.95));
+      box-shadow: 0 12px 26px rgba(8, 47, 73, 0.8);
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .nav-links {
+        justify-content: flex-start;
+      }
+    }
+
   </style>
 </head>
+
+
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
+    authDomain: "pleural-seminar-2025.firebaseapp.com",
+    projectId: "pleural-seminar-2025",
+    storageBucket: "pleural-seminar-2025.appspot.com",
+    messagingSenderId: "914784082205",
+    appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const userEmailSpan = document.getElementById("user-email");
+  const logoutBtn = document.getElementById("logout-btn");
+
+  onAuthStateChanged(auth, user => {
+    if (!user) {
+      // Not signed in ➜ send to login page
+      window.location.href = "login.html";
+      return;
+    }
+
+    // User is signed in ➜ show their email
+    if (userEmailSpan) {
+      userEmailSpan.textContent = user.email;
+    }
+
+    // Logout button
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        signOut(auth).then(() => {
+          window.location.href = "login.html";
+        });
+      });
+    }
+  });
+</script>
+
+
+
+
 <body>
   <main class="shell">
+    <header class="nav">
+      <div class="nav-brand">
+        <img src="assets/branding/logo.png" class="nav-logo" alt="PleuraWales logo" />
+        <div class="nav-title">
+          <div class="nav-title-main">Wales Pleural Group</div>
+          <div class="nav-title-sub">Members dashboard</div>
+        </div>
+      </div>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="news.html" class="nav-link">News &amp; Events</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="members.html" class="nav-link active">Members</a>
+      </nav>
+    </header>
+
     <div class="content">
       <header class="top">
         <div class="title-block">
@@ -328,6 +478,7 @@
           <div class="user-label">
             <span class="user-caption">Logged in as</span>
             <span id="user-name">Loading…</span>
+            
           </div>
         </div>
       </header>
@@ -391,7 +542,7 @@
               <span class="card-pill">Pleural Seminar Wales</span>
             </h2>
             <p>
-              Retrieve certificates linked to your email from the most recent Pleural Seminar Wales seminar, including attendance
+              Retrieve certificates linked to your email from the most recent seminar, including attendance
               and presentation certificates.
             </p>
             <ul class="card-list">
@@ -456,58 +607,7 @@
     </div>
   </main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
-      authDomain: "pleural-seminar-2025.firebaseapp.com",
-      projectId: "pleural-seminar-2025",
-      storageBucket: "pleural-seminar-2025.appspot.com",
-      messagingSenderId: "914784082205",
-      appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const nameEl = document.getElementById("user-name");
-    const logoutBtn = document.getElementById("logout-btn");
-
-    function displayNameForUser(user) {
-      if (user.displayName && user.displayName.trim() !== "") {
-        return user.displayName.trim();
-      }
-      if (user.email) {
-        const email = user.email;
-        const atIndex = email.indexOf("@");
-        if (atIndex > 0) {
-          return email.slice(0, atIndex);
-        }
-        return email;
-      }
-      return "PleuraWales member";
-    }
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      if (nameEl) {
-        nameEl.textContent = displayNameForUser(user);
-      }
-
-      if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-          signOut(auth).then(() => {
-            window.location.href = "login.html";
-          });
-        });
-      }
-    });
-  </script>
+  
+  <script type="module" src="auth-guard.js"></script>
 </body>
 </html>
