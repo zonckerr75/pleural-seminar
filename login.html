@@ -279,15 +279,60 @@
       text-decoration: underline;
     }
   
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-wrapper input[type="password"],
+    .password-wrapper input[type="text"] {
+      flex: 1;
+      padding-right: 2.2rem;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 0.55rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0;
+    }
+
+    .password-toggle:focus {
+      outline: none;
+      color: var(--accent);
+    }
+
     .login-status {
       font-size: 0.8rem;
       color: var(--text-muted);
     }
+
     .login-status.error {
       color: var(--danger);
     }
+
     .login-status.success {
       color: #4ade80;
+    }
+
+    .link-button {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      font: inherit;
+      color: var(--accent);
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .link-button:hover {
+      text-decoration: underline;
     }
 
   </style>
@@ -331,11 +376,14 @@
 
           <div class="field-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" autocomplete="current-password"
-              placeholder="Your password" />
+            <div class="password-wrapper">
+              <input type="password" id="password" name="password" autocomplete="current-password"
+                placeholder="Your password" />
+              <button type="button" class="password-toggle" aria-label="Show password" id="password-toggle">👁</button>
+            </div>
             <div class="helper-row">
               <span id="login-status" class="login-status"></span>
-              <a href="set-password.html">Forgot password?</a>
+              <button type="button" class="link-button" id="forgot-password-btn">Forgot password?</button>
             </div>
           </div>
 
@@ -359,7 +407,11 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      sendPasswordResetEmail
+    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
@@ -377,11 +429,46 @@
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const statusEl = document.getElementById("login-status");
+    const forgotBtn = document.getElementById("forgot-password-btn");
+    const toggleBtn = document.getElementById("password-toggle");
 
     function setStatus(message, type = "") {
       if (!statusEl) return;
       statusEl.textContent = message || "";
       statusEl.className = "login-status" + (type ? " " + type : "");
+    }
+
+    if (toggleBtn && passwordInput) {
+      toggleBtn.addEventListener("click", () => {
+        const isPassword = passwordInput.type === "password";
+        passwordInput.type = isPassword ? "text" : "password";
+        toggleBtn.textContent = isPassword ? "🙈" : "👁";
+        toggleBtn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+      });
+    }
+
+    if (forgotBtn) {
+      forgotBtn.addEventListener("click", async () => {
+        setStatus("");
+        const email = (emailInput.value || "").trim();
+        if (!email) {
+          setStatus("Please enter your email address first.", "error");
+          return;
+        }
+        try {
+          await sendPasswordResetEmail(auth, email);
+          setStatus("If this email is registered, a password reset link has been sent.", "success");
+        } catch (error) {
+          console.error("sendPasswordResetEmail error:", error);
+          let message = "There was a problem sending the reset email. Please try again.";
+          if (error.code === "auth/user-not-found") {
+            message = "No account found for that email address.";
+          } else if (error.code === "auth/invalid-email") {
+            message = "Please check the email address and try again.";
+          }
+          setStatus(message, "error");
+        }
+      });
     }
 
     if (form) {
@@ -397,13 +484,13 @@
           return;
         }
 
-        try {
-          const button = form.querySelector("button[type='submit']");
-          if (button) {
-            button.disabled = true;
-            button.innerHTML = "<span>Signing in…</span><span aria-hidden='true'>→</span>";
-          }
+        const button = form.querySelector("button[type='submit']");
+        if (button) {
+          button.disabled = true;
+          button.innerHTML = "<span>Signing in…</span>";
+        }
 
+        try {
           await signInWithEmailAndPassword(auth, email, password);
           setStatus("Signed in successfully. Redirecting…", "success");
           window.location.href = "members.html";
@@ -421,10 +508,10 @@
           }
           setStatus(message, "error");
         } finally {
-          const button = form.querySelector("button[type='submit']");
-          if (button) {
-            button.disabled = false;
-            button.innerHTML = "<span>Log in</span><span aria-hidden='true'>→</span>";
+          const button2 = form.querySelector("button[type='submit']");
+          if (button2) {
+            button2.disabled = false;
+            button2.innerHTML = "<span>Log in</span><span aria-hidden='true'>→</span>";
           }
         }
       });
