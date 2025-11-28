@@ -22,7 +22,7 @@ function displayNameForUser(user) {
     const atIndex = email.indexOf("@");
     return atIndex > 0 ? email.slice(0, atIndex) : email;
   }
-  return "PleuraWales member";
+  return "";
 }
 
 const nameEl = document.getElementById("user-name");
@@ -30,22 +30,28 @@ const logoutBtn = document.getElementById("logout-btn");
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
-    // Not signed in – send to login
     window.location.href = "login.html";
     return;
   }
 
   if (nameEl) {
-    nameEl.textContent = displayNameForUser(user);
+    const name = displayNameForUser(user);
+    if (name) {
+      nameEl.textContent = name;
+    } else {
+      nameEl.textContent = "";
+    }
   }
 
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
-      signOut(auth).then(() => {
-        window.location.href = "login.html";
-      }).catch((err) => {
-        console.error("Error signing out:", err);
-      });
+      signOut(auth)
+        .then(() => {
+          window.location.href = "login.html";
+        })
+        .catch((err) => {
+          console.error("Error signing out:", err);
+        });
     });
   }
 });
