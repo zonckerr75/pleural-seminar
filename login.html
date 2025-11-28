@@ -244,24 +244,32 @@
 
     .btn-primary {
       border-radius: 999px;
-      border: none;
-      background: radial-gradient(circle at top left, #38bdf8, #0ea5e9);
-      color: #020617 !important;
+      border: 1px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
       font-weight: 600;
       font-size: 0.9rem;
-      padding: 9px 20px;
+      padding: 8px 16px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
-      box-shadow: 0 16px 32px rgba(8, 47, 73, 0.8);
-      transition: all 0.16s ease-out;
+      box-shadow: none;
+      transition: background-color 0.16s ease-out, color 0.16s ease-out, transform 0.16s ease-out;
       margin-top: 10px;
     }
 
     .btn-primary:hover {
+      background-color: var(--accent-soft);
+      color: var(--text-main);
       transform: translateY(-1px);
-      box-shadow: 0 20px 40px rgba(8, 47, 73, 0.95);
+    }
+
+    @media (max-width: 600px) {
+      .btn-primary {
+        width: 100%;
+      }
     }
 
     .small-text {
@@ -278,61 +286,6 @@
     .small-text a:hover {
       text-decoration: underline;
     }
-  
-    .password-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-
-    .password-wrapper input[type="password"],
-    .password-wrapper input[type="text"] {
-      flex: 1;
-      padding-right: 34px;
-    }
-
-    .password-toggle {
-      position: absolute;
-      right: 8px;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.9rem;
-      padding: 0;
-    }
-
-    .password-toggle:focus {
-      outline: none;
-      color: var(--accent);
-    }
-
-    .login-status {
-      min-height: 1em;
-    }
-
-    .login-status.error {
-      color: var(--danger);
-    }
-
-    .login-status.success {
-      color: #4ade80;
-    }
-
-    .link-button {
-      background: none;
-      border: none;
-      padding: 0;
-      font: inherit;
-      color: var(--accent);
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .link-button:hover {
-      text-decoration: underline;
-    }
-
   </style>
 </head>
 <body>
@@ -374,20 +327,19 @@
 
           <div class="field-group">
             <label for="password">Password</label>
-            <div class="password-wrapper">
-              <input type="password" id="password" name="password" autocomplete="current-password"
-                placeholder="Your password" />
-              <button type="button" class="password-toggle" aria-label="Show password" id="password-toggle">👁</button>
-            </div>
+            <input type="password" id="password" name="password" autocomplete="current-password"
+              placeholder="Your password" />
             <div class="helper-row">
-              <span id="login-status" class="login-status"></span>
-              <button type="button" class="link-button" id="forgot-password-btn">Forgot password?</button>
+              <span></span>
+              <a href="set-password.html">Forgot password?</a>
             </div>
           </div>
 
           <button type="submit" class="btn-primary">
             <span>Log in</span>
             <span aria-hidden="true">→</span>
+          </button>
+
           <p class="small-text">
             New to the members area?
             <a href="registration.html">Create an account</a>.
@@ -400,121 +352,5 @@
       </section>
     </div>
   </main>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      sendPasswordResetEmail
-    } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZq933hFxLT1K49auoZjBnYWEdi2mKUFI",
-      authDomain: "pleural-seminar-2025.firebaseapp.com",
-      projectId: "pleural-seminar-2025",
-      storageBucket: "pleural-seminar-2025.appspot.com",
-      messagingSenderId: "914784082205",
-      appId: "1:914784082205:web:448e2d4fe8e9579075a9f4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const form = document.querySelector("form");
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const statusEl = document.getElementById("login-status");
-    const forgotBtn = document.getElementById("forgot-password-btn");
-    const toggleBtn = document.getElementById("password-toggle");
-
-    function setStatus(message, type = "") {
-      if (!statusEl) return;
-      statusEl.textContent = message || "";
-      statusEl.className = "login-status" + (type ? " " + type : "");
-    }
-
-    if (toggleBtn && passwordInput) {
-      toggleBtn.addEventListener("click", () => {
-        const isPassword = passwordInput.type === "password";
-        passwordInput.type = isPassword ? "text" : "password";
-        toggleBtn.textContent = isPassword ? "🙈" : "👁";
-        toggleBtn.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
-      });
-    }
-
-    if (forgotBtn) {
-      forgotBtn.addEventListener("click", async () => {
-        setStatus("");
-        const email = (emailInput.value || "").trim();
-        if (!email) {
-          setStatus("Please enter your email address first.", "error");
-          return;
-        }
-        try {
-          await sendPasswordResetEmail(auth, email, {
-          url: "https://pleurawales.org.uk/set-password.html"
-        });
-          setStatus("If this email is registered, a password reset link has been sent.", "success");
-        } catch (error) {
-          console.error("sendPasswordResetEmail error:", error);
-          let message = "There was a problem sending the reset email. Please try again.";
-          if (error.code === "auth/user-not-found") {
-            message = "No account found for that email address.";
-          } else if (error.code === "auth/invalid-email") {
-            message = "Please check the email address and try again.";
-          }
-          setStatus(message, "error");
-        }
-      });
-    }
-
-    if (form) {
-      form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        setStatus("");
-
-        const email = (emailInput.value || "").trim();
-        const password = (passwordInput.value || "").trim();
-
-        if (!email || !password) {
-          setStatus("Please enter both email and password.", "error");
-          return;
-        }
-
-        try {
-          const button = form.querySelector("button[type='submit']");
-          if (button) {
-            button.disabled = true;
-            button.innerHTML = "<span>Signing in…</span>";
-          }
-
-          await signInWithEmailAndPassword(auth, email, password);
-          setStatus("Signed in successfully. Redirecting…", "success");
-          window.location.href = "members.html";
-        } catch (error) {
-          console.error("signIn error:", error);
-          let message = "Unable to sign in. Please check your details and try again.";
-          if (error.code === "auth/wrong-password") {
-            message = "Incorrect password. Please try again.";
-          } else if (error.code === "auth/user-not-found") {
-            message = "No account found for that email address.";
-          } else if (error.code === "auth/invalid-email") {
-            message = "Please check the email address and try again.";
-          } else if (error.code === "auth/too-many-requests") {
-            message = "Too many failed attempts. Please try again later or reset your password.";
-          }
-          setStatus(message, "error");
-        } finally {
-          const button = form.querySelector("button[type='submit']");
-          if (button) {
-            button.disabled = false;
-            button.innerHTML = "<span>Log in</span><span aria-hidden='true'>→</span>";
-          }
-        }
-      });
-    }
-  </script>
 </body>
 </html>
-
