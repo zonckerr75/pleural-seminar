@@ -25,33 +25,37 @@ function displayNameForUser(user) {
   return "";
 }
 
-const nameEl = document.getElementById("user-name");
-const logoutBtn = document.getElementById("logout-btn");
-
+// We grab elements inside the callback as well, in case the script loads before DOM is ready
 onAuthStateChanged(auth, (user) => {
+  console.log("[auth-guard] onAuthStateChanged fired:", !!user);
+
   if (!user) {
+    console.log("[auth-guard] No user, redirecting to login.html");
     window.location.href = "login.html";
     return;
   }
 
+  const nameEl = document.getElementById("user-name");
+  const logoutBtn = document.getElementById("logout-btn");
+
   if (nameEl) {
-    const name = displayNameForUser(user);
-    if (name) {
-      nameEl.textContent = name;
-    } else {
-      nameEl.textContent = "";
-    }
+    nameEl.textContent = displayNameForUser(user) || "Member";
+  } else {
+    console.warn("[auth-guard] #user-name element not found");
   }
 
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
       signOut(auth)
         .then(() => {
+          console.log("[auth-guard] Signed out, redirecting to login.html");
           window.location.href = "login.html";
         })
         .catch((err) => {
-          console.error("Error signing out:", err);
+          console.error("[auth-guard] Error signing out:", err);
         });
     });
+  } else {
+    console.warn("[auth-guard] #logout-btn element not found");
   }
 });
